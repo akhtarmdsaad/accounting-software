@@ -1,5 +1,5 @@
 from django.shortcuts import render,HttpResponse
 
 # Create your views here.
-def home(request):
-    return HttpResponse("Finance Home")
+def dashboard(request):
+    return render(request,"hod/dashboard.html")
