@@ -17,6 +17,9 @@
     {% include "includes/header.html" %}
     {% include "includes/sidebar.html"  %}
     
+    {% block content %}{% endblock content %}
+
+
     {% include "includes/footer.html"  %}
 
     <script src="{% static 'assets/js/jquery-3.6.0.min.js' %}"></script>
