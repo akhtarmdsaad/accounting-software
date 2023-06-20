@@ -48,6 +48,7 @@ class InventoryAdjustments(models.Model):
     quantity = models.IntegerField()
     reason_title = models.CharField(max_length=100)
     reason_desc = models.TextField() 
+    ADJUSTMENT_TYPE = models.IntegerField(choices=ADJUSTMENT_TYPE,default=2)
 
     def __str__(self):
         return str(self.item.name) + " - " + str(self.reason_title)

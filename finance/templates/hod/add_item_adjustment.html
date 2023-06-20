@@ -49,13 +49,22 @@
                 <div class="col-12 col-sm-6">
                     <div class="form-group">
                       <label>Item</label>
-                      <select class="form-control" name="item_group">
+                      <select class="form-control" name="item">
                         {% for i in items %}
                         <option value={{i.id}}>{{i}}</option>
                         {% endfor %}
                       </select>
                     </div>
                   </div>
+                  <div class="col-12 col-sm-6">
+                    <div class="form-group">
+                        <label>Adjustment Type</label>
+                        <select class="form-control" name="type">
+                            <option value = "1">Increase</option>
+                            <option value = "2">Decrease</option>
+                        </select>
+                     </div>
+                </div>
                   <div class="col-12 col-sm-6">
                     <div class="form-group">
                       <label>Quantity</label>
@@ -72,7 +81,7 @@
                       <label>Reason Title</label>
                       <input
                         required
-                        type="number"
+                        type="text"
                         class="form-control"
                         name="reason_title"
                       />
@@ -83,7 +92,7 @@
                       <label>Reason Description</label>
                       <textarea
                         class="form-control"
-                        name="message"
+                        name="reason_desc"
                         rows="10"
                       ></textarea>
                     </div>
