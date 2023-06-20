@@ -1,0 +1,146 @@
+{% extends 'base.html' %} {% block content %}
+
+<div class="main-wrapper">
+  <div class="page-wrapper">
+    <div class="content container-fluid">
+      <div class="page-header">
+        <div class="row align-items-center">
+          <div class="col">
+            <h3 class="page-title">Update Item</h3>
+            <ul class="breadcrumb">
+              <li class="breadcrumb-item">
+                <a href="{% url 'finance_dashboard' %}">Dashboard</a>
+              </li>
+              <li class="breadcrumb-item active">Update Item</li>
+            </ul>
+          </div>
+          <div class="col-auto text-right float-right ml-auto">
+            <a href="{% url 'view_items' %}" class="btn btn-primary"
+              ><i class="fas fa-plus"></i> &nbsp;View Item
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="card">
+          <div class="card-body">
+            <form method="post" action="#" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div class="col-12">
+                <h5 class="form-title"><span>Update Item</span></h5>
+              </div>
+              {% include 'includes/messages.html' %}
+
+              <div class="col-12 col-sm-6">
+                <div class="form-group">
+                  <label>Name</label>
+                  <input
+                    required
+                    type="text"
+                    class="form-control"
+                    name="name"
+                    value={{elem.name}}
+                  />
+                </div>
+              </div>
+              
+              <div class="col-sm-11">
+                <div class="form-group">
+                  <label>Image</label>
+                  <input type="file" class="form-control" name="image" />
+                </div>
+              </div>
+              <div class="col-12 col-sm-6">
+                <div class="form-group">
+                  <label>Item Group</label>
+                  <select class="form-control" name="item_group">
+                    {% for i in item_groups %}
+                        <option value={{i.id}}
+                        
+                        {% if i.id == elem.item_group.id %}
+                            selected
+                        {% endif %}
+                        
+                        >{{i}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="col-12 col-sm-6">
+                <div class="form-group">
+                  <label>HSN Code</label>
+                  <input
+                    required
+                    type="number"
+                    class="form-control"
+                    name="hsn"
+                    value={{elem.hsn_code}}
+                  />
+                </div>
+              </div>
+              <div class="col-12 col-sm-6">
+                <div class="form-group">
+                  <label>Unit</label>
+                  <input
+                    required
+                    type="text"
+                    class="form-control"
+                    name="unit"
+                    value = {{elem.unit}}
+                  />
+                </div>
+              </div>
+              <div class="col-12 col-sm-2">
+                <div class="form-group">
+                  <label>Tax Rate (CGST/SGST) in %</label>
+                  <input
+                    required
+                    type="number"
+                    class="form-control"
+                    name="tax"
+                    value={{elem.state_tax_rate}}
+                  />
+                </div>
+              </div>
+              <div class="col-12 col-sm-6">
+                <div class="form-group">
+                  <label>Current Stock</label>
+                  <input
+                    required
+                    type="number"
+                    class="form-control"
+                    name="cur_stock"
+                    value={{elem.current_stock}}
+                  />
+                </div>
+              </div>
+              <div class="col-12 col-sm-6">
+                <div class="form-group">
+                  <label>Minimum Stock</label>
+                  <input
+                    required
+                    type="number"
+                    class="form-control"
+                    name="min_stock"
+                    value={{elem.min_stock}}
+                  />
+                </div>
+              </div>
+              
+
+              <div class="col-sm-11">
+                <button type="submit" class="btn btn-primary">
+                  Update Item
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}

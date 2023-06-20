@@ -25,7 +25,7 @@ class ItemGroup(models.Model):
 class Item(models.Model):
     name = models.CharField(_("name"), max_length=50)
     image = models.ImageField(upload_to="media/item_images",null=True)
-    item_group = models.ForeignKey(ItemGroup,on_delete=models.PROTECT)
+    item_group = models.ForeignKey(ItemGroup,on_delete=models.CASCADE)
     hsn_code = models.IntegerField()
     unit = models.CharField(max_length=10)
     unit_plural = models.CharField(max_length=10)

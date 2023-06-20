@@ -1,0 +1,95 @@
+{% extends 'base.html' %} {% block content %}
+
+<div class="main-wrapper">
+  <div class="page-wrapper">
+    <div class="content container-fluid">
+      <div class="page-header">
+        <div class="row align-items-center">
+          <div class="col">
+            <h3 class="page-title">Update Item Groups</h3>
+            <ul class="breadcrumb">
+              <li class="breadcrumb-item">
+                <a href="{% url 'finance_dashboard' %}">Dashboard</a>
+              </li>
+              <li class="breadcrumb-item active">Update Item Groups</li>
+            </ul>
+          </div>
+          <div class="col-auto text-right float-right ml-auto">
+            <a href="{% url 'view_item_groups' %}" class="btn btn-primary"
+              ><i class="fas fa-plus"></i> &nbsp;View Item Groups
+            </a>
+          </div>
+          
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="card">
+            <div class="card-body">
+              <form method="post" action="#">
+                {% csrf_token %}
+                <div class="col-12">
+                  <h5 class="form-title"><span>Update Item Groups</span></h5>
+                </div>
+                {% include 'includes/messages.html' %}
+
+                <div class="col-12 col-sm-6">
+                  <div class="form-group">
+                    <label>Name</label>
+                    <input
+                      required
+                      type="text"
+                      class="form-control"
+                      name="name"
+                      value="{{elem.name}}"
+                    />
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label>Brand</label>
+                    <input
+                      required
+                      type="text"
+                      class="form-control"
+                      name="brand"
+                      value="{{elem.brand}}"
+                    />
+                  </div>
+                </div>
+                <div class="col-12 col-sm-6">
+                    <div class="form-group">
+                        <label>Tax Preference</label>
+                        <select class="form-control" name="tax" value={{elem.tax_preference}}>
+                            <option value = "1">Taxable</option>
+                            <option value = "2">Non-Taxable</option>
+                        </select>
+                     </div>
+                </div>
+                <div class="col-12 col-sm-6">
+                    <div class="form-group">
+                        <label>Inventory</label>
+                        <select class="form-control" name="inventory" 
+                        value="{{elem.inventory}}">
+                            <option value = "1">Yes</option>
+                            <option value = "2">No</option>
+                        </select>
+                     </div>
+                </div>
+                <input type="hidden" value="{{elem.id}}" name="id">
+                <div class="col-sm-11">
+                  <button type="submit" class="btn btn-primary">
+                    Update Item Group
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}

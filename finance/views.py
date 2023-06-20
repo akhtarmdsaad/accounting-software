@@ -1,4 +1,4 @@
-from django.shortcuts import render,HttpResponse
+from django.shortcuts import redirect, render,HttpResponse
 from django.contrib import messages
 from finance.models import ItemGroup, Item,InventoryAdjustments
 
@@ -26,6 +26,13 @@ def view_item_groups(request):
     }
     return render(request,"hod/view_item_groups.html", context)
 
+def delete_item_groups(request,id):
+    item_group = ItemGroup.objects.get(id=id)
+    item_group.delete()
+    messages.success(request,"Item Group Deleted Successfully")
+    return redirect("view_item_groups")
+
+
 def add_item_groups(request):
     if request.method == "POST":
         name = request.POST.get('name')
@@ -44,6 +51,23 @@ def add_item_groups(request):
         messages.success(request,"Item Group Added Successfully")
 
     return render(request,"hod/add_item_groups.html")
+
+def edit_item_groups(request,id):
+    if request.method == "POST":
+        id = request.POST.get('id')
+        elem = ItemGroup.objects.get(id=int(id))
+        elem.name = request.POST.get('name')
+        elem.brand = request.POST.get('brand')
+        elem.tax = request.POST.get('tax')
+        elem.inventory = request.POST.get('inventory')
+
+        elem.save()
+        messages.success(request,"Item Group Updated Successfully")
+    item_group = ItemGroup.objects.get(id=id)
+    context = {
+        "elem":item_group
+    }
+    return render(request,"hod/edit_item_groups.html",context)
 
 
 
@@ -93,6 +117,38 @@ def add_item(request):
     }
     return render(request,"hod/add_item.html",context)
 
+def edit_item(request,id):
+    item_groups = ItemGroup.objects.all()
+    if request.method == "POST":
+        id = request.POST.get('id')
+        elem = Item.objects.get(id=int(id))
+        elem.name = request.POST.get('name')
+        elem.image = request.FILES.get('image')
+        item_group_id = request.POST.get('item_group')
+        elem.item_group = ItemGroup.objects.get(pk=item_group_id)
+        elem.hsn = request.POST.get('hsn')
+        elem.unit = request.POST.get('unit')
+        elem.tax = request.POST.get('tax')
+        elem.cur_stock = request.POST.get('cur_stock')
+        elem.min_stock = request.POST.get('min_stock')
+        elem.unit_plural = elem.unit+"s"
+
+        elem.save()
+        messages.success(request,"Item Updated Successfully")
+    item = Item.objects.get(id=id)
+    context = {
+        "item_groups":item_groups,
+        "elem":item
+    }
+    return render(request,"hod/edit_item.html",context)
+
+def delete_item(request,id):
+    item = Item.objects.get(id=id)
+    item.delete()
+    messages.success(request,"Item Deleted Successfully")
+    return redirect("view_items")
+
+
 def view_item_adjustment(request):
     inventory_adjustments = InventoryAdjustments.objects.all()
 
@@ -128,3 +184,40 @@ def add_item_adjustment(request):
     return render(request,"hod/add_item_adjustment.html",{
         "items":items
     })
+
+
+def edit_item_adjustment(request,id):
+    items = Item.objects.all()
+    if request.method == "POST":
+        id = request.POST.get('id')
+        elem = InventoryAdjustments.objects.get(id=int(id))
+        elem.date = request.POST.get('date')
+        elem.quantity = request.POST.get('qnt')
+        item_id = request.POST.get('item')
+        elem.item = Item.objects.get(id=item_id)
+        elem.ADJUSTMENT_TYPE = request.POST.get('type')
+        elem.reason_title = request.POST.get('reason_title')
+        elem.reason_desc = request.POST.get('reason_desc')
+
+        
+        elem.save()
+        messages.success(request,"Adjustment Updated Successfully")
+
+    elem = InventoryAdjustments.objects.get(id=int(id))
+    day = str(elem.date.day).rjust(2,"0")
+    month = str(elem.date.month).rjust(2,"0")
+    year = str(elem.date.year).rjust(4,"0")
+
+    return render(request,"hod/edit_item_adjustment.html",{
+        "items":items,
+        "elem":elem,
+        "day":day,
+        "month":month,
+        "year":year
+    })
+
+def delete_item_adjustment(request,id):
+    item = InventoryAdjustments.objects.get(id=id)
+    item.delete()
+    messages.success(request,"Item Adjustment Deleted Successfully")
+    return redirect("view_item_adjustment")
