@@ -1,0 +1,76 @@
+{% extends 'base.html' %} {% block content %}
+
+<div class="page-wrapper">
+  <div class="content container-fluid">
+    <div class="page-header">
+      <div class="row">
+        <div class="col-sm-12">
+          <h3 class="page-title">Customer Details</h3>
+          <ul class="breadcrumb">
+            <li class="breadcrumb-item"><a href="students.html">Customer</a></li>
+            <li class="breadcrumb-item active">Customer Details</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="about-info">
+              <h4>{{elem.name}}</h4>
+              <div class="media mt-3">
+                <img src="/{{item.image}}" class="mr-3" alt="..." />
+                <div class="media-body">
+                  <ul>
+                    <li>
+                      <span class="title-span">Name : </span>
+                      <span class="info-span">{{elem.name}}</span>
+                    </li>
+                    <li>
+                      <span class="title-span">Under Group : </span>
+                      <span class="info-span">{{item.item_group}}</span>
+                    </li>
+                    <li>
+                      <span class="title-span">HSN Code : </span>
+                      <span class="info-span">{{item.hsn_code}}</span>
+                    </li>
+                    <li>
+                      <span class="title-span">Unit : </span>
+                      <span class="info-span">{{item.unit}} / {{item.unit_plural}}</span
+                      >
+                    </li>
+                    <li>
+                      <span class="title-span">Tax Rate (CGST/SGST) : </span>
+                      <span class="info-span">{{item.state_tax_rate}}%  / {{item.state_tax_rate}}%</span>
+                    </li>
+                    <b>
+                        <li>
+                            <span class="title-span">Current Stock : </span>
+                            <span class="info-span">{{item.current_stock}}</span>
+                        </li>
+                    </b>
+                    <li>
+                      <span class="title-span">Minimum Stock : </span>
+                      <span class="info-span">{{item.min_stock}}</span>
+                    </li>
+                    <li>
+                      <span class="title-span">Created At : </span>
+                      <span class="info-span">{{item.created_at}}</span>
+                    </li>
+                    <li>
+                      <span class="title-span">Updated At : </span>
+                      <span class="info-span">{{item.updated_at}}</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              {% endblock content %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

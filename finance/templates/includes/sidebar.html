@@ -6,7 +6,7 @@
           <span>Main Menu</span>
         </li>
         <li>
-          <a href="holiday.html"
+          <a href="{% url 'finance_dashboard' %}"
             ><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a
           >
         </li>
@@ -16,16 +16,16 @@
             <span class="menu-arrow"></span
           ></a>
           <ul style="display: block">
-            <li><a href="index.html" class="active">Item Groups</a></li>
-            <li><a href="teacher-dashboard.html">Items</a></li>
-            <li><a href="student-dashboard.html">Inventory Adjustment</a></li>
+            <li><a href="{% url 'view_item_groups' %}" class="active">Item Groups</a></li>
+            <li><a href="{% url 'view_items' %}">Items</a></li>
+            <li><a href="{% url 'view_item_adjustment' %}">Inventory Adjustment</a></li>
           </ul>
         </li>
         <li class="menu-title">
           <span>Customer</span>
         </li>
         <li>
-          <a href="holiday.html"
+          <a href="{% url 'view_customers' %}"
             ><i class="fas fa-user-alt"></i> <span>Customers</span></a
           >
         </li>
