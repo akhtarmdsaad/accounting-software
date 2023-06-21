@@ -1,6 +1,6 @@
 from django.shortcuts import redirect, render,HttpResponse
 from django.contrib import messages
-from finance.models import ItemGroup, Item,InventoryAdjustments,Customer
+from finance.models import Invoice, ItemGroup, Item,InventoryAdjustments,Customer
 import datetime
 
 # Create your views here.
@@ -251,3 +251,9 @@ def delete_customer(request,id):
     elem = Customer.objects.get(id=id)
     elem.delete()
     return redirect("view_customers")
+
+def view_invoices(request):
+    invoices = Invoice.objects.all()
+    return render(request,"hod/view_invoice.html",{
+        "invoices":invoices
+    })

@@ -30,4 +30,11 @@ urlpatterns = [
     path('edit_customers/<int:id>/',views.edit_customer,name="edit_customer"),
     path('delete_customer/<int:id>/',views.delete_customer,name="delete_customer"),
 
+
+    #Invoice
+    path('view_invoices/',views.view_invoices,name="view_invoices"),
+    # path('add_invoices/',views.add_invoice,name="add_invoices"),
+    # path('view_invoices/<int:id>/',views.view_invoices_id,name="view_invoices_id"),
+    # path('edit_invoices/<int:id>/',views.edit_invoice,name="edit_invoice"),
+    # path('delete_invoice/<int:id>/',views.delete_invoice,name="delete_invoice"),
 ]

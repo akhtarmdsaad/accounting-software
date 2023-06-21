@@ -78,6 +78,22 @@ class Payment(models.Model):
         return f"{self.amount}"
     
 
+class Invoice(models.Model):
+    invoice_no = models.CharField(_("invoice_no"), max_length=50)
+    customer = models.ForeignKey(Customer,on_delete=models.CASCADE)
+    date = models.DateField(_("date"), auto_now=False, auto_now_add=False)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+
+    
+class Transaction(models.Model):
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
+    item = models.CharField(max_length=100)
+    quantity = models.IntegerField()
+    rate = models.DecimalField(max_digits=10, decimal_places=2)
+    discount = models.DecimalField(max_digits=10, decimal_places=2)
+    tax = models.DecimalField(max_digits=10, decimal_places=2)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
 
 
 
+    
