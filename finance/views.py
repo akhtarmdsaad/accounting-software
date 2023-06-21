@@ -1,6 +1,7 @@
 from django.shortcuts import redirect, render,HttpResponse
 from django.contrib import messages
-from finance.models import ItemGroup, Item,InventoryAdjustments
+from finance.models import ItemGroup, Item,InventoryAdjustments,Customer
+import datetime
 
 # Create your views here.
 def dashboard(request):
@@ -60,6 +61,7 @@ def edit_item_groups(request,id):
         elem.brand = request.POST.get('brand')
         elem.tax = request.POST.get('tax')
         elem.inventory = request.POST.get('inventory')
+        elem.updated_at = datetime.datetime.now()
 
         elem.save()
         messages.success(request,"Item Group Updated Successfully")
@@ -132,7 +134,7 @@ def edit_item(request,id):
         elem.cur_stock = request.POST.get('cur_stock')
         elem.min_stock = request.POST.get('min_stock')
         elem.unit_plural = elem.unit+"s"
-
+        elem.updated_at = datetime.datetime.now()
         elem.save()
         messages.success(request,"Item Updated Successfully")
     item = Item.objects.get(id=id)
@@ -198,7 +200,7 @@ def edit_item_adjustment(request,id):
         elem.ADJUSTMENT_TYPE = request.POST.get('type')
         elem.reason_title = request.POST.get('reason_title')
         elem.reason_desc = request.POST.get('reason_desc')
-
+        elem.updated_at = datetime.datetime.now()
         
         elem.save()
         messages.success(request,"Adjustment Updated Successfully")
@@ -221,3 +223,15 @@ def delete_item_adjustment(request,id):
     item.delete()
     messages.success(request,"Item Adjustment Deleted Successfully")
     return redirect("view_item_adjustment")
+
+def view_customers(request):
+    customers = Customer.objects.all()
+    return render(request,"hod/view_customer.html",{
+        "customers":customers
+    })
+
+def view_customers_id(request,id):
+    customer = Customer.objects.get(id=id)
+    return  render(request,"hod/view_customer_id.html",{
+        "elem":customer
+    })

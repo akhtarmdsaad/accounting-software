@@ -5,3 +5,5 @@ from finance.models import *
 admin.site.register(ItemGroup)
 admin.site.register(Item)
 admin.site.register(InventoryAdjustments)
+admin.site.register(Customer)
+admin.site.register(Payment)

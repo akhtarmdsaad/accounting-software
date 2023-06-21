@@ -49,6 +49,35 @@ class InventoryAdjustments(models.Model):
     reason_title = models.CharField(max_length=100)
     reason_desc = models.TextField() 
     ADJUSTMENT_TYPE = models.IntegerField(choices=ADJUSTMENT_TYPE,default=2)
+    created_at = models.DateTimeField(auto_now_add=True,null = True)
+    updated_at = models.DateTimeField(auto_now_add=True,null = True)
 
     def __str__(self):
         return str(self.item.name) + " - " + str(self.reason_title)
+
+class Customer(models.Model):
+    name = models.CharField(_("name"), max_length=50)
+    email = models.EmailField(_("email"), max_length=254,null=True)
+    phone = models.CharField(_("phone"), max_length=50)
+    address = models.TextField()
+    gstin = models.CharField(_("gstin"), max_length=15)
+    current_balance = models.IntegerField(default = 0)
+    created_at = models.DateTimeField(auto_now_add=True,null = True)
+    updated_at = models.DateTimeField(auto_now_add=True,null = True)
+
+    def __str__(self):
+        return self.name
+    
+
+class Payment(models.Model):
+    date = models.DateField(_("date"), auto_now=False, auto_now_add=False)
+    amount = models.IntegerField(_("amount"))
+    customer = models.ForeignKey(Customer,null=True,on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.amount}"
+    
+
+
+
+
