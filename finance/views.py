@@ -235,3 +235,19 @@ def view_customers_id(request,id):
     return  render(request,"hod/view_customer_id.html",{
         "elem":customer
     })
+
+def add_customer(request):
+    if request.method == "POST":
+        pass
+    return render(request,"hod/add_customer.html")
+
+def edit_customer(request,id):
+    elem = Customer.objects.get(id=id)
+    return render(request,"hod/edit_customer.html",{
+        "elem":elem
+    })
+
+def delete_customer(request,id):
+    elem = Customer.objects.get(id=id)
+    elem.delete()
+    return redirect("view_customers")

@@ -7,7 +7,7 @@
         <div class="col-sm-12">
           <h3 class="page-title">Customer Details</h3>
           <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="students.html">Customer</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'finance_dashboard' %}">Dashboard</a></li>
             <li class="breadcrumb-item active">Customer Details</li>
           </ul>
         </div>
@@ -20,7 +20,7 @@
             <div class="about-info">
               <h4>{{elem.name}}</h4>
               <div class="media mt-3">
-                <img src="/{{item.image}}" class="mr-3" alt="..." />
+                
                 <div class="media-body">
                   <ul>
                     <li>
@@ -28,39 +28,35 @@
                       <span class="info-span">{{elem.name}}</span>
                     </li>
                     <li>
-                      <span class="title-span">Under Group : </span>
-                      <span class="info-span">{{item.item_group}}</span>
+                      <span class="title-span">Email : </span>
+                      <span class="info-span">{{elem.email}}</span>
                     </li>
                     <li>
-                      <span class="title-span">HSN Code : </span>
-                      <span class="info-span">{{item.hsn_code}}</span>
+                      <span class="title-span">Phone : </span>
+                      <span class="info-span">{{elem.phone}}</span>
                     </li>
                     <li>
-                      <span class="title-span">Unit : </span>
-                      <span class="info-span">{{item.unit}} / {{item.unit_plural}}</span
+                      <span class="title-span">Address : </span>
+                      <span class="info-span">{{elem.address}}</span
                       >
                     </li>
                     <li>
-                      <span class="title-span">Tax Rate (CGST/SGST) : </span>
-                      <span class="info-span">{{item.state_tax_rate}}%  / {{item.state_tax_rate}}%</span>
+                      <span class="title-span">gstin : </span>
+                      <span class="info-span">{{elem.gstin|upper}}%</span>
                     </li>
                     <b>
                         <li>
-                            <span class="title-span">Current Stock : </span>
-                            <span class="info-span">{{item.current_stock}}</span>
+                            <span class="title-span">Current Balance : </span>
+                            <span class="info-span">{{elem.current_balance}}</span>
                         </li>
                     </b>
                     <li>
-                      <span class="title-span">Minimum Stock : </span>
-                      <span class="info-span">{{item.min_stock}}</span>
-                    </li>
-                    <li>
                       <span class="title-span">Created At : </span>
-                      <span class="info-span">{{item.created_at}}</span>
+                      <span class="info-span">{{elem.created_at}}</span>
                     </li>
                     <li>
                       <span class="title-span">Updated At : </span>
-                      <span class="info-span">{{item.updated_at}}</span>
+                      <span class="info-span">{{elem.updated_at}}</span>
                     </li>
                   </ul>
                 </div>

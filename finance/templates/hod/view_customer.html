@@ -15,7 +15,7 @@
             </ul>
           </div>
           <div class="col-auto text-right float-right ml-auto">
-            <a href="{% url 'add_items' %}" class="btn btn-primary"
+            <a href="{% url 'add_customers' %}" class="btn btn-primary"
               ><i class="fas fa-plus"></i> &nbsp;Add Customer
             </a>
           </div>
@@ -41,7 +41,7 @@
                       {% for i in customers %}
                       <tr>
                         <td>{{i.id}}</td>
-                        <td><a href="{% url 'view_items_id' i.id %}">{{i.name}}</a></td>
+                        <td><a href="{% url 'view_customers_id' i.id %}">{{i.name}}</a></td>
                         <td>{{i.email}}</td>
                         <td>{{i.phone}} 
                         </td>
@@ -49,7 +49,7 @@
                         <td class="text-right">
                           <div class="actions">
                             <a
-                              href="{% url 'edit_item' i.id %}"
+                              href="{% url 'edit_customer' i.id %}"
                               class="btn btn-sm bg-success-light mr-2"
                             >
                               <i class="fas fa-pen"></i>
@@ -72,7 +72,7 @@
 
 
         
-    {% for i in items %}
+    {% for i in customers %}
 <!-- Modal -->
 <div class="modal fade" id="modal-{{i.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
@@ -88,7 +88,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        <a class="btn btn-danger" href="{% url 'delete_item' i.id %}">Delete</a>
+        <a class="btn btn-danger" href="{% url 'delete_customer' i.id %}">Delete</a>
       </div>
     </div>
   </div>

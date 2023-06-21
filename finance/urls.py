@@ -25,9 +25,9 @@ urlpatterns = [
 
     #Customer
     path('view_customers/',views.view_customers,name="view_customers"),
-    # path('add_customers/',views.add_customer,name="add_customers"),
+    path('add_customers/',views.add_customer,name="add_customers"),
     path('view_customers/<int:id>/',views.view_customers_id,name="view_customers_id"),
-    # path('edit_customers/<int:id>/',views.edit_customer,name="edit_customer"),
-    # path('delete_customer/<int:id>/',views.delete_customer,name="delete_customer"),
+    path('edit_customers/<int:id>/',views.edit_customer,name="edit_customer"),
+    path('delete_customer/<int:id>/',views.delete_customer,name="delete_customer"),
 
 ]
