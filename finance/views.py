@@ -257,3 +257,5 @@ def view_invoices(request):
     return render(request,"hod/view_invoice.html",{
         "invoices":invoices
     })
+def add_invoice(request):
+    return render(request,"hod/add_invoice.html")
