@@ -1,9 +1,17 @@
-from django.shortcuts import redirect, render,HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render,HttpResponse
 from django.contrib import messages
-from finance.models import Invoice, ItemGroup, Item,InventoryAdjustments,Customer
-import datetime
+from finance.forms import TransactionForm
+from finance.models import Invoice, ItemGroup, Item,InventoryAdjustments,Customer, Transaction
+import datetime,decimal
+from company_settings import INVOICE_FORMAT,COMPANY_ABBR,get_invoice
 
 # Create your views here.
+def test_form(request):
+    form = TransactionForm()
+    return render(request,"hod/form.html",{
+        "form":form
+    })
+
 def dashboard(request):
     total_item_groups = ItemGroup.objects.all().count()
     items = Item.objects.all()
@@ -125,7 +133,9 @@ def edit_item(request,id):
         id = request.POST.get('id')
         elem = Item.objects.get(id=int(id))
         elem.name = request.POST.get('name')
-        elem.image = request.FILES.get('image')
+        image = request.FILES.get('image')
+        if image:
+            elem.image = image
         item_group_id = request.POST.get('item_group')
         elem.item_group = ItemGroup.objects.get(pk=item_group_id)
         elem.hsn = request.POST.get('hsn')
@@ -179,7 +189,13 @@ def add_item_adjustment(request):
             reason_title=reason_title,
             reason_desc=reason_desc
         )
-
+        # Do The Changes to other models Here
+        if int(type) == 1:
+            item.current_stock += int(qnt)
+        else:
+            item.current_stock -= int(qnt)
+            
+        item.save()
         elem.save()
         messages.success(request,"Adjustment Added Successfully")
 
@@ -219,8 +235,13 @@ def edit_item_adjustment(request,id):
     })
 
 def delete_item_adjustment(request,id):
-    item = InventoryAdjustments.objects.get(id=id)
-    item.delete()
+    adjustment = InventoryAdjustments.objects.get(id=id)
+    if adjustment.ADJUSTMENT_TYPE == 1:
+        adjustment.item.current_stock -= adjustment.quantity
+    else:
+        adjustment.item.current_stock += adjustment.quantity
+    adjustment.item.save()
+    adjustment.delete()
     messages.success(request,"Item Adjustment Deleted Successfully")
     return redirect("view_item_adjustment")
 
@@ -238,7 +259,24 @@ def view_customers_id(request,id):
 
 def add_customer(request):
     if request.method == "POST":
-        pass
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        address = request.POST.get('address')
+        gstin = request.POST.get('gstin')
+        current_balance = request.POST.get('balance')
+
+        customer = Customer(
+            name=name,
+            email=email,
+            phone=phone,
+            address=address,
+            gstin=gstin,
+            current_balance = current_balance
+        )
+        
+        customer.save()
+        messages.success(request,"Customer Saved Successfully")
     return render(request,"hod/add_customer.html")
 
 def edit_customer(request,id):
@@ -248,14 +286,197 @@ def edit_customer(request,id):
     })
 
 def delete_customer(request,id):
+    if request.method == "POST":
+        elem.name = request.POST.get('name')
+        elem.email = request.POST.get('email')
+        elem.phone = request.POST.get('phone')
+        elem.address = request.POST.get('address')
+        elem.gstin = request.POST.get('gstin')
+        elem.current_balance = request.POST.get('balance')
+
+        elem.save()
+        messages.success(request,"Customer Updated Successfully")
+
     elem = Customer.objects.get(id=id)
     elem.delete()
     return redirect("view_customers")
 
 def view_invoices(request):
-    invoices = Invoice.objects.all()
+    invoices = Invoice.objects.filter(valid=True)
     return render(request,"hod/view_invoice.html",{
         "invoices":invoices
     })
+
+
+
 def add_invoice(request):
-    return render(request,"hod/add_invoice.html")
+    customers = Customer.objects.all()
+    items = Item.objects.all()
+    #get invoice
+    invoices = Invoice.objects.filter(valid=False)
+    if not invoices:
+        last_invoice = Invoice.objects.all().order_by('-id')
+        if last_invoice:
+            last_invoice = last_invoice[0]
+            new_inv_no = get_invoice(last_invoice.invoice_no)
+        else:
+            new_inv_no = get_invoice("0")
+        current_invoice = Invoice.objects.create(
+            invoice_no=new_inv_no,
+            customer = Customer.objects.all()[0],
+            date = datetime.date.today(),
+            total_taxable_amount=0,
+            total_tax_amount=0,
+            total_amount = 0
+        )
+    else:
+        current_invoice = invoices[0]
+    
+    transactions = current_invoice.transaction_set.all()
+    if request.method == "POST":
+        current_invoice.invoice_no = request.POST.get('invoice_no')
+        current_invoice.date = request.POST.get('date')
+        customer_id = request.POST.get('customer_id')
+        customer = Customer.objects.get(id=customer_id)
+        current_invoice.customer = customer
+        customer.current_balance += current_invoice.total_amount
+        customer.save()
+        for tr in current_invoice.transaction_set.all():
+            tr.item.current_stock -= tr.quantity
+            tr.item.save()
+        current_invoice.valid = True
+        current_invoice.save()
+        return redirect("view_invoices")
+    day = str(current_invoice.date.day).rjust(2,"0")
+    month = str(current_invoice.date.month).rjust(2,"0")
+    year = str(current_invoice.date.year).rjust(4,"0")
+    return render(request,"hod/add_invoice.html",{
+        "customers":customers,
+        "items":items,
+        "invoice":current_invoice,
+        "day":day,
+        "month":month,
+        "year":year,
+        "transactions":transactions
+    })
+
+def delete_invoice(request,id):
+    invoice = Invoice.objects.get(id=id)
+    if invoice.valid:
+        invoice.customer.current_balance -= invoice.total_amount
+        invoice.customer.save()
+        for tr in invoice.transaction_set.all():
+            tr.item.current_stock += tr.quantity
+            tr.item.save()
+
+    invoice.delete()
+    return redirect("view_invoices")
+
+def edit_invoice(request,id):
+    customers = Customer.objects.all()
+    items = Item.objects.all()
+    #get invoice
+    current_invoice = Invoice.objects.get(id=id)
+    transactions = current_invoice.transaction_set.all()
+    if request.method == "POST":
+        current_invoice.invoice_no = request.POST.get('invoice_no')
+        current_invoice.date = request.POST.get('date')
+        customer_id = request.POST.get('customer_id')
+        customer = Customer.objects.get(id=customer_id)
+        current_invoice.customer = customer
+        current_invoice.valid = True
+        current_invoice.save()
+        return redirect("view_invoices")
+    day = str(current_invoice.date.day).rjust(2,"0")
+    month = str(current_invoice.date.month).rjust(2,"0")
+    year = str(current_invoice.date.year).rjust(4,"0")
+    return render(request,"hod/edit_invoice.html",{
+        "customers":customers,
+        "items":items,
+        "invoice":current_invoice,
+        "day":day,
+        "month":month,
+        "year":year,
+        "transactions":transactions
+    })
+
+
+def save_transaction(request):
+    if request.method == "POST":
+        invoice_id = request.POST.get("invoice_id")
+        invoice = Invoice.objects.get(id=invoice_id)
+        item_id = request.POST.get('item')
+        item = get_object_or_404(Item,id=int(item_id))
+
+        qnt = decimal.Decimal(request.POST.get('qnt'))
+        rate = decimal.Decimal(request.POST.get('rate'))
+        taxable_value = decimal.Decimal(request.POST.get('taxable_value'))
+        discount_percent = decimal.Decimal(request.POST.get('discount_percent'))
+        discount_amount = decimal.Decimal(request.POST.get('discount_amount'))
+        state_tax = (taxable_value-discount_amount) * item.state_tax_rate/100
+        central_tax = state_tax 
+        total_amount = decimal.Decimal(request.POST.get('total_amount'))
+
+        
+        
+
+        transaction = Transaction(
+            invoice = invoice,
+            item = item,
+            quantity = qnt,
+            rate = rate,
+            taxable_value = taxable_value,
+            discount_percent = discount_percent,
+            discount_amount = discount_amount,
+            state_tax = state_tax,
+            central_tax = central_tax,
+            amount = total_amount
+        )
+
+        transaction.save()
+        invoice.total_taxable_amount += transaction.taxable_value
+        invoice.total_tax_amount += transaction.state_tax + transaction.central_tax
+        invoice.total_amount += transaction.amount 
+        invoice.save()
+
+    return redirect("add_invoices")
+
+def save_edit_transaction(request,id):
+    if request.method == "POST":
+        invoice_id = request.POST.get("invoice_id")
+        invoice = Invoice.objects.get(id=invoice_id)
+        item_id = request.POST.get('item')
+        item = get_object_or_404(Item,id=int(item_id))
+
+        qnt = decimal.Decimal(request.POST.get('qnt'))
+        amount = decimal.Decimal(request.POST.get('amount'))
+        discount = request.POST.get('discount')
+        rate = amount / qnt
+        taxable_amount = amount / (1 + decimal.Decimal(item.state_tax_rate*2) / 100)
+        tax_amount = taxable_amount * decimal.Decimal(item.state_tax_rate) / 100 * 2
+
+
+        transaction = Transaction(
+            invoice = invoice,
+            item = item,
+            quantity = qnt,
+            rate = rate,
+            discount = discount,
+            tax = tax_amount,
+            amount = amount
+
+        )
+
+        transaction.save()
+        invoice.total_amount += transaction.amount 
+        invoice.save()
+
+    return redirect("edit_invoice",id)
+
+def delete_transaction(request,id):
+    elem = Transaction.objects.get(id=id)
+    elem.invoice.total_amount -= elem.amount
+    elem.invoice.save()
+    elem.delete()
+
+    return redirect("add_invoices")

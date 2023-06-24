@@ -43,14 +43,14 @@
                         <td>{{i.id}}</td>
                         <td>{{i.date}}</td>
                         <td>{{i.item}}</td>
-                        <td>
+                        <td style="font-weight: 600;
+                        
                           {% if i.ADJUSTMENT_TYPE == 1 %}
-                            +
+                           color:green;" > + {{i.quantity}}
                           {% elif i.ADJUSTMENT_TYPE == 2 %}
-
-                          -
+                          color:red;"  > - {{i.quantity}}
                           {% endif %}
-                        {{i.quantity}}</td>
+                        </td>
                         <td>{{i.reason_title}}</td>
                         <td class="text-right">
                           <div class="actions">
@@ -77,7 +77,7 @@
     </div>
 
         
-    {% for i in item_adjustments %}
+    {% for i in inventory_adjustments %}
 <!-- Modal -->
 <div class="modal fade" id="modal-{{i.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">

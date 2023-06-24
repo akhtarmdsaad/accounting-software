@@ -6,12 +6,12 @@
       <div class="page-header">
         <div class="row align-items-center">
           <div class="col">
-            <h3 class="page-title">Add Invoice</h3>
+            <h3 class="page-title">Edit Invoice</h3>
             <ul class="breadcrumb">
               <li class="breadcrumb-item">
                 <a href="{% url 'finance_dashboard' %}">Dashboard</a>
               </li>
-              <li class="breadcrumb-item active">Add Invoice</li>
+              <li class="breadcrumb-item active">Edit Invoice</li>
             </ul>
           </div>
           <div class="col-auto text-right float-right ml-auto">
@@ -29,7 +29,7 @@
             <form method="post" action="#">
               {% csrf_token %}
               <div class="col-12">
-                <h5 class="form-title"><span>Add Invoice</span></h5>
+                <h5 class="form-title"><span>Edit Invoice</span></h5>
               </div>
               {% include 'includes/messages.html' %}
               <div class="row col-12">
@@ -76,7 +76,7 @@
                 <thead>
                   <tr>
                     <th>Item</th>
-                    <th width=10>Quantity</th>
+                    <th>Quantity</th>
                     <th>Rate</th>
                     <th>Taxable Value</th>
                     <th>Discount (in %)</th>
@@ -177,17 +177,9 @@
                     </td>
                   </tr>
                   <tr>
-                    <td colspan="2"></td>
+                    <td colspan="4"></td>
                     <td class="text-end"><strong>Total Amount:</strong></td>
-                    <td colspan=3><b>{{invoice.total_taxable_amount}}</b></td>
-                    <td><b>{{invoice.total_tax_amount}}</b></td>
-                    <td style="
-                    display: grid;
-                    place-items: center;
-                    font-size: x-large;
-                    color: green;
-                    font-weight: 400;
-                "><b>{{invoice.total_amount}}</b></td>
+                    <td><b>{{invoice.total_amount}}</b></td>
                   </tr>
 
                 </tfoot>
@@ -229,7 +221,7 @@
           
           <div class="row col-12">
             <div class="col-12 col-sm-4">
-              <div class="form-group">  
+              <div class="form-group">
                 <label for="item">Item</label>
                 <select class="form-control" name="item" id="item" >
                   {% for i in items %}
@@ -361,12 +353,6 @@
 
 {% block script %}
 <script>
-  function round(number,digits=2){
-    var decimal = number * Math.pow(10,digits)
-    decimal = Math.round(decimal) / 100
-    console.log(decimal)
-    return(decimal)
-  }
 
   qnt = document.querySelector("#modal-form #qnt")
   rate = document.querySelector("#modal-form #rate")
@@ -392,38 +378,38 @@
 
   discount_percent.addEventListener("input",(e)=>{
     if(discount_percent.value){
-      discount_amount.value =round( taxable_value.value * discount_percent.value / 100,2);
-      total_amount.value = round( ((taxable_value.value-discount_amount.value) * (1 + (tax_button.value*2)/100)),2);
-      total_rate.value = round( total_amount.value / qnt.value,2);
+      discount_amount.value = taxable_value.value * discount_percent.value / 100;
+      total_amount.value = ((taxable_value.value-discount_amount.value) * (1 + (tax_button.value*2)/100))
+      total_rate.value = total_amount.value / qnt.value;
     }
     else
     {
       discount_amount.value = 0
-      total_amount.value = round( ((taxable_value.value-discount_amount.value) * (1 + (tax_button.value*2)/100)),2);
-      total_rate.value = round( total_amount.value / qnt.value,2);
+      total_amount.value = ((taxable_value.value-discount_amount.value) * (1 + (tax_button.value*2)/100))
+      total_rate.value = total_amount.value / qnt.value;
     }
   })
   
   discount_amount.addEventListener("input",(e)=>{
     if(discount_amount.value){
-      discount_percent.value = round( discount_amount.value * 100 / taxable_value.value,2);
-      total_amount.value = round( ((taxable_value.value-discount_amount.value) * (1 + (tax_button.value*2)/100)),2);
-      total_rate.value = round( total_amount.value / qnt.value,2);
+      discount_percent.value = discount_amount.value * 100 / taxable_value.value;
+      total_amount.value = ((taxable_value.value-discount_amount.value) * (1 + (tax_button.value*2)/100))
+      total_rate.value = total_amount.value / qnt.value;
     }
     else
     {
       discount_percent.value = 0
-      total_amount.value = round( ((taxable_value.value-discount_amount.value) * (1 + (tax_button.value*2)/100)),2);
-      total_rate.value = round( total_amount.value / qnt.value,2);
+      total_amount.value = ((taxable_value.value-discount_amount.value) * (1 + (tax_button.value*2)/100))
+      total_rate.value = total_amount.value / qnt.value;
     }
   })
 
   rate.addEventListener("input",(e)=>{
     qnt_no = qnt.value;
     if(rate.value){
-      taxable_value.value = round(  rate.value * qnt_no,2);
-      total_amount.value = round( ((taxable_value.value-discount_amount.value) * (1 + (tax_button.value*2)/100)),2);
-      total_rate.value = round( total_amount.value / qnt_n,2);
+      taxable_value.value =  rate.value * qnt_no;
+      total_amount.value = ((taxable_value.value-discount_amount.value) * (1 + (tax_button.value*2)/100));
+      total_rate.value = total_amount.value / qnt_no
     }
     else{
       taxable_value.value =  0
@@ -435,9 +421,9 @@
   taxable_value.addEventListener("input",(e)=>{
     qnt_no = qnt.value;
     if(taxable_value.value){
-      rate.value = round( taxable_value.value / qnt_no,2);
-      total_amount.value = round( ((taxable_value.value-discount_amount.value) * (1 + (tax_button.value*2)/100)),2);
-      total_rate.value = round( total_amount.value / qnt_no,2);
+      rate.value = taxable_value.value / qnt_no;
+      total_amount.value = ((taxable_value.value-discount_amount.value) * (1 + (tax_button.value*2)/100))
+      total_rate.value = total_amount.value / qnt_no;
     }
     else{
       rate.value=0
@@ -452,10 +438,10 @@
       if(!discount_percent.value){
         discount_percent.value = 0
       }
-      taxable_value.value = round( (total_amount.value / (1 + (tax_button.value*2)/100)) / (1 - (discount_percent.value/100)),2);
-      discount_amount.value = round( taxable_value.value * discount_percent.value / 100,2);
-      rate.value = round( parseFloat(taxable_value.value) / qnt_no,2);
-      total_rate.value = round( total_amount.value / qnt_no,2);
+      taxable_value.value = (total_amount.value / (1 + (tax_button.value*2)/100)) / (1 - (discount_percent.value/100))
+      discount_amount.value = taxable_value.value * discount_percent.value / 100;
+      rate.value = parseFloat(taxable_value.value) / qnt_no;
+      total_rate.value = total_amount.value / qnt_no;
     }
     else{
       rate.value=0
@@ -466,10 +452,10 @@
   total_rate.addEventListener("input",(e)=>{
     qnt_no = qnt.value;
     if(total_rate.value){
-      total_amount.value = round( total_rate.value * qnt_no,2);
-      taxable_value.value = round( (total_amount.value / (1 + (tax_button.value*2)/100)) / (1 - (discount_percent.value/100)),2);
-      discount_amount.value = round( taxable_value.value * discount_percent.value / 100,2);
-      rate.value = round( parseFloat(taxable_value.value) / qnt_no,2);
+      total_amount.value = total_rate.value * qnt_no;
+      taxable_value.value = (total_amount.value / (1 + (tax_button.value*2)/100)) / (1 - (discount_percent.value/100))
+      discount_amount.value = taxable_value.value * discount_percent.value / 100;
+      rate.value = parseFloat(taxable_value.value) / qnt_no;
     }
     else{
       rate.value=0

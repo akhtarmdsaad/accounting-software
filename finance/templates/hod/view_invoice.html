@@ -39,12 +39,11 @@
                     <tbody>
                       {% for i in invoices %}
                       <tr>
-                          <td><a href="{% url 'view_customers_id' i.id %}">{{i.invoice_no}}</a></td>
+                          <td><a href="{% url 'edit_invoice' i.id %}">{{i.invoice_no}}</a></td>
                         <td>{{i.date}}</td>
-                        <td>{{i.email}}</td>
                         <td>{{i.customer}} 
                         </td>
-                        <td>{{i.total_amount}}</td>
+                        <td colspan=2>{{i.total_amount}}</td>
                         <td class="text-right">
                           <div class="actions">
                             <a
@@ -87,7 +86,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        <a class="btn btn-danger" href="{% url 'delete_customer' i.id %}">Delete</a>
+        <a class="btn btn-danger" href="{% url 'delete_invoice' i.id %}">Delete</a>
       </div>
     </div>
   </div>

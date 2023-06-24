@@ -32,13 +32,14 @@
     <script src="{% static 'assets/plugins/apexchart/apexcharts.min.js' %}"></script>
     <script src="{% static 'assets/plugins/apexchart/chart-data.js' %}"></script>
     <script src="{% static 'assets/js/script.js' %}"></script>
-<script src="{% static 'assets/plugins/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'assets/plugins/datatables/jquery.dataTables.min.js' %}"></script>
     <script src="{% static 'assets/plugins/datatables/datatables.min.js' %}"></script>
 <script>
-
    $(document).ready(function () {
       $('#table_id').dataTable();
    });
+   
 </script>
+{% block script %}{% endblock script %}
 </body>
 </html>
