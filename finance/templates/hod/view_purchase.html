@@ -6,17 +6,17 @@
       <div class="page-header">
         <div class="row align-items-center">
           <div class="col">
-            <h3 class="page-title">Vendor</h3>
+            <h3 class="page-title">Purchase Invoice</h3>
             <ul class="breadcrumb">
               <li class="breadcrumb-item">
                 <a href="{% url 'finance_dashboard' %}">Dashboard</a>
               </li>
-              <li class="breadcrumb-item active">Vendor</li>
+              <li class="breadcrumb-item active">Purchase Invoice</li>
             </ul>
           </div>
           <div class="col-auto text-right float-right ml-auto">
-            <a href="{% url 'add_vendors' %}" class="btn btn-primary"
-              ><i class="fas fa-plus"></i> &nbsp;Add Vendor
+            <a href="{% url 'add_purchase_invoices' %}" class="btn btn-primary"
+              ><i class="fas fa-plus"></i> &nbsp;Add Purchase Invoice
             </a>
           </div>
         </div>
@@ -29,34 +29,25 @@
                 <table id="table_id" class="table table-hover table-center mb-0">
                     <thead>
                       <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Payables</th>
+                        <th>Invoice No</th>
+                        <th>Date</th>
+                        <th>Vendor</th>
+                        <th>Total Amount</th>
                         <th class="text-right">Action</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {% for i in vendors %}
+                      {% for i in purchase_invoices %}
                       <tr>
-                        <td>{{i.id}}</td>
-                        <td><a href="{% url 'view_vendors_id' i.id %}">{{i.company}}</a></td>
-                        <td>{{i.email}}</td>
-                        <td>{{i.phone}} 
+                          <td><a href="{% url 'edit_purchase_invoice' i.id %}">{{i.invoice_no}}</a></td>
+                        <td>{{i.date}}</td>
+                        <td>{{i.vendor.company}} 
                         </td>
-                        <td style="font-weight:600;color:
-                        {% if i.current_balance > 0 %}
-                        green 
-                        {% else %}
-                        red
-                        {% endif %}
-                        "
-                        >{{i.current_balance}}</td>
+                        <td colspan=2>{{i.total_amount}}</td>
                         <td class="text-right">
                           <div class="actions">
                             <a
-                              href="{% url 'edit_vendor' i.id %}"
+                              href="{% url 'edit_customer' i.id %}"
                               class="btn btn-sm bg-success-light mr-2"
                             >
                               <i class="fas fa-pen"></i>
@@ -79,7 +70,7 @@
 
 
         
-    {% for i in vendors %}
+    {% for i in purchase_invoices %}
 <!-- Modal -->
 <div class="modal fade" id="modal-{{i.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
@@ -95,7 +86,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        <a class="btn btn-danger" href="{% url 'delete_vendor' i.id %}">Delete</a>
+        <a class="btn btn-danger" href="{% url 'delete_purchase_invoice' i.id %}">Delete</a>
       </div>
     </div>
   </div>

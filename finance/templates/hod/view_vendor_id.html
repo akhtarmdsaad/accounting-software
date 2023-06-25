@@ -1,0 +1,80 @@
+{% extends 'base.html' %} {% block content %}
+
+<div class="page-wrapper">
+  <div class="content container-fluid">
+    <div class="page-header">
+      <div class="row">
+        <div class="col-sm-12">
+          <h3 class="page-title">Vendor Details</h3>
+          <ul class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'finance_dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item active">Vendor Details</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="about-info">
+              <h4>{{elem.name}}</h4>
+              <div class="media mt-3">
+                
+                <div class="media-body">
+                  <ul>
+                    <li>
+                      <span class="title-span">Name : </span>
+                      <span class="info-span">{{elem.name}}</span>
+                    </li>
+                    <li>
+                      <span class="title-span">Company : </span>
+                      <span class="info-span">{{elem.company}}</span>
+                    </li>
+                    <li>
+                      <span class="title-span">Email : </span>
+                      <span class="info-span">{{elem.email}}</span>
+                    </li>
+                    <li>
+                      <span class="title-span">Phone : </span>
+                      <span class="info-span">{{elem.phone}}</span>
+                    </li>
+                    <li>
+                      <span class="title-span">Website : </span>
+                      <span class="info-span"><a href="{{elem.website}}">{{elem.website}}</a></span>
+                    </li>
+                    <li>
+                      <span class="title-span">Address : </span>
+                      <span class="info-span">{{elem.address}}</span
+                      >
+                    </li>
+                    <li>
+                      <span class="title-span">GSTIN : </span>
+                      <span class="info-span">{{elem.gstin|upper}}</span>
+                    </li>
+                    <b>
+                        <li>
+                            <span class="title-span">Current Balance : </span>
+                            <span class="info-span">{{elem.current_balance}}</span>
+                        </li>
+                    </b>
+                    <li>
+                      <span class="title-span">Created At : </span>
+                      <span class="info-span">{{elem.created_at}}</span>
+                    </li>
+                    <li>
+                      <span class="title-span">Updated At : </span>
+                      <span class="info-span">{{elem.updated_at}}</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              {% endblock content %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

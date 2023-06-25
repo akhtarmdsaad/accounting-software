@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.urls import path,include
 
+from finance import vendor_views
+
 from . import views
 
 urlpatterns = [
@@ -53,6 +55,21 @@ urlpatterns = [
     path('edit_salereturns/<int:id>/',views.edit_salereturn,name="edit_salereturn"),
     path('delete_salereturn/<int:id>/',views.delete_salereturn,name="delete_salereturn"),
 
+    #Vendors
+    path('view_vendors/',vendor_views.view_vendors,name="view_vendors"),
+    path('add_vendors/',vendor_views.add_vendor,name="add_vendors"),
+    path('view_vendors/<int:id>/',vendor_views.view_vendors_id,name="view_vendors_id"),
+    path('edit_vendors/<int:id>/',vendor_views.edit_vendor,name="edit_vendor"),
+    path('delete_vendor/<int:id>/',vendor_views.delete_vendor,name="delete_vendor"),
 
+    #purchase invoices
+    path('view_purchase_invoices/',vendor_views.view_purchase_invoices,name="view_purchase_invoices"),
+    path('add_purchase_invoices/',vendor_views.add_purchase_invoice,name="add_purchase_invoices"),
+    # path('view_purchase_invoices/<int:id>/',vendor_views.view_purchase_invoices_id,name="view_purchase_invoices_id"),
+    path('edit_purchase_invoices/<int:id>/',vendor_views.edit_purchase_invoice,name="edit_purchase_invoice"),
+    path('delete_purchase_invoice/<int:id>/',vendor_views.delete_purchase_invoice,name="delete_purchase_invoice"),
+    # path('save_purchase_transaction/',vendor_views.save_purchase_transaction,name="save_purchase_transaction"),
+    # path('save_edit_purchase_transaction/<int:id>',vendor_views.save_edit_purchase_transaction,name="save_edit_purchase_transaction"),
+    # path('delete_purchase_transaction/<int:id>',vendor_views.delete_purchase_transaction,name="delete_purchase_transaction"),
 
 ]

@@ -294,12 +294,6 @@ def add_customer(request):
 
 def edit_customer(request,id):
     elem = Customer.objects.get(id=id)
-    return render(request,"hod/edit_customer.html",{
-        "elem":elem
-    })
-
-def delete_customer(request,id):
-    elem = Customer.objects.get(id=id)
     if request.method == "POST":
         elem.name = request.POST.get('name')
         elem.email = request.POST.get('email')
@@ -311,6 +305,13 @@ def delete_customer(request,id):
         elem.save()
         messages.success(request,"Customer Updated Successfully")
 
+    
+    return render(request,"hod/edit_customer.html",{
+        "elem":elem
+    })
+
+def delete_customer(request,id):
+    elem = Customer.objects.get(id=id)
     
     elem.delete()
     return redirect("view_customers")

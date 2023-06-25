@@ -6,22 +6,23 @@
       <div class="page-header">
         <div class="row align-items-center">
           <div class="col">
-            <h3 class="page-title">Edit Invoice</h3>
+            <h3 class="page-title">Edit Purchase Invoice</h3>
             <ul class="breadcrumb">
               <li class="breadcrumb-item">
                 <a href="{% url 'finance_dashboard' %}">Dashboard</a>
               </li>
-              <li class="breadcrumb-item active">Edit Invoice</li>
+              <li class="breadcrumb-item active">Edit Purchase Invoice</li>
             </ul>
           </div>
           <div class="col-auto text-right float-right ml-auto">
-            <a href="{% url 'view_invoices' %}" class="btn btn-primary"
-              ><i class="fas fa-plus"></i> &nbsp;View Invoice
+            <a href="{% url 'view_purchase_invoices' %}" class="btn btn-primary"
+              ><i class="fas fa-plus"></i> &nbsp;View Purchase Invoice
             </a>
           </div>
         </div>
       </div>
     </div>
+    
     <div class="row">
       <div class="col-sm-12">
         <div class="card">
@@ -29,10 +30,21 @@
             <form method="post" action="#">
               {% csrf_token %}
               <div class="col-12">
-                <h5 class="form-title"><span>Edit Invoice</span></h5>
+                <h5 class="form-title"><span>Edit Purchase Invoice</span></h5>
               </div>
               {% include 'includes/messages.html' %}
+              
               <div class="row col-12">
+                <div class="col-12 col-sm-6">
+                  <div class="form-group">
+                    <label for="purchase_invoice">Purchase Invoice File</label>
+                    <br>
+                    <small style="font-weight: bold;">Currently: <a href="/{{purchase_invoice.file_invoice}}">{{purchase_invoice.file_invoice|truncatechars:20}}</a> </small>
+                    
+                    <input type="file" class="form-control-file" name="purchase_invoice" id="purchase_invoice" placeholder="Invoice File here" aria-describedby="fileHelpId">
+                    <small id="fileHelpId" class="form-text text-muted">Upload Invoice file here</small>
+                  </div>
+              </div>
                 <div class="col-12 col-sm-6">
                   <div class="form-group">
                     <label>Invoice No</label>
@@ -40,8 +52,8 @@
                       required
                       type="text"
                       class="form-control"
-                      name="invoice_no"
-                      value="{{invoice.invoice_no}}"
+                      name="purchase_invoice_no"
+                      value="{{purchase_invoice.invoice_no}}"
                     />
                   </div>
                 </div>
@@ -57,13 +69,13 @@
                     />
                   </div>
                 </div>
-              </div>
+              
               <div class="col-12 col-sm-6">
                 <div class="form-group">
-                  <label>Customer</label>
-                  <select class="form-control" name="customer_id">
-                    {% for i in customers %}
-                    <option value="{{i.id}}" {% if i.id == invoice.customer.id %} selected{% endif %} >
+                  <label>Vendor</label>
+                  <select class="form-control" name="vendor_id">
+                    {% for i in vendors %}
+                    <option value="{{i.id}}" {% if i.id == purchase_invoice.vendor.id %} selected{% endif %} >
                       {{i.name}}
                       {{i.address}}
                     </option>
@@ -71,7 +83,7 @@
                   </select>
                 </div>
               </div>
-
+            </div>
               <table class="table mt-4 table-striped table-responsive">
                 <thead>
                   <tr>
@@ -179,7 +191,7 @@
                   <tr>
                     <td colspan="4"></td>
                     <td class="text-end"><strong>Total Amount:</strong></td>
-                    <td><b>{{invoice.total_amount}}</b></td>
+                    <td><b>{{purchase_invoice.total_amount}}</b></td>
                   </tr>
 
                 </tfoot>
@@ -337,7 +349,7 @@
             
               </div>
             </div>
-            <input type="hidden" name="invoice_id" value="{{invoice.id}}">
+            <input type="hidden" name="purchase_invoice_id" value="{{purchase_invoice.id}}">
           </div>
         
       </div>

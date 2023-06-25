@@ -6,17 +6,17 @@
       <div class="page-header">
         <div class="row align-items-center">
           <div class="col">
-            <h3 class="page-title">Update Customer</h3>
+            <h3 class="page-title">Update Vendor</h3>
             <ul class="breadcrumb">
               <li class="breadcrumb-item">
                 <a href="{% url 'finance_dashboard' %}">Dashboard</a>
               </li>
-              <li class="breadcrumb-item active">Update Customer</li>
+              <li class="breadcrumb-item active">Update Vendor</li>
             </ul>
           </div>
           <div class="col-auto text-right float-right ml-auto">
-            <a href="{% url 'view_customers' %}" class="btn btn-primary"
-              ><i class="fas fa-plus"></i> &nbsp;View Customer
+            <a href="{% url 'view_vendors' %}" class="btn btn-primary"
+              ><i class="fas fa-plus"></i> &nbsp;View Vendor
             </a>
           </div>
         </div>
@@ -29,10 +29,22 @@
             <form method="post" action="#" enctype="multipart/form-data">
               {% csrf_token %}
               <div class="col-12">
-                <h5 class="form-title"><span>Update Customer</span></h5>
+                <h5 class="form-title"><span>Update Vendor</span></h5>
               </div>
               {% include 'includes/messages.html' %}
 
+              <div class="col-12 col-sm-6">
+                <div class="form-group">
+                  <label>Company</label>
+                  <input
+                    required
+                    type="text"
+                    class="form-control"
+                    name="company"
+                    value="{{elem.company}}"
+                  />
+                </div>
+              </div>
               <div class="col-12 col-sm-6">
                 <div class="form-group">
                   <label>Name</label>
@@ -41,7 +53,7 @@
                     type="text"
                     class="form-control"
                     name="name"
-                    value={{elem.name}}
+                    value="{{elem.name}}"
                   />
                 </div>
               </div>
@@ -53,7 +65,7 @@
                     type="email"
                     class="form-control"
                     name="email"
-                    value={{elem.email}}
+                    value="{{elem.email}}"
                   />
                 </div>
               </div>
@@ -65,7 +77,19 @@
                     type="text"
                     class="form-control"
                     name="phone"
-                    value={{elem.phone}}
+                    value="{{elem.phone}}"
+                  />
+                </div>
+              </div>
+              <div class="col-12 col-sm-6">
+                <div class="form-group">
+                  <label>Website</label>
+                  <input
+                    required
+                    type="text"
+                    class="form-control"
+                    name="website"
+                    value="{{elem.website}}"
                   />
                 </div>
               </div>
@@ -76,7 +100,7 @@
                     type="text"
                     class="form-control"
                     name="gstin"
-                    value={{elem.gstin}}
+                    value="{{elem.gstin}}"
                   />
                 </div>
               </div>
@@ -106,7 +130,7 @@
 
               <div class="col-sm-11">
                 <button type="submit" class="btn btn-primary">
-                  Update Customer
+                  Update Vendor
                 </button>
               </div>
             </form>

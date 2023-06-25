@@ -423,7 +423,7 @@
     if(rate.value){
       taxable_value.value = round(  rate.value * qnt_no,2);
       total_amount.value = round( ((taxable_value.value-discount_amount.value) * (1 + (tax_button.value*2)/100)),2);
-      total_rate.value = round( total_amount.value / qnt_n,2);
+      total_rate.value = round( total_amount.value / qnt_no,2);
     }
     else{
       taxable_value.value =  0
