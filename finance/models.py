@@ -69,12 +69,16 @@ class Customer(models.Model):
     def __str__(self):
         return self.name
     
-
+MODE = (
+    (1,'CASH'),
+    (2,'BANK')
+)
 class Payment(models.Model):
     date = models.DateField(_("date"), auto_now=False, auto_now_add=False)
     description = models.TextField(default="")
     customer = models.ForeignKey(Customer,null=True,on_delete=models.CASCADE)
     amount = models.IntegerField(_("amount"))
+    mode = models.IntegerField(choices=MODE,default=1)
     created_at = models.DateTimeField(auto_now_add=True,null = True)
     updated_at = models.DateTimeField(auto_now_add=True,null = True)
 
@@ -114,3 +118,35 @@ class Transaction(models.Model):
 
     def __str__(self):
         return self.invoice.invoice_no
+
+STATUS = (
+    (1,"Available"),
+    (2,"Redeemed")
+)
+
+class SaleReturn(models.Model):
+    date = models.DateField(_("date"), auto_now=False, auto_now_add=False)
+    customer = models.ForeignKey(Customer,on_delete=models.CASCADE)
+    item = models.ForeignKey(Item,on_delete=models.CASCADE)
+    quantity = models.IntegerField()
+    description = models.TextField(default="")
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.IntegerField(choices=STATUS,default = 1)
+    created_at = models.DateTimeField(auto_now_add=True,null = True)
+    updated_at = models.DateTimeField(auto_now_add=True,null = True)
+
+class Vendor(models.Model):
+    name = models.CharField(_("name"), max_length=50)
+    company = models.CharField(_("company"), max_length=50)
+    email = models.EmailField(_("email"), max_length=254,null=True)
+    phone = models.CharField(_("phone"), max_length=50)
+    address = models.TextField()
+    website = models.CharField(_("website"), max_length=50)
+    gstin = models.CharField(_("gstin"), max_length=15,null=True)
+    current_balance = models.DecimalField(max_digits=10, decimal_places=2,default=decimal.Decimal(0))
+    created_at = models.DateTimeField(auto_now_add=True,null = True)
+    updated_at = models.DateTimeField(auto_now_add=True,null = True)
+
+    def __str__(self):
+        return self.company
+    

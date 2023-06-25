@@ -1,0 +1,103 @@
+{% extends 'base.html' %} {% block content %}
+
+<div class="main-wrapper">
+  <div class="page-wrapper">
+    <div class="content container-fluid">
+      <div class="page-header">
+        <div class="row align-items-center">
+          <div class="col">
+            <h3 class="page-title">Add Payment</h3>
+            <ul class="breadcrumb">
+              <li class="breadcrumb-item">
+                <a href="{% url 'finance_dashboard' %}">Dashboard</a>
+              </li>
+              <li class="breadcrumb-item active">Add Payment</li>
+            </ul>
+          </div>
+          <div class="col-auto text-right float-right ml-auto">
+            <a href="{% url 'view_payments' %}" class="btn btn-primary"
+              ><i class="fas fa-plus"></i> &nbsp;View Payment
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="card">
+          <div class="card-body">
+            <form method="post" action="#">
+              {% csrf_token %}
+              <div class="col-12">
+                <h5 class="form-title"><span>Add Payment</span></h5>
+              </div>
+              {% include 'includes/messages.html' %}
+
+              <div class="col-12 col-sm-6">
+                <div class="form-group">
+                  <label>Date</label>
+                  <input
+                    required
+                    type="date"
+                    class="form-control"
+                    name="date"
+                  />
+                </div>
+              </div>
+              
+              <div class="col-sm-11">
+                <div class="form-group">
+                  <label>Description</label>
+                  <textarea
+                    class="form-control"
+                    name="desc"
+                    rows="10"
+                  ></textarea>
+                </div>
+              </div>
+              <div class="col-12 col-sm-6">
+                <div class="form-group">
+                  <label>Customers</label>
+                  <select class="form-control" name="customer_id">
+                    {% for i in customers %}
+                    <option value={{i.id}}>{{i.name}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="col-12 col-sm-6">
+                <div class="form-group">
+                    <label>Mode</label>
+                    <select class="form-control" name="mode">
+                        <option value = "1">Cash</option>
+                        <option value = "2">Bank</option>
+                    </select>
+                </div>
+              </div>
+              <div class="col-12 col-sm-6">
+                <div class="form-group">
+                  <label>Amount</label>
+                  <input
+                    required
+                    type="number"
+                    step="0.01"
+                    class="form-control"
+                    name="amount"
+                  />
+                </div>
+              </div>
+
+              <div class="col-sm-11">
+                <button type="submit" class="btn btn-primary">
+                  Add Payment
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}

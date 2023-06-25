@@ -35,20 +35,14 @@
           >
         </li>
         <li>
-          <a href="holiday.html"
+          <a href="{% url 'view_payments' %}"
             ><i class="fas fa-money-check"></i>
             <span>Payments Received</span></a
           >
         </li>
-        <li class="submenu">
-          <a href="#"
-            ><i class="fas fa-hand-point-left"></i> <span> Returns</span>
-            <span class="menu-arrow"></span
-          ></a>
-          <ul>
-            <li><a href="teachers.html">Sale Returns</a></li>
-            <li><a href="teacher-details.html">Credit Notes</a></li>
-          </ul>
+        <li>
+          <a href="{% url 'view_salereturns' %}"><i class="fas fa-hand-point-left"></i> <span> Sale Returns</span></a>
+
         </li>
         <li class="menu-title">
           <span>Vendors</span>

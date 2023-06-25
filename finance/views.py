@@ -1,9 +1,9 @@
 from django.shortcuts import get_object_or_404, redirect, render,HttpResponse
 from django.contrib import messages
 from finance.forms import TransactionForm
-from finance.models import Invoice, ItemGroup, Item,InventoryAdjustments,Customer, Transaction
+from finance.models import Invoice, ItemGroup, Item,InventoryAdjustments,Customer, Payment, SaleReturn, Transaction
 import datetime,decimal
-from company_settings import INVOICE_FORMAT,COMPANY_ABBR,get_invoice
+from company_settings import get_invoice
 
 # Create your views here.
 def test_form(request):
@@ -67,7 +67,7 @@ def edit_item_groups(request,id):
         elem = ItemGroup.objects.get(id=int(id))
         elem.name = request.POST.get('name')
         elem.brand = request.POST.get('brand')
-        elem.tax = request.POST.get('tax')
+        elem.tax_preference = request.POST.get('tax')
         elem.inventory = request.POST.get('inventory')
         elem.updated_at = datetime.datetime.now()
 
@@ -138,10 +138,10 @@ def edit_item(request,id):
             elem.image = image
         item_group_id = request.POST.get('item_group')
         elem.item_group = ItemGroup.objects.get(pk=item_group_id)
-        elem.hsn = request.POST.get('hsn')
+        elem.hsn_code = request.POST.get('hsn')
         elem.unit = request.POST.get('unit')
-        elem.tax = request.POST.get('tax')
-        elem.cur_stock = request.POST.get('cur_stock')
+        elem.state_tax_rate = request.POST.get('tax')
+        elem.current_stock = request.POST.get('cur_stock')
         elem.min_stock = request.POST.get('min_stock')
         elem.unit_plural = elem.unit+"s"
         elem.updated_at = datetime.datetime.now()
@@ -206,7 +206,13 @@ def add_item_adjustment(request):
 
 def edit_item_adjustment(request,id):
     items = Item.objects.all()
+    elem = InventoryAdjustments.objects.get(id=int(id))
     if request.method == "POST":
+        if int(elem.ADJUSTMENT_TYPE) == 1:
+            elem.item.current_stock -= int(elem.quantity)
+        else:
+            elem.item.current_stock += int(elem.quantity)
+        elem.item.save()
         id = request.POST.get('id')
         elem = InventoryAdjustments.objects.get(id=int(id))
         elem.date = request.POST.get('date')
@@ -218,10 +224,17 @@ def edit_item_adjustment(request,id):
         elem.reason_desc = request.POST.get('reason_desc')
         elem.updated_at = datetime.datetime.now()
         
+        if int(elem.ADJUSTMENT_TYPE) == 1:
+            elem.item.current_stock += int(elem.quantity)
+        else:
+            elem.item.current_stock -= int(elem.quantity)
+            
+        elem.item.save()
+
         elem.save()
         messages.success(request,"Adjustment Updated Successfully")
 
-    elem = InventoryAdjustments.objects.get(id=int(id))
+    
     day = str(elem.date.day).rjust(2,"0")
     month = str(elem.date.month).rjust(2,"0")
     year = str(elem.date.year).rjust(4,"0")
@@ -286,6 +299,7 @@ def edit_customer(request,id):
     })
 
 def delete_customer(request,id):
+    elem = Customer.objects.get(id=id)
     if request.method == "POST":
         elem.name = request.POST.get('name')
         elem.email = request.POST.get('email')
@@ -297,7 +311,7 @@ def delete_customer(request,id):
         elem.save()
         messages.success(request,"Customer Updated Successfully")
 
-    elem = Customer.objects.get(id=id)
+    
     elem.delete()
     return redirect("view_customers")
 
@@ -480,3 +494,158 @@ def delete_transaction(request,id):
     elem.delete()
 
     return redirect("add_invoices")
+
+def view_payments(request):
+    payments = Payment.objects.all()
+
+    return render(request,"hod/view_payments.html",{
+        "payments":payments
+    })
+
+def add_payment(request):
+    customers = Customer.objects.all()
+    if request.method == "POST":
+        date = request.POST.get('date')
+        desc = request.POST.get('desc')
+        customer_id = request.POST.get('customer_id')
+        customer = Customer.objects.get(id=customer_id)
+        mode = request.POST.get('mode')
+        amount = request.POST.get('amount')
+        elem = Payment(
+            date = date, 
+            description = desc,
+            customer = customer,
+            mode=mode,
+            amount = amount
+        )
+
+        elem.save()
+        elem.customer.current_balance -= decimal.Decimal(amount)
+        elem.customer.save()
+        messages.success(request,"Payment Added Successfully")
+    context = {
+        "customers":customers
+    }
+    return render(request,"hod/add_payment.html",context)
+
+def edit_payment(request,id):
+    customers = Customer.objects.all()
+    elem = Payment.objects.get(id=id)
+    if request.method == "POST":
+        elem.customer.current_balance += decimal.Decimal(elem.amount)
+        elem.customer.save()
+        
+        elem.date = request.POST.get('date')
+        elem.description = request.POST.get('desc')
+        customer_id = request.POST.get('customer_id')
+        elem.customer = Customer.objects.get(id=customer_id)
+        elem.mode = request.POST.get('mode')
+        elem.amount = request.POST.get('amount')
+
+        elem.customer.current_balance -= decimal.Decimal(elem.amount)
+        elem.customer.save()
+        elem.save()
+        messages.success(request,"Payment Updated Successfully")
+        return redirect("edit_payment",id)
+    
+    day = str(elem.date.day).rjust(2,"0")
+    month = str(elem.date.month).rjust(2,"0")
+    year = str(elem.date.year).rjust(4,"0")
+    context = {
+        "customers":customers,
+        "elem":elem,
+        "day":day,
+        "month":month,
+        "year":year
+    }
+
+    return render(request,"hod/edit_payment.html",context)
+
+def delete_payment(request,id):
+    elem = Payment.objects.get(id=id)
+    elem.customer.current_balance += decimal.Decimal(elem.amount)
+    elem.customer.save()
+    elem.delete()
+    return redirect("view_payments")
+
+def view_salereturns(request):
+    sale_return = SaleReturn.objects.all()
+    return render(request,"hod/view_salereturn.html",{
+        "sale_return":sale_return
+    })
+
+def add_salereturn(request):
+    items = Item.objects.all()
+    customers = Customer.objects.all()
+    if request.method == "POST":
+        date = request.POST.get('date')
+        qnt = request.POST.get('qnt')
+        customer_id = request.POST.get('customer_id')
+        customer = Customer.objects.get(id=customer_id)
+        item_id = request.POST.get('item')
+        item = Item.objects.get(id=item_id)
+        desc = request.POST.get('desc')
+        amount = request.POST.get('amount')
+
+
+        elem = SaleReturn(
+            date=date,
+            customer=customer,
+            item=item,
+            quantity=qnt,
+            description=desc,
+            amount=amount
+            
+        )
+        # Do The Changes to other models Here
+        
+        elem.save()
+        messages.success(request,"Sale Return Added Successfully")
+
+    context = {
+        "items":items,
+        "customers":customers,
+    }
+    return render(request,"hod/add_salereturn.html",context)
+
+
+def delete_salereturn(request,id):
+    elem = SaleReturn.objects.get(id=id)
+    elem.delete()
+    return redirect("view_salereturns")
+
+def edit_salereturn(request,id):
+    items = Item.objects.all()
+    customers = Customer.objects.all()
+    elem = SaleReturn.objects.get(id=int(id))
+    if request.method == "POST":
+        id = request.POST.get('id')
+        elem = SaleReturn.objects.get(id=int(id))
+        elem.date = request.POST.get('date')
+        elem.quantity = request.POST.get('qnt')
+        item_id = request.POST.get('item')
+        elem.item = Item.objects.get(id=item_id)
+        customer_id = request.POST.get('customer_id')
+        elem.customer = Customer.objects.get(id=customer_id)
+        elem.description = request.POST.get('desc')
+        elem.amount = request.POST.get('amount')
+        elem.status = int(request.POST.get('status'))
+        elem.updated_at = datetime.datetime.now()
+        
+        elem.save()
+        messages.success(request,"Sale Return Updated Successfully")
+        return redirect("edit_salereturn",elem.id)
+
+    
+    day = str(elem.date.day).rjust(2,"0")
+    month = str(elem.date.month).rjust(2,"0")
+    year = str(elem.date.year).rjust(4,"0")
+
+    return render(request,"hod/edit_salereturn.html",{
+        "items":items,
+        "customers":customers,
+        "elem":elem,
+        "day":day,
+        "month":month,
+        "year":year
+    })

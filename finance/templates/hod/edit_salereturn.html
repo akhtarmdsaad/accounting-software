@@ -1,0 +1,147 @@
+{% extends 'base.html' %} {% block content %}
+
+<div class="main-wrapper">
+  <div class="page-wrapper">
+    <div class="content container-fluid">
+      <div class="page-header">
+        <div class="row align-items-center">
+          <div class="col">
+            <h3 class="page-title">Update Sale Return</h3>
+            <ul class="breadcrumb">
+              <li class="breadcrumb-item">
+                <a href="{% url 'finance_dashboard' %}">Dashboard</a>
+              </li>
+              <li class="breadcrumb-item active">Update Sale Return</li>
+            </ul>
+          </div>
+          <div class="col-auto text-right float-right ml-auto">
+            <a href="{% url 'view_salereturns' %}" class="btn btn-primary"
+              ><i class="fas fa-plus"></i> &nbsp;View Sale Return
+            </a>
+          </div>
+          
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="card">
+            <div class="card-body">
+              <form method="post" action="#">
+                {% csrf_token %}
+                <div class="col-12">
+                  <h5 class="form-title"><span>Update Sale Return</span></h5>
+                </div>
+                {% include 'includes/messages.html' %}
+
+                <div class="col-12 col-sm-6">
+                  <div class="form-group">
+                    <label>Date</label>
+                    <input
+                      required
+                      type="date"
+                      class="form-control"
+                      name="date"
+                      value="{{year}}-{{month}}-{{day}}"
+                    />
+                  </div>
+                </div>
+                
+                <div class="col-12 col-sm-6">
+                    <div class="form-group">
+                      <label>Customer</label>
+                      <select class="form-control" name="customer_id">
+                        {% for i in customers %}
+                        <option value={{i.id}}
+
+                          {% if i.id == elem.customer.id %}
+                              selected
+                          {% endif %}>{{i.name}}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6">
+                    <div class="form-group">
+                      <label>Item</label>
+                      <select class="form-control" name="item">
+                        {% for i in items %}
+                        <option value={{i.id}}
+
+                          {% if i.id == elem.item.id %}
+                              selected
+                          {% endif %}
+                          >{{i}}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                </div>
+                
+                <div class="col-12 col-sm-6">
+                  <div class="form-group">
+                    <label>Quantity</label>
+                    <input
+                      required
+                      type="number"
+                      class="form-control"
+                      name="qnt"
+                      value="{{elem.quantity}}"
+                    />
+                  </div>
+                </div>
+                <div class="col-sm-11">
+                  <div class="form-group">
+                    <label>Description</label>
+                    <textarea
+                      class="form-control"
+                      name="desc"
+                      rows="10"
+                    >{{elem.description}}</textarea>
+                  </div>
+                </div>
+                <div class="col-12 col-sm-6">
+                  <div class="form-group">
+                    <label>Amount</label>
+                    <input
+                      required
+                      type="number"
+                      class="form-control"
+                      name="amount"
+                      value="{{elem.amount}}"
+                    />
+                  </div>
+                </div>
+                <div class="col-12 col-sm-6">
+                  <div class="form-group">
+                    <label>Status</label>
+                    <select class="form-control" name="status">
+                      <option value="1"
+                      {% if i.status == 1 %}
+                      selected
+                      {% endif %}
+                      >Available</option>
+                      <option value="2"
+                      {% if i.status == 2 %}
+                      selected
+                      {% endif %}
+                      >Redeemed</option>
+                    </select>
+                  </div>
+              </div>
+              <input type="hidden" name="id" value="{{elem.id}}">                
+
+                <div class="col-sm-11">
+                  <button type="submit" class="btn btn-primary">
+                    Update Sale Return
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}

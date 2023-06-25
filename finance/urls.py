@@ -40,4 +40,19 @@ urlpatterns = [
     path('save_transaction/',views.save_transaction,name="save_transaction"),
     path('save_edit_transaction/<int:id>',views.save_edit_transaction,name="save_edit_transaction"),
     path('delete_transaction/<int:id>',views.delete_transaction,name="delete_transaction"),
+
+    #payments
+    path('view_payments/',views.view_payments,name="view_payments"),
+    path('add_payments/',views.add_payment,name="add_payments"),
+    path('edit_payments/<int:id>/',views.edit_payment,name="edit_payment"),
+    path('delete_payment/<int:id>/',views.delete_payment,name="delete_payment"),
+
+    #sale return
+    path('view_salereturns/',views.view_salereturns,name="view_salereturns"),
+    path('add_salereturns/',views.add_salereturn,name="add_salereturns"),
+    path('edit_salereturns/<int:id>/',views.edit_salereturn,name="edit_salereturn"),
+    path('delete_salereturn/<int:id>/',views.delete_salereturn,name="delete_salereturn"),
+
+
+
 ]
