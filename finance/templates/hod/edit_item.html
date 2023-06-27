@@ -41,7 +41,7 @@
                     type="text"
                     class="form-control"
                     name="name"
-                    value={{elem.name}}
+                    value="{{elem.name}}"
                   />
                 </div>
               </div>
@@ -57,7 +57,7 @@
                   <label>Item Group</label>
                   <select class="form-control" name="item_group">
                     {% for i in item_groups %}
-                        <option value={{i.id}}
+                        <option value="{{i.id}}"
                         
                         {% if i.id == elem.item_group.id %}
                             selected
@@ -76,7 +76,7 @@
                     type="number"
                     class="form-control"
                     name="hsn"
-                    value={{elem.hsn_code}}
+                    value="{{elem.hsn_code}}"
                   />
                 </div>
               </div>
@@ -100,7 +100,7 @@
                     type="number"
                     class="form-control"
                     name="tax"
-                    value={{elem.state_tax_rate}}
+                    value="{{elem.state_tax_rate}}"
                   />
                 </div>
               </div>
@@ -112,7 +112,7 @@
                     type="number"
                     class="form-control"
                     name="cur_stock"
-                    value={{elem.current_stock}}
+                    value="{{elem.current_stock}}"
                   />
                 </div>
               </div>
@@ -124,11 +124,11 @@
                     type="number"
                     class="form-control"
                     name="min_stock"
-                    value={{elem.min_stock}}
+                    value="{{elem.min_stock}}"
                   />
                 </div>
               </div>
-              <input type="hidden" name="id" value={{elem.id}}>
+              <input type="hidden" name="id" value="{{elem.id}}">
 
               <div class="col-sm-11">
                 <button type="submit" class="btn btn-primary">

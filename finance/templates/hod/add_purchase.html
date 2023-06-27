@@ -36,7 +36,7 @@
                 <div class="col-12 col-sm-6">
                   <div class="form-group">
                     <label for="purchase_invoice">Purchase Invoice</label>
-                    <input type="file" class="form-control-file" name="purchase_invoice" id="purchase_invoice" placeholder="Invoice File here" aria-describedby="fileHelpId">
+                    <input type="file" class="form-control-file" name="purchase_invoice_file" id="purchase_invoice" placeholder="Invoice File here" aria-describedby="fileHelpId">
                     <small id="fileHelpId" class="form-text text-muted">Upload Invoice file here</small>
                   </div>
               </div>
@@ -49,6 +49,7 @@
                       type="text"
                       class="form-control"
                       name="purchase_invoice_no"
+                      value="{{current_invoice.invoice_no}}"
                     />
                   </div>
                 </div>
@@ -60,6 +61,7 @@
                       type="date"
                       class="form-control"
                       name="date"
+                      value="{{year}}-{{month}}-{{day}}"
                     />
                   </div>
                 </div>
@@ -68,7 +70,9 @@
                   <label>Vendor</label>
                   <select class="form-control" name="vendor_id">
                     {% for i in vendors %}
-                    <option value="{{i.id}}">
+                    <option value="{{i.id}}"
+                    {% if i.id == current_invoice.vendor.id %}{% endif %}
+                    >
                       {{i.company}}
                       {{i.address}}
                     </option>
@@ -92,13 +96,13 @@
                   </tr>
                 </thead>
                 <tbody>
-					{% for transaction in transactions %}
+					{% for purchase_transaction in purchase_transactions %}
                   <tr>
                     <td>
                       <select class="form-control" name="item" disabled>
                         {% for i in items %}
-                          <option value="{{i.id}}" tax={{i.state_tax_rate}} 
-                            {% if transaction.item.id == i.id %} selected {% endif %}
+                          <option value="{{i.id}}" tax="{{i.state_tax_rate}}" 
+                            {% if purchase_transaction.item.id == i.id %} selected {% endif %}
                           > {{i.name}} {{i.address}} </option>
                         {% endfor %}
                       </select>
@@ -110,7 +114,7 @@
                         class="form-control"
                         name="qnt"
                         disabled
-                        value={{transaction.quantity}}
+                        value="{{purchase_transaction.quantity}}"
                       />
                     </td>
                     <td>
@@ -120,7 +124,7 @@
                         class="form-control"
                         name="rate"
                         disabled
-                        value={{transaction.rate}}
+                        value="{{purchase_transaction.rate}}"
                       />
                     </td>
                     <td>
@@ -130,7 +134,7 @@
                         class="form-control"
                         name="rate"
                         disabled
-                        value={{transaction.taxable_value}}
+                        value="{{purchase_transaction.taxable_value}}"
                       />
                     </td>
                     <td>
@@ -139,26 +143,26 @@
                         type="number" step="0.01"
                         class="form-control"
                         name="discount"
-                        value={{transaction.discount_percent}}
+                        value="{{purchase_transaction.discount_percent}}"
                         disabled
                       />
                     </td>
                     <td>
-                      {{transaction.item.state_tax_rate}}% / {{transaction.item.state_tax_rate}}%
+                      {{purchase_transaction.item.state_tax_rate}}% / {{purchase_transaction.item.state_tax_rate}}%
 
                     </td>
                     <td>
-                      {{transaction.state_tax}} / {{transaction.central_tax}}
+                      {{purchase_transaction.state_tax}} / {{purchase_transaction.central_tax}}
 
                     </td>
                     <td>
-                      {{transaction.amount}}
+                      {{purchase_transaction.amount}}
 
                     </td>
                     <td class="text-right">
                       <div class="actions">
                         <a
-                          href="{% url 'delete_transaction' transaction.id %}"
+                          href="{% url 'delete_purchase_transaction' purchase_transaction.id %}"
                           class="btn btn-sm bg-danger-light mr-2"
                         >
                           <i class="fas fa-trash"></i>
@@ -181,18 +185,14 @@
                       
                     </td>
                   </tr>
-                  <tr>
-                    <td colspan="2"></td>
-                    <td class="text-end"><strong>Total Amount:</strong></td>
-                    <td colspan=3><b>{{purchase_invoice.total_taxable_amount}}</b></td>
-                    <td><b>{{purchase_invoice.total_tax_amount}}</b></td>
-                    <td style="
-                    display: grid;
-                    place-items: center;
+                  <tr style="
                     font-size: x-large;
-                    color: green;
-                    font-weight: 400;
-                "><b>{{purchase_invoice.total_amount}}</b></td>
+                    font-weight: 400;">
+                    <td colspan="2"></td>
+                    <td class="text-end"><strong>Total:</strong></td>
+                    <td colspan=3 class="text-end"><b>{{current_invoice.total_taxable_amount}}</b></td>
+                    <td class="text-end"><b>{{current_invoice.total_tax_amount}}</b></td>
+                    <td style="color: green;" class="text-end"><b>{{current_invoice.total_amount}}</b></td>
                   </tr>
 
                 </tfoot>
@@ -229,7 +229,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <form id="modal-form" method="post" action="{% url 'save_transaction' %}">
+        <form id="modal-form" method="post" action="{% url 'save_purchase_transaction' %}">
           {% csrf_token %}
           
           <div class="row col-12">
@@ -238,7 +238,7 @@
                 <label for="item">Item</label>
                 <select class="form-control" name="item" id="item" >
                   {% for i in items %}
-                  <option value="{{i.id}}" current_stock="{{i.current_stock}}" tax={{i.state_tax_rate}}>
+                  <option value="{{i.id}}" current_stock="{{i.current_stock}}" tax="{{i.state_tax_rate}}">
                     {{i.name}} <br />
                     {{i.address}}
                   </option>
@@ -350,7 +350,7 @@
             
               </div>
             </div>
-            <input type="hidden" name="purchase_invoice_id" value="{{purchase_invoice.id}}">
+            <input type="hidden" name="purchase_invoice_id" value="{{current_invoice.id}}">
           </div>
         
       </div>

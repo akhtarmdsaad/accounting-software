@@ -70,6 +70,7 @@ def edit_item_groups(request,id):
         elem.tax_preference = request.POST.get('tax')
         elem.inventory = request.POST.get('inventory')
         elem.updated_at = datetime.datetime.now()
+        elem.changed_by_user = request.user
 
         elem.save()
         messages.success(request,"Item Group Updated Successfully")
@@ -145,6 +146,8 @@ def edit_item(request,id):
         elem.min_stock = request.POST.get('min_stock')
         elem.unit_plural = elem.unit+"s"
         elem.updated_at = datetime.datetime.now()
+        elem.changed_by_user = request.user
+
         elem.save()
         messages.success(request,"Item Updated Successfully")
     item = Item.objects.get(id=id)
@@ -191,9 +194,9 @@ def add_item_adjustment(request):
         )
         # Do The Changes to other models Here
         if int(type) == 1:
-            item.current_stock += int(qnt)
+            item.current_stock += decimal.Decimal(qnt)
         else:
-            item.current_stock -= int(qnt)
+            item.current_stock -= decimal.Decimal(qnt)
             
         item.save()
         elem.save()
@@ -209,12 +212,10 @@ def edit_item_adjustment(request,id):
     elem = InventoryAdjustments.objects.get(id=int(id))
     if request.method == "POST":
         if int(elem.ADJUSTMENT_TYPE) == 1:
-            elem.item.current_stock -= int(elem.quantity)
+            elem.item.current_stock -= decimal.Decimal(elem.quantity)
         else:
-            elem.item.current_stock += int(elem.quantity)
+            elem.item.current_stock += decimal.Decimal(elem.quantity)
         elem.item.save()
-        id = request.POST.get('id')
-        elem = InventoryAdjustments.objects.get(id=int(id))
         elem.date = request.POST.get('date')
         elem.quantity = request.POST.get('qnt')
         item_id = request.POST.get('item')
@@ -223,16 +224,18 @@ def edit_item_adjustment(request,id):
         elem.reason_title = request.POST.get('reason_title')
         elem.reason_desc = request.POST.get('reason_desc')
         elem.updated_at = datetime.datetime.now()
+        elem.changed_by_user = request.user
         
         if int(elem.ADJUSTMENT_TYPE) == 1:
-            elem.item.current_stock += int(elem.quantity)
+            elem.item.current_stock += decimal.Decimal(elem.quantity)
         else:
-            elem.item.current_stock -= int(elem.quantity)
+            elem.item.current_stock -= decimal.Decimal(elem.quantity)
             
         elem.item.save()
 
         elem.save()
         messages.success(request,"Adjustment Updated Successfully")
+        return redirect("edit_item_adjustment",elem.id)
 
     
     day = str(elem.date.day).rjust(2,"0")
@@ -301,6 +304,8 @@ def edit_customer(request,id):
         elem.address = request.POST.get('address')
         elem.gstin = request.POST.get('gstin')
         elem.current_balance = request.POST.get('balance')
+        elem.updated_at = datetime.datetime.now()
+        elem.changed_by_user = request.user
 
         elem.save()
         messages.success(request,"Customer Updated Successfully")
@@ -400,6 +405,9 @@ def edit_invoice(request,id):
         customer = Customer.objects.get(id=customer_id)
         current_invoice.customer = customer
         current_invoice.valid = True
+        current_invoice.updated_at = datetime.datetime.now()
+        current_invoice.changed_by_user = request.user
+
         current_invoice.save()
         return redirect("view_invoices")
     day = str(current_invoice.date.day).rjust(2,"0")
@@ -447,7 +455,7 @@ def save_transaction(request):
             central_tax = central_tax,
             amount = total_amount
         )
-
+        
         transaction.save()
         invoice.total_taxable_amount += transaction.taxable_value
         invoice.total_tax_amount += transaction.state_tax + transaction.central_tax
@@ -481,7 +489,8 @@ def save_edit_transaction(request,id):
             amount = amount
 
         )
-
+        transaction.updated_at = datetime.datetime.now()
+        transaction.changed_by_user = request.user
         transaction.save()
         invoice.total_amount += transaction.amount 
         invoice.save()
@@ -542,6 +551,8 @@ def edit_payment(request,id):
         elem.customer = Customer.objects.get(id=customer_id)
         elem.mode = request.POST.get('mode')
         elem.amount = request.POST.get('amount')
+        elem.updated_at = datetime.datetime.now()
+        elem.changed_by_user = request.user
 
         elem.customer.current_balance -= decimal.Decimal(elem.amount)
         elem.customer.save()
@@ -599,6 +610,8 @@ def add_salereturn(request):
             
         )
         # Do The Changes to other models Here
+        item.quantity += decimal.Decimal(qnt)
+        item.save()
         
         elem.save()
         messages.success(request,"Sale Return Added Successfully")
@@ -620,6 +633,8 @@ def edit_salereturn(request,id):
     customers = Customer.objects.all()
     elem = SaleReturn.objects.get(id=int(id))
     if request.method == "POST":
+        elem.item.quantity -= elem.quantity 
+        elem.item.save()
         id = request.POST.get('id')
         elem = SaleReturn.objects.get(id=int(id))
         elem.date = request.POST.get('date')
@@ -632,7 +647,12 @@ def edit_salereturn(request,id):
         elem.amount = request.POST.get('amount')
         elem.status = int(request.POST.get('status'))
         elem.updated_at = datetime.datetime.now()
+        elem.changed_by_user = request.user
         
+        # Do The Changes to other models Here
+        elem.item.quantity += decimal.Decimal(elem.quantity)
+        elem.item.save()
+
         elem.save()
         messages.success(request,"Sale Return Updated Successfully")
         return redirect("edit_salereturn",elem.id)

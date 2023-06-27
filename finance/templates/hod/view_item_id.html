@@ -1,5 +1,5 @@
 {% extends 'base.html' %} {% block content %}
-
+{% load static %}
 <div class="page-wrapper">
   <div class="content container-fluid">
     <div class="page-header">
@@ -20,7 +20,11 @@
             <div class="about-info">
               <h4>{{item.name}}</h4>
               <div class="media mt-3">
+                {% if item.image %}
                 <img src="/{{item.image}}" class="mr-3" alt="..." />
+                {% else %}
+                <img src="{% static 'assets/img/test.png' %}" width="100" height="200" class="mr-3" alt="..." />
+                {% endif %}
                 <div class="media-body">
                   <ul>
                     <li>

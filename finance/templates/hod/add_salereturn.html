@@ -51,7 +51,7 @@
                       <label>Customer</label>
                       <select class="form-control" name="customer_id">
                         {% for i in customers %}
-                        <option value={{i.id}}>{{i.name}}</option>
+                        <option value="{{i.id}}">{{i.name}}</option>
                         {% endfor %}
                       </select>
                     </div>
@@ -61,7 +61,7 @@
                       <label>Item</label>
                       <select class="form-control" name="item">
                         {% for i in items %}
-                        <option value={{i.id}}>{{i}}</option>
+                        <option value="{{i.id}}">{{i}}</option>
                         {% endfor %}
                       </select>
                     </div>

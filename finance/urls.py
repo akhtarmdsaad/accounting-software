@@ -6,7 +6,7 @@ from finance import vendor_views
 from . import views
 
 urlpatterns = [
-    path('',views.dashboard,name="finance_dashboard"),
+    path('dashboard/',views.dashboard,name="finance_dashboard"),
 
     #items
     path('view_item_groups/',views.view_item_groups,name="view_item_groups"),
@@ -65,11 +65,24 @@ urlpatterns = [
     #purchase invoices
     path('view_purchase_invoices/',vendor_views.view_purchase_invoices,name="view_purchase_invoices"),
     path('add_purchase_invoices/',vendor_views.add_purchase_invoice,name="add_purchase_invoices"),
+    path('save_invoice_details/',vendor_views.save_invoice_detail,name="save_invoice_details"),
     # path('view_purchase_invoices/<int:id>/',vendor_views.view_purchase_invoices_id,name="view_purchase_invoices_id"),
     path('edit_purchase_invoices/<int:id>/',vendor_views.edit_purchase_invoice,name="edit_purchase_invoice"),
     path('delete_purchase_invoice/<int:id>/',vendor_views.delete_purchase_invoice,name="delete_purchase_invoice"),
-    # path('save_purchase_transaction/',vendor_views.save_purchase_transaction,name="save_purchase_transaction"),
-    # path('save_edit_purchase_transaction/<int:id>',vendor_views.save_edit_purchase_transaction,name="save_edit_purchase_transaction"),
-    # path('delete_purchase_transaction/<int:id>',vendor_views.delete_purchase_transaction,name="delete_purchase_transaction"),
+    path('save_purchase_transaction/',vendor_views.save_purchase_transaction,name="save_purchase_transaction"),
+    path('save_edit_purchase_transaction/<int:id>',vendor_views.save_edit_purchase_transaction,name="save_edit_purchase_transaction"),
+    path('delete_purchase_transaction/<int:id>',vendor_views.delete_purchase_transaction,name="delete_purchase_transaction"),
+
+    #reciepts
+    path('view_reciepts/',vendor_views.view_reciepts,name="view_reciepts"),
+    path('add_reciepts/',vendor_views.add_reciept,name="add_reciepts"),
+    path('edit_reciepts/<int:id>/',vendor_views.edit_reciept,name="edit_reciept"),
+    path('delete_reciept/<int:id>/',vendor_views.delete_reciept,name="delete_reciept"),
+
+    # My Credit Notes
+    path('view_vendor_credit_notes/',vendor_views.view_vendor_credit_notes,name="view_vendor_credit_notes"),
+    path('add_vendor_credit_notes/',vendor_views.add_vendor_credit_note,name="add_vendor_credit_notes"),
+    path('edit_vendor_credit_notes/<int:id>/',vendor_views.edit_vendor_credit_note,name="edit_vendor_credit_note"),
+    path('delete_vendor_credit_note/<int:id>/',vendor_views.delete_vendor_credit_note,name="delete_vendor_credit_note"),
 
 ]

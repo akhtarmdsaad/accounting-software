@@ -61,7 +61,7 @@
                   <label>Customers</label>
                   <select class="form-control" name="customer_id">
                     {% for i in customers %}
-                    <option value={{i.id}}
+                    <option value="{{i.id}}"
                     
                     {% if i.id == elem.customer.id %}
                               selected
@@ -101,7 +101,7 @@
                     step="0.01"
                     class="form-control"
                     name="amount"
-                    value={{elem.amount}}
+                    value="{{elem.amount}}"
                   />
                 </div>
               </div>

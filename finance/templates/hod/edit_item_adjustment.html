@@ -52,7 +52,7 @@
                       <label>Item</label>
                       <select class="form-control" name="item">
                         {% for i in items %}
-                          <option value={{i.id}}
+                          <option value="{{i.id}}"
 
                           {% if i.id == elem.item.id %}
                               selected
@@ -92,7 +92,7 @@
                         type="number"
                         class="form-control"
                         name="qnt"
-                        value={{elem.quantity}}
+                        value="{{elem.quantity}}"
                       />
                     </div>
                   </div>
@@ -104,7 +104,7 @@
                         type="text"
                         class="form-control"
                         name="reason_title"
-                        value={{elem.reason_title}}
+                        value="{{elem.reason_title}}"
                       />
                     </div>
                   </div>

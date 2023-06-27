@@ -99,13 +99,13 @@
                   </tr>
                 </thead>
                 <tbody>
-					{% for transaction in transactions %}
+					{% for purchase_transaction in purchase_transactions %}
                   <tr>
                     <td>
                       <select class="form-control" name="item" disabled>
                         {% for i in items %}
                           <option value="{{i.id}}" tax={{i.state_tax_rate}} 
-                            {% if transaction.item.id == i.id %} selected {% endif %}
+                            {% if purchase_transaction.item.id == i.id %} selected {% endif %}
                           > {{i.name}} {{i.address}} </option>
                         {% endfor %}
                       </select>
@@ -117,7 +117,7 @@
                         class="form-control"
                         name="qnt"
                         disabled
-                        value={{transaction.quantity}}
+                        value={{purchase_transaction.quantity}}
                       />
                     </td>
                     <td>
@@ -127,7 +127,7 @@
                         class="form-control"
                         name="rate"
                         disabled
-                        value={{transaction.rate}}
+                        value={{purchase_transaction.rate}}
                       />
                     </td>
                     <td>
@@ -137,7 +137,7 @@
                         class="form-control"
                         name="rate"
                         disabled
-                        value={{transaction.taxable_value}}
+                        value={{purchase_transaction.taxable_value}}
                       />
                     </td>
                     <td>
@@ -146,26 +146,26 @@
                         type="number" step="0.01"
                         class="form-control"
                         name="discount"
-                        value={{transaction.discount_percent}}
+                        value={{purchase_transaction.discount_percent}}
                         disabled
                       />
                     </td>
                     <td>
-                      {{transaction.item.state_tax_rate}}% / {{transaction.item.state_tax_rate}}%
+                      {{purchase_transaction.item.state_tax_rate}}% / {{purchase_transaction.item.state_tax_rate}}%
 
                     </td>
                     <td>
-                      {{transaction.state_tax}} / {{transaction.central_tax}}
+                      {{purchase_transaction.state_tax}} / {{purchase_transaction.central_tax}}
 
                     </td>
                     <td>
-                      {{transaction.amount}}
+                      {{purchase_transaction.amount}}
 
                     </td>
                     <td class="text-right">
                       <div class="actions">
                         <a
-                          href="{% url 'delete_transaction' transaction.id %}"
+                          href="{% url 'delete_purchase_transaction' purchase_transaction.id %}"
                           class="btn btn-sm bg-danger-light mr-2"
                         >
                           <i class="fas fa-trash"></i>
@@ -228,7 +228,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <form id="modal-form" method="post" action="{% url 'save_transaction' %}">
+        <form id="modal-form" method="post" action="{% url 'save_purchase_transaction' %}">
           {% csrf_token %}
           
           <div class="row col-12">
@@ -365,7 +365,12 @@
 
 {% block script %}
 <script>
-
+  function round(number,digits=2){
+    var decimal = number * Math.pow(10,digits)
+    decimal = Math.round(decimal) / 100
+    console.log(decimal)
+    return(decimal)
+  }
   qnt = document.querySelector("#modal-form #qnt")
   rate = document.querySelector("#modal-form #rate")
   taxable_value = document.querySelector("#modal-form #taxable_value")

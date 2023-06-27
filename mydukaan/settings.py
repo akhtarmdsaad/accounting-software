@@ -38,9 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # 3rd party
-    'allauth', # new
-    'allauth.account', # new
-    'allauth.socialaccount', # new
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'active_link',
+
 
     'accounts',
     'finance',
@@ -112,7 +114,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Indian/Maldives'
 
 USE_I18N = True
 

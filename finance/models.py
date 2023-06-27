@@ -1,6 +1,7 @@
 import decimal
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from accounts.models import CustomUser
 # Create your models here.
 
 TAX_PREFERENCE = (
@@ -12,6 +13,8 @@ INVENTORY_TYPE = (
     (1,'Yes'),
     (2,'No')
 )
+
+
 class ItemGroup(models.Model):
     name = models.CharField(_("name"), max_length=50)
     brand = models.CharField(_("brand"), max_length=50)
@@ -19,6 +22,8 @@ class ItemGroup(models.Model):
     inventory = models.IntegerField(choices=INVENTORY_TYPE,default=1)
     created_at = models.DateTimeField(auto_now_add=True,null = True)
     updated_at = models.DateTimeField(auto_now_add=True,null = True)
+    changed_by_user = models.ForeignKey(CustomUser,null=True,on_delete=models.PROTECT)
+    
 
     def __str__(self) -> str:
         return self.name + " - " + self.brand
@@ -31,10 +36,12 @@ class Item(models.Model):
     unit = models.CharField(max_length=10)
     unit_plural = models.CharField(max_length=10)
     state_tax_rate = models.IntegerField()
-    current_stock = models.IntegerField()
-    min_stock = models.IntegerField(default=10)
+    current_stock = models.DecimalField(max_digits=10, decimal_places=2)
+    min_stock = models.DecimalField(max_digits=10, decimal_places=2,default=decimal.Decimal(0))
     created_at = models.DateTimeField(auto_now_add=True,null = True)
     updated_at = models.DateTimeField(auto_now_add=True,null = True)
+    changed_by_user = models.ForeignKey(CustomUser,null=True,on_delete=models.PROTECT)
+    
 
     def __str__(self) -> str:
         return self.name + " - " + str(self.item_group)
@@ -46,12 +53,14 @@ ADJUSTMENT_TYPE = (
 class InventoryAdjustments(models.Model):
     date = models.DateField()
     item = models.ForeignKey(Item,on_delete=models.CASCADE)
-    quantity = models.IntegerField()
+    quantity = models.DecimalField(max_digits=10, decimal_places=2)
     reason_title = models.CharField(max_length=100)
     reason_desc = models.TextField() 
     ADJUSTMENT_TYPE = models.IntegerField(choices=ADJUSTMENT_TYPE,default=2)
     created_at = models.DateTimeField(auto_now_add=True,null = True)
     updated_at = models.DateTimeField(auto_now_add=True,null = True)
+    changed_by_user = models.ForeignKey(CustomUser,null=True,on_delete=models.PROTECT)
+    
 
     def __str__(self):
         return str(self.item.name) + " - " + str(self.reason_title)
@@ -65,6 +74,8 @@ class Customer(models.Model):
     current_balance = models.DecimalField(max_digits=10, decimal_places=2,default=decimal.Decimal(0))
     created_at = models.DateTimeField(auto_now_add=True,null = True)
     updated_at = models.DateTimeField(auto_now_add=True,null = True)
+    changed_by_user = models.ForeignKey(CustomUser,null=True,on_delete=models.PROTECT)
+    
 
     def __str__(self):
         return self.name
@@ -77,10 +88,12 @@ class Payment(models.Model):
     date = models.DateField(_("date"), auto_now=False, auto_now_add=False)
     description = models.TextField(default="")
     customer = models.ForeignKey(Customer,null=True,on_delete=models.CASCADE)
-    amount = models.IntegerField(_("amount"))
+    amount = models.DecimalField(max_digits=10, decimal_places=2,default=decimal.Decimal(0))
     mode = models.IntegerField(choices=MODE,default=1)
     created_at = models.DateTimeField(auto_now_add=True,null = True)
     updated_at = models.DateTimeField(auto_now_add=True,null = True)
+    changed_by_user = models.ForeignKey(CustomUser,null=True,on_delete=models.PROTECT)
+    
 
     def __str__(self):
         return f"{self.customer.name}-{self.amount}"
@@ -96,6 +109,8 @@ class Invoice(models.Model):
     valid = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True,null = True)
     updated_at = models.DateTimeField(auto_now_add=True,null = True)
+    changed_by_user = models.ForeignKey(CustomUser,null=True,on_delete=models.PROTECT)
+    
 
     def __str__(self):
         return self.invoice_no
@@ -105,7 +120,7 @@ class Invoice(models.Model):
 class Transaction(models.Model):
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
     item = models.ForeignKey(Item,on_delete=models.CASCADE)
-    quantity = models.IntegerField()
+    quantity = models.DecimalField(max_digits=10, decimal_places=2)
     rate = models.DecimalField(max_digits=10, decimal_places=2)
     taxable_value = models.DecimalField(max_digits=10, decimal_places=2,null=True)
     discount_percent = models.DecimalField(max_digits=10, decimal_places=2,null=True)
@@ -115,6 +130,8 @@ class Transaction(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True,null = True)
     updated_at = models.DateTimeField(auto_now_add=True,null = True)
+    changed_by_user = models.ForeignKey(CustomUser,null=True,on_delete=models.PROTECT)
+    
 
     def __str__(self):
         return self.invoice.invoice_no
@@ -128,12 +145,17 @@ class SaleReturn(models.Model):
     date = models.DateField(_("date"), auto_now=False, auto_now_add=False)
     customer = models.ForeignKey(Customer,on_delete=models.CASCADE)
     item = models.ForeignKey(Item,on_delete=models.CASCADE)
-    quantity = models.IntegerField()
+    quantity = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField(default="")
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.IntegerField(choices=STATUS,default = 1)
     created_at = models.DateTimeField(auto_now_add=True,null = True)
     updated_at = models.DateTimeField(auto_now_add=True,null = True)
+    changed_by_user = models.ForeignKey(CustomUser,null=True,on_delete=models.PROTECT)
+    
+    
+    def __str__(self):
+        return str(self.vendor) + " - " + str(self.amount)
 
 class Vendor(models.Model):
     name = models.CharField(_("name"), max_length=50)
@@ -146,6 +168,8 @@ class Vendor(models.Model):
     current_balance = models.DecimalField(max_digits=10, decimal_places=2,default=decimal.Decimal(0))
     created_at = models.DateTimeField(auto_now_add=True,null = True)
     updated_at = models.DateTimeField(auto_now_add=True,null = True)
+    changed_by_user = models.ForeignKey(CustomUser,null=True,on_delete=models.PROTECT)
+    
 
     def __str__(self):
         return self.company
@@ -158,8 +182,11 @@ class PurchaseInvoice(models.Model):
     total_taxable_amount = models.DecimalField(max_digits=10, decimal_places=2,null=True)
     total_tax_amount = models.DecimalField(max_digits=10, decimal_places=2,null=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    valid = models.BooleanField(_("valid"),default=False)
     created_at = models.DateTimeField(auto_now_add=True,null = True)
     updated_at = models.DateTimeField(auto_now_add=True,null = True)
+    changed_by_user = models.ForeignKey(CustomUser,null=True,on_delete=models.PROTECT)
+    
 
     def __str__(self):
         return self.invoice_no
@@ -169,7 +196,7 @@ class PurchaseInvoice(models.Model):
 class PurchaseTransaction(models.Model):
     invoice = models.ForeignKey(PurchaseInvoice, on_delete=models.CASCADE)
     item = models.ForeignKey(Item,on_delete=models.CASCADE)
-    quantity = models.IntegerField()
+    quantity = models.DecimalField(max_digits=10, decimal_places=2,default=decimal.Decimal(0))
     rate = models.DecimalField(max_digits=10, decimal_places=2)
     taxable_value = models.DecimalField(max_digits=10, decimal_places=2,null=True)
     discount_percent = models.DecimalField(max_digits=10, decimal_places=2,null=True)
@@ -179,6 +206,38 @@ class PurchaseTransaction(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True,null = True)
     updated_at = models.DateTimeField(auto_now_add=True,null = True)
+    changed_by_user = models.ForeignKey(CustomUser,null=True,on_delete=models.PROTECT)
+    
 
     def __str__(self):
         return self.invoice.invoice_no
+
+class Reciept(models.Model):
+    date = models.DateField(_("date"), auto_now=False, auto_now_add=False)
+    description = models.TextField(default="")
+    vendor = models.ForeignKey(Vendor,null=True,on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2,default=decimal.Decimal(0))
+    mode = models.IntegerField(choices=MODE,default=1)
+    created_at = models.DateTimeField(auto_now_add=True,null = True)
+    updated_at = models.DateTimeField(auto_now_add=True,null = True)
+    changed_by_user = models.ForeignKey(CustomUser,null=True,on_delete=models.PROTECT)
+    
+
+    def __str__(self):
+        return f"{self.vendor.company}-{self.amount}"
+  
+class VendorCreditNote(models.Model):
+    date = models.DateField(_("date"), auto_now=False, auto_now_add=False)
+    vendor = models.ForeignKey(Vendor,on_delete=models.CASCADE)
+    item = models.ForeignKey(Item,on_delete=models.CASCADE)
+    quantity = models.DecimalField(max_digits=10, decimal_places=2,default=decimal.Decimal(0))
+    description = models.TextField(default="")
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    created_at = models.DateTimeField(auto_now_add=True,null = True)
+    updated_at = models.DateTimeField(auto_now_add=True,null = True)
+    changed_by_user = models.ForeignKey(CustomUser,null=True,on_delete=models.PROTECT)
+    
+
+    def __str__(self):
+        return str(self.vendor.company) + " - " + str(self.amount)
+    

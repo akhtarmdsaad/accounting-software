@@ -6,17 +6,17 @@
       <div class="page-header">
         <div class="row align-items-center">
           <div class="col">
-            <h3 class="page-title">Add Payment</h3>
+            <h3 class="page-title">Edit Reciept</h3>
             <ul class="breadcrumb">
               <li class="breadcrumb-item">
                 <a href="{% url 'finance_dashboard' %}">Dashboard</a>
               </li>
-              <li class="breadcrumb-item active">Add Payment</li>
+              <li class="breadcrumb-item active">Edit Reciept</li>
             </ul>
           </div>
           <div class="col-auto text-right float-right ml-auto">
-            <a href="{% url 'view_payments' %}" class="btn btn-primary"
-              ><i class="fas fa-plus"></i> &nbsp;View Payment
+            <a href="{% url 'view_reciepts' %}" class="btn btn-primary"
+              ><i class="fas fa-plus"></i> &nbsp;View Reciept
             </a>
           </div>
         </div>
@@ -29,7 +29,7 @@
             <form method="post" action="#">
               {% csrf_token %}
               <div class="col-12">
-                <h5 class="form-title"><span>Add Payment</span></h5>
+                <h5 class="form-title"><span>Edit Reciept</span></h5>
               </div>
               {% include 'includes/messages.html' %}
 
@@ -41,6 +41,7 @@
                     type="date"
                     class="form-control"
                     name="date"
+                    value="{{year}}-{{month}}-{{day}}"
                   />
                 </div>
               </div>
@@ -52,15 +53,21 @@
                     class="form-control"
                     name="desc"
                     rows="10"
-                  ></textarea>
+                  >{{elem.description}}</textarea>
                 </div>
               </div>
               <div class="col-12 col-sm-6">
                 <div class="form-group">
-                  <label>Customers</label>
-                  <select class="form-control" name="customer_id">
-                    {% for i in customers %}
-                    <option value="{{i.id}}">{{i.name}}</option>
+                  <label>Vendors</label>
+                  <select class="form-control" name="vendor_id">
+                    {% for i in vendors %}
+                    <option value="{{i.id}}"
+                    
+                    {% if i.id == elem.vendor.id %}
+                              selected
+                          {% endif %}
+                    
+                    >{{i.company}}</option>
                     {% endfor %}
                   </select>
                 </div>
@@ -69,8 +76,19 @@
                 <div class="form-group">
                     <label>Mode</label>
                     <select class="form-control" name="mode">
-                        <option value = "1">Cash</option>
-                        <option value = "2">Bank</option>
+                        <option value = "1"
+                        
+                        {% if elem.mode == 1 %}
+                                selected
+                            {% endif %}
+                        
+                        >Cash</option>
+                        <option value = "2"
+                        
+                        {% if elem.mode == 2 %} 
+                                selected
+                            {% endif %}
+                        >Bank</option>
                     </select>
                 </div>
               </div>
@@ -83,13 +101,14 @@
                     step="0.01"
                     class="form-control"
                     name="amount"
+                    value="{{elem.amount}}"
                   />
                 </div>
               </div>
 
               <div class="col-sm-11">
                 <button type="submit" class="btn btn-primary">
-                  Add Payment
+                  Edit Reciept
                 </button>
               </div>
             </form>

@@ -6,17 +6,17 @@
       <div class="page-header">
         <div class="row align-items-center">
           <div class="col">
-            <h3 class="page-title">Update Sale Return</h3>
+            <h3 class="page-title">Update My Credit Note</h3>
             <ul class="breadcrumb">
               <li class="breadcrumb-item">
                 <a href="{% url 'finance_dashboard' %}">Dashboard</a>
               </li>
-              <li class="breadcrumb-item active">Update Sale Return</li>
+              <li class="breadcrumb-item active">Update My Credit Note</li>
             </ul>
           </div>
           <div class="col-auto text-right float-right ml-auto">
-            <a href="{% url 'view_salereturns' %}" class="btn btn-primary"
-              ><i class="fas fa-plus"></i> &nbsp;View Sale Return
+            <a href="{% url 'view_vendor_credit_notes' %}" class="btn btn-primary"
+              ><i class="fas fa-plus"></i> &nbsp;View My Credit Note
             </a>
           </div>
           
@@ -30,7 +30,7 @@
               <form method="post" action="#">
                 {% csrf_token %}
                 <div class="col-12">
-                  <h5 class="form-title"><span>Update Sale Return</span></h5>
+                  <h5 class="form-title"><span>Update My Credit Note</span></h5>
                 </div>
                 {% include 'includes/messages.html' %}
 
@@ -49,14 +49,14 @@
                 
                 <div class="col-12 col-sm-6">
                     <div class="form-group">
-                      <label>Customer</label>
-                      <select class="form-control" name="customer_id">
-                        {% for i in customers %}
-                        <option value={{i.id}}
+                      <label>Vendor</label>
+                      <select class="form-control" name="vendor_id">
+                        {% for i in vendors %}
+                        <option value="{{i.id}}"
 
-                          {% if i.id == elem.customer.id %}
+                          {% if i.id == elem.vendor.id %}
                               selected
-                          {% endif %}>{{i.name}}</option>
+                          {% endif %}>{{i.company}}</option>
                         {% endfor %}
                       </select>
                     </div>
@@ -66,7 +66,7 @@
                       <label>Item</label>
                       <select class="form-control" name="item">
                         {% for i in items %}
-                        <option value={{i.id}}
+                        <option value="{{i.id}}"
 
                           {% if i.id == elem.item.id %}
                               selected
@@ -108,31 +108,16 @@
                       class="form-control"
                       name="amount"
                       value="{{elem.amount}}"
+                      step="0.01"
                     />
                   </div>
                 </div>
-                <div class="col-12 col-sm-6">
-                  <div class="form-group">
-                    <label>Status</label>
-                    <select class="form-control" name="status">
-                      <option value="1"
-                      {% if i.status == 1 %}
-                      selected
-                      {% endif %}
-                      >Available</option>
-                      <option value="2"
-                      {% if i.status == 2 %}
-                      selected
-                      {% endif %}
-                      >Redeemed</option>
-                    </select>
-                  </div>
-              </div>
+                
               <input type="hidden" name="id" value="{{elem.id}}">                
 
                 <div class="col-sm-11">
                   <button type="submit" class="btn btn-primary">
-                    Update Sale Return
+                    Update My Credit Note
                   </button>
                 </div>
               </form>

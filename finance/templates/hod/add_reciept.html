@@ -6,17 +6,17 @@
       <div class="page-header">
         <div class="row align-items-center">
           <div class="col">
-            <h3 class="page-title">Add Payment</h3>
+            <h3 class="page-title">Add Reciept</h3>
             <ul class="breadcrumb">
               <li class="breadcrumb-item">
                 <a href="{% url 'finance_dashboard' %}">Dashboard</a>
               </li>
-              <li class="breadcrumb-item active">Add Payment</li>
+              <li class="breadcrumb-item active">Add Reciept</li>
             </ul>
           </div>
           <div class="col-auto text-right float-right ml-auto">
-            <a href="{% url 'view_payments' %}" class="btn btn-primary"
-              ><i class="fas fa-plus"></i> &nbsp;View Payment
+            <a href="{% url 'view_reciepts' %}" class="btn btn-primary"
+              ><i class="fas fa-plus"></i> &nbsp;View Reciept
             </a>
           </div>
         </div>
@@ -29,7 +29,7 @@
             <form method="post" action="#">
               {% csrf_token %}
               <div class="col-12">
-                <h5 class="form-title"><span>Add Payment</span></h5>
+                <h5 class="form-title"><span>Add Reciept</span></h5>
               </div>
               {% include 'includes/messages.html' %}
 
@@ -57,10 +57,10 @@
               </div>
               <div class="col-12 col-sm-6">
                 <div class="form-group">
-                  <label>Customers</label>
-                  <select class="form-control" name="customer_id">
-                    {% for i in customers %}
-                    <option value="{{i.id}}">{{i.name}}</option>
+                  <label>Vendors</label>
+                  <select class="form-control" name="vendor_id">
+                    {% for i in vendors %}
+                    <option value={{i.id}}>{{i.name}}</option>
                     {% endfor %}
                   </select>
                 </div>
@@ -89,7 +89,7 @@
 
               <div class="col-sm-11">
                 <button type="submit" class="btn btn-primary">
-                  Add Payment
+                  Add Reciept
                 </button>
               </div>
             </form>
