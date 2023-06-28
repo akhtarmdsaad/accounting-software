@@ -1,4 +1,6 @@
-{% extends 'base.html' %} {% block content %}
+{% extends 'base.html' %} 
+{% block title  %}Add Customer{% endblock title  %}
+{% block content %}
 
 <div class="main-wrapper">
   <div class="page-wrapper">
@@ -91,7 +93,7 @@
                   <label>Current Balance</label>
                   <input
                     required
-                    type="number"
+                    type="number" step="0.01"
                     class="form-control"
                     name="balance"
                   />

@@ -1,22 +1,33 @@
 import datetime
 import decimal
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib.auth.decorators import login_required
 from finance.models import Item, PurchaseInvoice, PurchaseTransaction, Reciept, Vendor,VendorCreditNote
 from django.contrib import messages
 
+@login_required(login_url="account_login")
 def view_vendors(request):
+    if not request.user.has_perm('finance.view_vendor'):
+        return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
     vendors = Vendor.objects.all()
     return render(request,"hod/view_vendor.html",{
         "vendors":vendors
     })
 
+@login_required(login_url="account_login")
 def view_vendors_id(request,id):
-    vendor = Vendor.objects.get(id=id)
+    if not request.user.has_perm('finance.view_vendor'):
+        return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
+    vendor = get_object_or_404(Vendor,id=id)
     return  render(request,"hod/view_vendor_id.html",{
         "elem":vendor
     })
 
+@login_required(login_url="account_login")
 def add_vendor(request):
+    if not request.user.has_perm('finance.add_vendor'):
+        return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
     if request.method == "POST":
         name = request.POST.get('name')
         email = request.POST.get('email')
@@ -42,8 +53,11 @@ def add_vendor(request):
         messages.success(request,"Vendor Saved Successfully")
     return render(request,"hod/add_vendor.html")
 
+@login_required(login_url="account_login")
 def edit_vendor(request,id):
-    elem = Vendor.objects.get(id=id)
+    if not request.user.has_perm('finance.change_vendor'):
+        return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
+    elem = get_object_or_404(Vendor,id=id)
     if request.method == "POST":
         elem.name = request.POST.get('name')
         elem.email = request.POST.get('email')
@@ -64,14 +78,20 @@ def edit_vendor(request,id):
         "elem":elem
     })
 
+@login_required(login_url="account_login")
 def delete_vendor(request,id):
-    elem = Vendor.objects.get(id=id)
+    if not request.user.has_perm('finance.delete_vendor'):
+        return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
+    elem = get_object_or_404(Vendor,id=id)
     
     elem.delete()
     return redirect("view_vendors")
 
 
+@login_required(login_url="account_login")
 def view_purchase_invoices(request):
+    if not request.user.has_perm('finance.view_purchaseinvoice'):
+        return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
     purchase_invoices = PurchaseInvoice.objects.all()
     return render(request,"hod/view_purchase.html",{
         "purchase_invoices":purchase_invoices
@@ -79,7 +99,10 @@ def view_purchase_invoices(request):
 
 
 
+@login_required(login_url="account_login")
 def add_purchase_invoice(request):
+    if not request.user.has_perm('finance.add_purchaseinvoice'):
+        return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
     vendors = Vendor.objects.all()
     items = Item.objects.all()
     current_invoice = PurchaseInvoice.objects.filter(valid=False)
@@ -103,7 +126,7 @@ def add_purchase_invoice(request):
             current_invoice.file_invoice = purchase_invoice_file
         current_invoice.date = request.POST.get('date')
         vendor_id = request.POST.get('vendor_id')
-        current_invoice.vendor = Vendor.objects.get(id=vendor_id)
+        current_invoice.vendor = get_object_or_404(Vendor,id=vendor_id)
         current_invoice.valid = True
         current_invoice.save()
         
@@ -122,8 +145,11 @@ def add_purchase_invoice(request):
         "year":year
     })
 
+@login_required(login_url="account_login")
 def delete_purchase_invoice(request,id):
-    purchase_invoice = PurchaseInvoice.objects.get(id=id)
+    if not request.user.has_perm('finance.delete_purchaseinvoice'):
+        return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
+    purchase_invoice = get_object_or_404(PurchaseInvoice,id=id)
     if purchase_invoice.valid:
         purchase_invoice.vendor.current_balance -= purchase_invoice.total_amount
         purchase_invoice.vendor.save()
@@ -134,7 +160,10 @@ def delete_purchase_invoice(request,id):
     purchase_invoice.delete()
     return redirect("view_purchase_invoices")
 
+@login_required(login_url="account_login")
 def save_invoice_detail(request):
+    if not request.user.has_perm('finance.add_purchaseinvoice'):
+        return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
     current_invoice = PurchaseInvoice.objects.filter(valid=False)
     if request.method == "POST":
         current_invoice.file_invoice = request.POST.get("purchase_invoice_file")
@@ -150,11 +179,14 @@ def save_invoice_detail(request):
     return redirect("add_purchase_invoices")
         
 
+@login_required(login_url="account_login")
 def edit_purchase_invoice(request,id):
+    if not request.user.has_perm('finance.change_purchaseinvoice'):
+        return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
     vendors = Vendor.objects.all()
     items = Item.objects.all()
     #get purchase_invoice
-    current_purchase_invoice = PurchaseInvoice.objects.get(id=id)
+    current_purchase_invoice = get_object_or_404(PurchaseInvoice,id=id)
     purchase_transactions = current_purchase_invoice.purchasetransaction_set.all()
     if request.method == "POST":
         current_purchase_invoice.invoice_no = request.POST.get('purchase_invoice_no')
@@ -163,7 +195,7 @@ def edit_purchase_invoice(request,id):
         if purchase_invoice_file:
             current_purchase_invoice.file_invoice = purchase_invoice_file
         vendor_id = request.POST.get('vendor_id')
-        vendor = Vendor.objects.get(id=vendor_id)
+        vendor = get_object_or_404(Vendor,id=vendor_id)
         current_purchase_invoice.vendor = vendor
         current_purchase_invoice.valid = True
         current_purchase_invoice.updated_at = datetime.datetime.now()
@@ -185,10 +217,13 @@ def edit_purchase_invoice(request,id):
     })
 
 
+@login_required(login_url="account_login")
 def save_purchase_transaction(request):
+    if not request.user.has_perm('finance.add_purchaseinvoice'):
+        return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
     if request.method == "POST":
         purchase_invoice_id = request.POST.get("purchase_invoice_id")
-        purchase_invoice = PurchaseInvoice.objects.get(id=purchase_invoice_id)
+        purchase_invoice = get_object_or_404(PurchaseInvoice,id=purchase_invoice_id)
         item_id = request.POST.get('item')
         item = get_object_or_404(Item,id=int(item_id))
 
@@ -225,10 +260,13 @@ def save_purchase_transaction(request):
 
     return redirect("add_purchase_invoices")
 
+@login_required(login_url="account_login")
 def save_edit_purchase_transaction(request,id):
+    if not request.user.has_perm('finance.change_purchaseinvoice'):
+        return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
     if request.method == "POST":
         purchase_invoice_id = request.POST.get("purchase_invoice_id")
-        purchase_invoice = PurchaseInvoice.objects.get(id=purchase_invoice_id)
+        purchase_invoice = get_object_or_404(PurchaseInvoice,id=purchase_invoice_id)
         item_id = request.POST.get('item')
         item = get_object_or_404(Item,id=int(item_id))
 
@@ -258,28 +296,37 @@ def save_edit_purchase_transaction(request,id):
 
     return redirect("edit_purchase_invoice",id)
 
+@login_required(login_url="account_login")
 def delete_purchase_transaction(request,id):
-    elem = PurchaseTransaction.objects.get(id=id)
+    if not request.user.has_perm('finance.delete_purchaseinvoice'):
+        return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
+    elem = get_object_or_404(PurchaseTransaction,id=id)
     elem.invoice.total_amount -= elem.amount
     elem.invoice.save()
     elem.delete()
 
     return redirect("add_purchase_invoices")
 
+@login_required(login_url="account_login")
 def view_reciepts(request):
+    if not request.user.has_perm('finance.view_reciept'):
+        return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
     reciepts = Reciept.objects.all()
 
     return render(request,"hod/view_reciepts.html",{
         "reciepts":reciepts
     })
 
+@login_required(login_url="account_login")
 def add_reciept(request):
+    if not request.user.has_perm('finance.add_reciept'):
+        return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
     vendors = Vendor.objects.all()
     if request.method == "POST":
         date = request.POST.get('date')
         desc = request.POST.get('desc')
         vendor_id = request.POST.get('vendor_id')
-        vendor = Vendor.objects.get(id=vendor_id)
+        vendor = get_object_or_404(Vendor,id=vendor_id)
         mode = request.POST.get('mode')
         amount = request.POST.get('amount')
         elem = Reciept(
@@ -299,9 +346,12 @@ def add_reciept(request):
     }
     return render(request,"hod/add_reciept.html",context)
 
+@login_required(login_url="account_login")
 def edit_reciept(request,id):
+    if not request.user.has_perm('finance.change_reciept'):
+        return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
     vendors = Vendor.objects.all()
-    elem = Reciept.objects.get(id=id)
+    elem = get_object_or_404(Reciept,id=id)
     if request.method == "POST":
         elem.vendor.current_balance -= decimal.Decimal(elem.amount)
         elem.vendor.save()
@@ -309,7 +359,7 @@ def edit_reciept(request,id):
         elem.date = request.POST.get('date')
         elem.description = request.POST.get('desc')
         vendor_id = request.POST.get('vendor_id')
-        elem.vendor = Vendor.objects.get(id=vendor_id)
+        elem.vendor = get_object_or_404(Vendor,id=vendor_id)
         elem.mode = request.POST.get('mode')
         elem.amount = request.POST.get('amount')
         elem.updated_at = datetime.datetime.now()
@@ -334,30 +384,39 @@ def edit_reciept(request,id):
 
     return render(request,"hod/edit_reciept.html",context)
 
+@login_required(login_url="account_login")
 def delete_reciept(request,id):
-    elem = Reciept.objects.get(id=id)
+    if not request.user.has_perm('finance.delete_reciept'):
+        return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
+    elem = get_object_or_404(Reciept,id=id)
     elem.vendor.current_balance -= decimal.Decimal(elem.amount)
     elem.vendor.save()
     elem.delete()
     return redirect("view_reciepts")
 
 
+@login_required(login_url="account_login")
 def view_vendor_credit_notes(request):
+    if not request.user.has_perm('finance.view_vendorcreditnote'):
+        return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
     sale_return = VendorCreditNote.objects.all()
     return render(request,"hod/view_vendor_notes.html",{
         "sale_return":sale_return
     })
 
+@login_required(login_url="account_login")
 def add_vendor_credit_note(request):
+    if not request.user.has_perm('finance.add_vendorcreditnote'):
+        return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
     items = Item.objects.all()
     vendors = Vendor.objects.all()
     if request.method == "POST":
         date = request.POST.get('date')
         qnt = request.POST.get('qnt')
         vendor_id = request.POST.get('vendor_id')
-        vendor = Vendor.objects.get(id=vendor_id)
+        vendor = get_object_or_404(Vendor,id=vendor_id)
         item_id = request.POST.get('item')
-        item = Item.objects.get(id=item_id)
+        item = get_object_or_404(Item,id=item_id)
         desc = request.POST.get('desc')
         amount = request.POST.get('amount')
 
@@ -383,12 +442,18 @@ def add_vendor_credit_note(request):
     return render(request,"hod/add_vendor_note.html",context)
 
 
+@login_required(login_url="account_login")
 def delete_vendor_credit_note(request,id):
-    elem = VendorCreditNote.objects.get(id=id)
+    if not request.user.has_perm('finance.delete_vendorcreditnote'):
+        return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
+    elem = get_object_or_404(VendorCreditNote,id=id)
     elem.delete()
     return redirect("view_vendor_credit_notes")
 
+@login_required(login_url="account_login")
 def edit_vendor_credit_note(request,id):
+    if not request.user.has_perm('finance.change_vendorcreditnote'):
+        return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
     items = Item.objects.all()
     vendors = Vendor.objects.all()
     elem = VendorCreditNote.objects.get(id=int(id))
@@ -398,9 +463,9 @@ def edit_vendor_credit_note(request,id):
         elem.date = request.POST.get('date')
         elem.quantity = request.POST.get('qnt')
         item_id = request.POST.get('item')
-        elem.item = Item.objects.get(id=item_id)
+        elem.item = get_object_or_404(Item,id=item_id)
         vendor_id = request.POST.get('vendor_id')
-        elem.vendor = Vendor.objects.get(id=vendor_id)
+        elem.vendor = get_object_or_404(Vendor,id=vendor_id)
         elem.description = request.POST.get('desc')
         elem.amount = request.POST.get('amount')
         elem.updated_at = datetime.datetime.now()

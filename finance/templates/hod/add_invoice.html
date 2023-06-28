@@ -41,6 +41,7 @@
                       type="text"
                       class="form-control"
                       name="invoice_no"
+                      id="invoice_no"
                       value="{{invoice.invoice_no}}"
                     />
                   </div>
@@ -53,6 +54,7 @@
                       type="date"
                       class="form-control"
                       name="date"
+                      id="date"
                       value="{{year}}-{{month}}-{{day}}"
                     />
                   </div>
@@ -368,6 +370,25 @@
     return(decimal)
   }
 
+  invoice_no_input = document.getElementById("invoice_no")
+  date_input = document.getElementById("date")
+  
+  data = sessionStorage.getItem('invoice_no') 
+  if(data)
+    invoice_no_input.value = data;
+  data = sessionStorage.getItem('date') 
+  if(data)
+    date_input.value = data;
+  // session storage
+  invoice_no_input.addEventListener('input',(e)=>{
+    sessionStorage.setItem('invoice_no',document.getElementById("invoice_no").value) 
+  });
+
+  date_input.addEventListener('input',(e)=>{
+    sessionStorage.setItem('date',document.getElementById("date").value) 
+  });
+  
+  
   qnt = document.querySelector("#modal-form #qnt")
   rate = document.querySelector("#modal-form #rate")
   taxable_value = document.querySelector("#modal-form #taxable_value")
@@ -388,6 +409,8 @@
   
   };
 
+  qnt.setAttribute("min","0");
+  qnt.setAttribute("max",current_stock_button.value);
 
 
   discount_percent.addEventListener("input",(e)=>{
@@ -479,7 +502,5 @@
   });
 
   
-
-
 </script>
 {% endblock script %}

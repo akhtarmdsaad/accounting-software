@@ -155,7 +155,7 @@ class SaleReturn(models.Model):
     
     
     def __str__(self):
-        return str(self.vendor) + " - " + str(self.amount)
+        return str(self.customer.name) + " - " + str(self.amount)
 
 class Vendor(models.Model):
     name = models.CharField(_("name"), max_length=50)
