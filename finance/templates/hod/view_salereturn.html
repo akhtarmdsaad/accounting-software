@@ -49,13 +49,10 @@
                         <td>{{i.amount}}</td>
                         <td>
                           {% if i.status == 1 %}
-                            <span class="badge badge-success">Available</span>
+                            <span class="badge badge-success"><a style="color:white;" href="{% url 'sale_return_redeem' i.id %}">Available</a></span>
                           {% else %}
                             <span class="badge badge-danger">Redeemed</span>
                           {% endif %}
-                          
-
-
                         </td>
                         <td class="text-right">
                           <div class="actions">

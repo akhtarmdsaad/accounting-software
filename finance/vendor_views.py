@@ -402,9 +402,9 @@ def delete_reciept(request,id):
 def view_vendor_credit_notes(request):
     if not request.user.has_perm('finance.view_vendorcreditnote'):
         return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
-    sale_return = VendorCreditNote.objects.all()
+    credit_note = VendorCreditNote.objects.all()
     return render(request,"hod/view_vendor_notes.html",{
-        "sale_return":sale_return
+        "credit_note":credit_note
     })
 
 @login_required(login_url="account_login")
@@ -434,7 +434,9 @@ def add_vendor_credit_note(request):
             
         )
         # Do The Changes to other models Here
-        
+        item.current_stock -= decimal.Decimal(qnt)
+        item.save()
+
         elem.save()
         messages.success(request,"Credit Note Added Successfully")
 
@@ -450,6 +452,9 @@ def delete_vendor_credit_note(request,id):
     if not request.user.has_perm('finance.delete_vendorcreditnote'):
         return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
     elem = get_object_or_404(VendorCreditNote,id=id)
+    elem.item.current_stock -= decimal.Decimal(elem.quantity)
+    elem.item.save()
+
     elem.delete()
     return redirect("view_vendor_credit_notes")
 
@@ -461,6 +466,9 @@ def edit_vendor_credit_note(request,id):
     vendors = Vendor.objects.all()
     elem = VendorCreditNote.objects.get(id=int(id))
     if request.method == "POST":
+        elem.item.current_stock += decimal.Decimal(elem.quantity)
+        elem.item.save()
+
         id = request.POST.get('id')
         elem = VendorCreditNote.objects.get(id=int(id))
         elem.date = request.POST.get('date')
@@ -471,8 +479,13 @@ def edit_vendor_credit_note(request,id):
         elem.vendor = get_object_or_404(Vendor,id=vendor_id)
         elem.description = request.POST.get('desc')
         elem.amount = request.POST.get('amount')
+        elem.status = int(request.POST.get('status'))
         elem.updated_at = datetime.datetime.now()
         elem.changed_by_user = request.user
+
+        # Do The Changes to other models Here
+        elem.item.current_stock -= decimal.Decimal(elem.quantity)
+        elem.item.save()
         
         elem.save()
         messages.success(request,"Credit Note Updated Successfully")
@@ -491,6 +504,13 @@ def edit_vendor_credit_note(request,id):
         "month":month,
         "year":year
     })
+
+def redeem_vendor_credit_note(request,id):
+    elem = VendorCreditNote.objects.get(id=id)
+    elem.status = 2
+    elem.save()
+    return redirect("view_vendor_credit_notes")
+
 
 def testme(request):
     import finance.testing_bysaad

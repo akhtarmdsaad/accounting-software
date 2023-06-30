@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404, redirect, render,HttpResponse
+from django.http import JsonResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -432,11 +433,13 @@ def add_invoice(request):
         customer_id = request.POST.get('customer_id')
         customer = get_object_or_404(Customer,id=customer_id)
         current_invoice.customer = customer
+        
         customer.current_balance += current_invoice.total_amount
         customer.save()
         for tr in current_invoice.transaction_set.all():
             tr.item.current_stock -= tr.quantity
             tr.item.save()
+        
         current_invoice.valid = True
         current_invoice.save()
         return redirect("view_invoices")
@@ -728,7 +731,7 @@ def add_salereturn(request):
             
         )
         # Do The Changes to other models Here
-        item.quantity += decimal.Decimal(qnt)
+        item.current_stock += decimal.Decimal(qnt)
         item.save()
         
         elem.save()
@@ -746,6 +749,9 @@ def delete_salereturn(request,id):
     if not request.user.has_perm('finance.delete_salereturn'):
         return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
     elem = get_object_or_404(SaleReturn,id=id)
+    elem.item.current_stock += decimal.Decimal(elem.quantity)
+    elem.item.save()
+
     elem.delete()
     return redirect("view_salereturns")
 
@@ -757,8 +763,9 @@ def edit_salereturn(request,id):
     customers = Customer.objects.all()
     elem = SaleReturn.objects.get(id=int(id))
     if request.method == "POST":
-        elem.item.quantity -= elem.quantity 
+        elem.item.current_stock -= elem.quantity 
         elem.item.save()
+        
         id = request.POST.get('id')
         elem = SaleReturn.objects.get(id=int(id))
         elem.date = request.POST.get('date')
@@ -774,7 +781,7 @@ def edit_salereturn(request,id):
         elem.changed_by_user = request.user
         
         # Do The Changes to other models Here
-        elem.item.quantity += decimal.Decimal(elem.quantity)
+        elem.item.current_stock += decimal.Decimal(elem.quantity)
         elem.item.save()
 
         elem.save()
@@ -796,7 +803,6 @@ def edit_salereturn(request,id):
     })
 
 
-from django.http import JsonResponse
 
 def get_available_quantity(request):
     item_id = request.GET.get('item_id')
@@ -812,3 +818,9 @@ def get_available_quantity(request):
         'available_quantity': available_quantity,
         'tax_percent': tax_percent
         })
+
+def redeem_salereturn(request,id):
+    elem = SaleReturn.objects.get(id=id)
+    elem.status = 2
+    elem.save()
+    return  redirect("view_salereturns")

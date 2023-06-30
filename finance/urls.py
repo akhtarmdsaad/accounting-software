@@ -54,6 +54,7 @@ urlpatterns = [
     path('add_salereturns/',views.add_salereturn,name="add_salereturns"),
     path('edit_salereturns/<int:id>/',views.edit_salereturn,name="edit_salereturn"),
     path('delete_salereturn/<int:id>/',views.delete_salereturn,name="delete_salereturn"),
+    path('redeem_salereturn/<int:id>/',views.redeem_salereturn,name="sale_return_redeem"),
 
     #Vendors
     path('view_vendors/',vendor_views.view_vendors,name="view_vendors"),
@@ -83,6 +84,7 @@ urlpatterns = [
     path('add_vendor_credit_notes/',vendor_views.add_vendor_credit_note,name="add_vendor_credit_notes"),
     path('edit_vendor_credit_notes/<int:id>/',vendor_views.edit_vendor_credit_note,name="edit_vendor_credit_note"),
     path('delete_vendor_credit_note/<int:id>/',vendor_views.delete_vendor_credit_note,name="delete_vendor_credit_note"),
+    path('redeem_vendor_credit_note/<int:id>/',vendor_views.redeem_vendor_credit_note,name="my_credit_redeem"),
 
     path("test/",vendor_views.testme,name="testme"),
 

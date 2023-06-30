@@ -1,4 +1,23 @@
-{% extends 'base.html' %} {% block content %}
+{% extends 'base.html' %} 
+
+{% block head  %}
+
+<style>
+a{
+  color: black
+}
+a:hover {
+  color:#009ce7;
+}
+
+
+</style>
+
+
+{% endblock head  %}
+
+
+{% block content %}
 
 <div class="page-wrapper">
   <div class="content container-fluid">
@@ -86,15 +105,16 @@
       <div class="col-12 col-md-6 col-lg-4 d-flex">
         <div class="card flex-fill">
           <div class="card-header">
-            <h5 class="card-title mb-0">Product Details</h5>
+            <h5 class="card-title mb-0"><strong>Product Details</strong></h5>
           </div>
           <ul class="list-group list-group-flush">
             <li class="list-group-item">
-              No of Low Stock Items - {{low_stock_items}}
+              <a href="">No of Low Stock Items - {{low_stock_items}}</a>
             </li>
-            <li class="list-group-item">All Items - {{total_items}}</li>
             <li class="list-group-item">
-              No of All Item Groups - {{total_item_groups}}
+              <a href="{% url 'view_items' %}">All Items - {{total_items}}</li></a>
+            <li class="list-group-item">
+              <a href="{% url 'view_item_groups' %}">No of All Item Groups - {{total_item_groups}}</a>
             </li>
           </ul>
         </div>

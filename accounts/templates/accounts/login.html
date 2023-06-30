@@ -24,12 +24,26 @@
                      <div class="login-right-wrap">
                         <h1>Login</h1>
                         <p class="account-subtitle">Access to our dashboard</p>
-                        <form action="#">
+                        <form method="post" action="#">
+                           {% csrf_token %}
+                           {% if messages %}
+                              {% for message in messages %}
+                                 {% if message.tags == "error" %}
+                                 <div class="alert alert-danger" role="alert">
+                                 {% elif message.tags == "success" %}
+                                 <div class="alert alert-success" role="alert">
+                                 {% elif message.tags == "warning" %}
+                                 <div class="alert alert-warning" role="alert">
+                                 {% endif %}
+                                       <strong>{{message}}</strong>
+                                 </div>
+                              {% endfor %}
+                           {% endif %}
                            <div class="form-group">
-                              <input class="form-control" type="text" placeholder="Email">
+                              <input class="form-control" type="text" name='email' placeholder="Email">
                            </div>
                            <div class="form-group">
-                              <input class="form-control" type="text" placeholder="Password">
+                              <input class="form-control" type="password" name='password' placeholder="Password">
                            </div>
                            <div class="form-group">
                               <button class="btn btn-primary btn-block" type="submit">Login</button>

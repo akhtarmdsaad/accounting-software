@@ -1,6 +1,6 @@
 import decimal
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from accounts.models import CustomUser
 # Create your models here.
 
@@ -232,6 +232,7 @@ class VendorCreditNote(models.Model):
     item = models.ForeignKey(Item,on_delete=models.CASCADE)
     quantity = models.DecimalField(max_digits=10, decimal_places=2,default=decimal.Decimal(0))
     description = models.TextField(default="")
+    status = models.IntegerField(choices=STATUS,default = 1)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True,null = True)
     updated_at = models.DateTimeField(auto_now_add=True,null = True)
