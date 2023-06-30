@@ -63,7 +63,7 @@
               <div class="col-12 col-sm-6">
                 <div class="form-group">
                   <label>Customer</label>
-                  <select class="form-control" name="customer_id">
+                  <select class="" id="customers_select" name="customer_id">
                     {% for i in customers %}
                     <option value="{{i.id}}" {% if i.id == invoice.customer.id %} selected{% endif %} >
                       {{i.name}}
@@ -78,10 +78,10 @@
                 <thead>
                   <tr>
                     <th>Item</th>
-                    <th width=10>Quantity</th>
-                    <th>Rate</th>
+                    <th width="99">Quantity</th>
+                    <th width="150">Rate</th>
                     <th>Taxable Value</th>
-                    <th>Discount (in %)</th>
+                    <th width="99">Discount (in %)</th>
                     <th>Tax (in %)</th>
                     <th>Tax (CGST / SGST)</th>
                     <th>Amount</th>
@@ -233,7 +233,7 @@
             <div class="col-12 col-sm-4">
               <div class="form-group">  
                 <label for="item">Item</label>
-                <select class="form-control" name="item" id="item" >
+                <select class="" id="items_select" name="item" id="items_select" >
                   {% for i in items %}
                   <option value="{{i.id}}" current_stock="{{i.current_stock}}" tax="{{i.state_tax_rate}}">
                     {{i.name}} <br />
@@ -401,13 +401,13 @@
   current_stock_button = document.querySelector("#modal-form #current_stock")
 
   item = document.querySelector("#modal-form #item")
-  tax_button.value = item.selectedOptions[0].getAttribute('tax');
-  current_stock_button.value = item.selectedOptions[0].getAttribute('current_stock');
-  item.onclick = (e)=>{
+  {% comment %} tax_button.value = item.selectedOptions[0].getAttribute('tax'); {% endcomment %}
+  {% comment %} current_stock_button.value = item.selectedOptions[0].getAttribute('current_stock'); {% endcomment %}
+  {% comment %} item.onclick = (e)=>{
     tax_button.value = item.selectedOptions[0].getAttribute('tax');
     current_stock_button.value = item.selectedOptions[0].getAttribute('current_stock');
   
-  };
+  }; {% endcomment %}
 
   qnt.setAttribute("min","0");
   qnt.setAttribute("max",current_stock_button.value);
@@ -486,6 +486,7 @@
       total_rate.value = 0
     }
   });
+
   total_rate.addEventListener("input",(e)=>{
     qnt_no = qnt.value;
     if(total_rate.value){
@@ -501,6 +502,39 @@
     }
   });
 
+
+  // Third Party Changes 
+
+   function fetchAvailableQuantity(itemId) {
+    $.ajax({
+      url: '/finance/get_available_quantity/',
+      method: 'GET',
+      data: { item_id: itemId },
+      success: function(response) {
+        // Handle the response and update the UI with the available quantity
+        $('#current_stock').val(response.available_quantity);
+        $('#tax').val(response.tax_percent);
+      },
+      error: function(xhr, status, error) {
+        // Handle the error if needed
+        console.error(error);
+      }
+    });
+  }
   
+  $(document).ready(function() {
+    $('#items_select').selectize({
+    onChange: function(value) {
+      // Make an AJAX request to fetch the available quantity
+      fetchAvailableQuantity(value);
+    }
+  });
+});
+
+
+
+  $(function () {
+    $("#customers_select").selectize();
+  });
 </script>
 {% endblock script %}

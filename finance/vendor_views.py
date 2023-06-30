@@ -127,6 +127,13 @@ def add_purchase_invoice(request):
         current_invoice.date = request.POST.get('date')
         vendor_id = request.POST.get('vendor_id')
         current_invoice.vendor = get_object_or_404(Vendor,id=vendor_id)
+        
+        # Calculations
+        current_invoice.vendor.current_balance -= current_invoice.total_amount
+        current_invoice.vendor.save()
+        for tr in current_invoice.transaction_set.all():
+            tr.item.current_stock += tr.quantity
+            tr.item.save()
         current_invoice.valid = True
         current_invoice.save()
         
@@ -151,33 +158,16 @@ def delete_purchase_invoice(request,id):
         return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
     purchase_invoice = get_object_or_404(PurchaseInvoice,id=id)
     if purchase_invoice.valid:
-        purchase_invoice.vendor.current_balance -= purchase_invoice.total_amount
+        purchase_invoice.vendor.current_balance += purchase_invoice.total_amount
         purchase_invoice.vendor.save()
         for tr in purchase_invoice.purchasetransaction_set.all():
-            tr.item.current_stock += tr.quantity
+            tr.item.current_stock -= tr.quantity
             tr.item.save()
 
     purchase_invoice.delete()
     return redirect("view_purchase_invoices")
 
-@login_required(login_url="account_login")
-def save_invoice_detail(request):
-    if not request.user.has_perm('finance.add_purchaseinvoice'):
-        return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
-    current_invoice = PurchaseInvoice.objects.filter(valid=False)
-    if request.method == "POST":
-        current_invoice.file_invoice = request.POST.get("purchase_invoice_file")
-        current_invoice.invoice_no = request.POST.get("purchase_invoice_no")
-        current_invoice.date = request.POST.get("date")
-        vendor_id = request.POST.get("vendor_id")
-        current_invoice.vendor = Vendor.objects.get(vendor_id)
-        current_invoice.save()
-        print("\n\n\nsaved\n\n\n")
 
-        
-
-    return redirect("add_purchase_invoices")
-        
 
 @login_required(login_url="account_login")
 def edit_purchase_invoice(request,id):
@@ -189,6 +179,13 @@ def edit_purchase_invoice(request,id):
     current_purchase_invoice = get_object_or_404(PurchaseInvoice,id=id)
     purchase_transactions = current_purchase_invoice.purchasetransaction_set.all()
     if request.method == "POST":
+        if current_purchase_invoice.valid:
+            current_purchase_invoice.vendor.current_balance += current_purchase_invoice.total_amount
+            current_purchase_invoice.vendor.save()
+            for tr in current_purchase_invoice.transaction_set.all():
+                tr.item.current_stock -= tr.quantity
+                tr.item.save()
+            
         current_purchase_invoice.invoice_no = request.POST.get('purchase_invoice_no')
         current_purchase_invoice.date = request.POST.get('date')
         purchase_invoice_file = request.FILES.get("purchase_invoice_file")
@@ -200,6 +197,12 @@ def edit_purchase_invoice(request,id):
         current_purchase_invoice.valid = True
         current_purchase_invoice.updated_at = datetime.datetime.now()
         current_purchase_invoice.changed_by_user = request.user
+
+        current_purchase_invoice.vendor.current_balance -= current_purchase_invoice.total_amount
+        current_purchase_invoice.vendor.save()
+        for tr in current_purchase_invoice.transaction_set.all():
+            tr.item.current_stock += tr.quantity
+            tr.item.save()
 
         current_purchase_invoice.save()
         return redirect("view_purchase_invoices")
@@ -488,3 +491,6 @@ def edit_vendor_credit_note(request,id):
         "month":month,
         "year":year
     })
+
+def testme(request):
+    import finance.testing_bysaad

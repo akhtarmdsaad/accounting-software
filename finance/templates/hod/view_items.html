@@ -30,6 +30,7 @@
                       <tr>
                         <th>ID</th>
                         <th>Name</th>
+                        <th>Item Group</th>
                         <th>Tax Rate</th>
                         <th>Current Stock</th>
                         <th>Created At</th>
@@ -41,6 +42,7 @@
                       <tr>
                         <td>{{i.id}}</td>
                         <td><a href="{% url 'view_items_id' i.id %}">{{i.name}}</a></td>
+                        <td>{{i.item_group.name}}</td>
                         <td>{{i.state_tax_rate}}%</td>
                         <td>{{i.current_stock}} 
                             {% if i.current_stock == 1  %}

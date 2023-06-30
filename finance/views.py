@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404, redirect, render,HttpResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from finance.forms import TransactionForm
 from finance.models import Invoice, ItemGroup, Item,InventoryAdjustments,Customer, Payment, SaleReturn, Transaction
 import datetime,decimal
@@ -384,8 +385,16 @@ def view_invoices(request):
     if not request.user.has_perm('finance.view_invoice'):
         return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
     invoices = Invoice.objects.filter(valid=True)
+    
+
+
+    paginator = Paginator(invoices, 100)  # Show 10 invoices per page
+    page_number = request.GET.get('page')
+    invoices_paged = paginator.get_page(page_number)
+
+    
     return render(request,"hod/view_invoice.html",{
-        "invoices":invoices
+        "invoices":invoices_paged
     })
 
 
@@ -469,6 +478,12 @@ def edit_invoice(request,id):
     current_invoice = get_object_or_404(Invoice,id=id)
     transactions = current_invoice.transaction_set.all()
     if request.method == "POST":
+        if current_invoice.valid:
+            current_invoice.customer.current_balance -= current_invoice.total_amount
+            current_invoice.customer.save()
+            for tr in current_invoice.transaction_set.all():
+                tr.item.current_stock += tr.quantity
+                tr.item.save()
         current_invoice.invoice_no = request.POST.get('invoice_no')
         current_invoice.date = request.POST.get('date')
         customer_id = request.POST.get('customer_id')
@@ -477,6 +492,12 @@ def edit_invoice(request,id):
         current_invoice.valid = True
         current_invoice.updated_at = datetime.datetime.now()
         current_invoice.changed_by_user = request.user
+
+        customer.current_balance += current_invoice.total_amount
+        customer.save()
+        for tr in current_invoice.transaction_set.all():
+            tr.item.current_stock -= tr.quantity
+            tr.item.save()
 
         current_invoice.save()
         return redirect("view_invoices")
@@ -773,3 +794,21 @@ def edit_salereturn(request,id):
         "month":month,
         "year":year
     })
+
+
+from django.http import JsonResponse
+
+def get_available_quantity(request):
+    item_id = request.GET.get('item_id')
+
+    # Perform the necessary logic to retrieve the available quantity based on the item_id
+
+    # Assume available_quantity is retrieved from the server
+    available_quantity = 10
+    tax_percent = 6
+
+    # Return the available quantity as a JSON response
+    return JsonResponse({
+        'available_quantity': available_quantity,
+        'tax_percent': tax_percent
+        })

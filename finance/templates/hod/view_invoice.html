@@ -21,10 +21,49 @@
           </div>
         </div>
       </div>
+      <div class="row pagination my-2">
+          {% if invoices.number == 1 %}
+            <a class="btn btn-outline-secondary disabled col-sm-2" href="?page=1">Go to First Page</a>
+          {% else %}
+            <a class="btn btn-outline-secondary col-sm-2" href="?page=1">Go to First Page</a>
+          {% endif %}
+          {% if invoices.has_previous %}
+            <a class="btn btn-outline-secondary mx-4" href="?page={{ invoices.previous_page_number }}">Previous 100</a>
+          {% else %}
+            <a class="btn btn-outline-secondary mx-4 disabled" href="#">Previous 100</a>
+          {% endif %}
+          
+          {% comment %} <div class="col-sm-2"></div> {% endcomment %}
+          
+          <span  class="current-page btn-info btn disabled ">{{ invoices.number }}</span>
+          
+          {% comment %} <div class="col-sm-2"></div> {% endcomment %}
+          {% if invoices.has_next %}
+              <a class="btn btn-outline-secondary mx-4" href="?page={{ invoices.next_page_number }}">Next 100</a>
+            {% else %}
+              <a class="btn btn-outline-secondary disabled mx-4" href="">Next 100</a>
+          {% endif %}
+          
+          {% if invoices.number == invoices.paginator.num_pages %}
+          <a class="btn btn-outline-secondary disabled col-sm-2" href="?page={{ invoices.paginator.num_pages }}">Go to Last Page</a>
+        {% else %}
+        <a class="btn btn-outline-secondary col-sm-2" href="?page={{ invoices.paginator.num_pages }}">Go to Last Page</a>
+          {% endif %}
+          <div class="col-sm-1"></div>
+          <form action="" method="get" class="mx-5 ">
+            
+              <input type="text"
+              class="form-control" style="display:inline;" name="" id="" placeholder="Search Invoice Number">
+              {% comment %} <i class="fa fa-search" style="display:inline;" aria-hidden="true"></i> {% endcomment %}
+          </form>
+  
+      </div>
+      
       <div class="row">
         <div class="col-sm-12">
           <div class="card card-table">
             <div class="card-body">
+              
               <div class="table-responsive">
                 <table id="table_id" class="table table-hover table-center mb-0">
                     <thead>
@@ -66,6 +105,45 @@
           </div>
         </div>
       </div>
+      <div class="row my-2">
+        {% if invoices.number == 1 %}
+          <a class="btn btn-outline-secondary disabled col-sm-2" href="?page=1">Go to First Page</a>
+        {% else %}
+          <a class="btn btn-outline-secondary col-sm-2" href="?page=1">Go to First Page</a>
+        {% endif %}
+        
+        {% if invoices.has_previous %}
+          <a class="btn btn-outline-secondary mx-4" href="?page={{ invoices.previous_page_number }}">Previous 100</a>
+        {% else %}
+          <a class="btn btn-outline-secondary mx-4 disabled" href="#">Previous 100</a>
+        {% endif %}
+        
+        {% comment %} <div class="col-sm-1"></div> {% endcomment %}
+        
+        <span  class="current-page btn-info btn disabled ">{{ invoices.number }}</span>
+        
+        {% comment %} <div class="col-sm-1"></div> {% endcomment %}
+        {% if invoices.has_next %}
+            <a class="btn btn-outline-secondary mx-4" href="?page={{ invoices.next_page_number }}">Next 100</a>
+          {% else %}
+            <a class="btn btn-outline-secondary disabled mx-4" href="">Next 100</a>
+        {% endif %}
+        
+        {% if invoices.number == invoices.paginator.num_pages %}
+        <a class="btn btn-outline-secondary disabled col-sm-2" href="?page={{ invoices.paginator.num_pages }}">Go to Last Page</a>
+      {% else %}
+      <a class="btn btn-outline-secondary col-sm-2" href="?page={{ invoices.paginator.num_pages }}">Go to Last Page</a>
+        {% endif %}
+      <div class="col-sm-1"></div>
+        <form action="" method="get" class="mx-5 ">
+          
+            <input type="text"
+            class="form-control" style="display:inline;" name="" id="" placeholder="Search Invoice Number">
+            {% comment %} <i class="fa fa-search" style="display:inline;" aria-hidden="true"></i> {% endcomment %}
+        </form>
+
+
+    </div>
     </div>
 
 
@@ -95,4 +173,12 @@
 
 
 {% endfor %}
-    {% endblock content %}
+
+{% block script  %} 
+
+
+
+{% endblock script  %}
+
+
+{% endblock content %}

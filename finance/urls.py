@@ -65,7 +65,6 @@ urlpatterns = [
     #purchase invoices
     path('view_purchase_invoices/',vendor_views.view_purchase_invoices,name="view_purchase_invoices"),
     path('add_purchase_invoices/',vendor_views.add_purchase_invoice,name="add_purchase_invoices"),
-    path('save_invoice_details/',vendor_views.save_invoice_detail,name="save_invoice_details"),
     # path('view_purchase_invoices/<int:id>/',vendor_views.view_purchase_invoices_id,name="view_purchase_invoices_id"),
     path('edit_purchase_invoices/<int:id>/',vendor_views.edit_purchase_invoice,name="edit_purchase_invoice"),
     path('delete_purchase_invoice/<int:id>/',vendor_views.delete_purchase_invoice,name="delete_purchase_invoice"),
@@ -85,4 +84,7 @@ urlpatterns = [
     path('edit_vendor_credit_notes/<int:id>/',vendor_views.edit_vendor_credit_note,name="edit_vendor_credit_note"),
     path('delete_vendor_credit_note/<int:id>/',vendor_views.delete_vendor_credit_note,name="delete_vendor_credit_note"),
 
+    path("test/",vendor_views.testme,name="testme"),
+
+    path('get_available_quantity/', views.get_available_quantity, name='available_quantity')
 ]
