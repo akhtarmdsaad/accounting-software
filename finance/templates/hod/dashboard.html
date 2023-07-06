@@ -1,5 +1,5 @@
 {% extends 'base.html' %} 
-
+{% load humanize %}
 {% block head  %}
 
 <style>
@@ -39,11 +39,11 @@ a:hover {
               class="db-widgets d-flex justify-content-between align-items-center"
             >
               <div class="db-icon">
-                <i class="fas fa-user-graduate"></i>
+                <i class="fas fa-user-alt"></i>
               </div>
               <div class="db-info">
-                <h3>50055</h3>
-                <h6>Students</h6>
+                <h3>{{no_of_customers}}</h3>
+                <h6>Customers</h6>
               </div>
             </div>
           </div>
@@ -56,11 +56,12 @@ a:hover {
               class="db-widgets d-flex justify-content-between align-items-center"
             >
               <div class="db-icon">
-                <i class="fas fa-crown"></i>
+                <i class="fas fa-money-bill    "></i>
               </div>
               <div class="db-info">
-                <h3>50+</h3>
-                <h6>Awards</h6>
+                
+                <h3>{{total_recievables|intcomma}}</h3>
+                <h6>Rs Recievable</h6>
               </div>
             </div>
           </div>
@@ -73,11 +74,11 @@ a:hover {
               class="db-widgets d-flex justify-content-between align-items-center"
             >
               <div class="db-icon">
-                <i class="fas fa-building"></i>
+                <i class="fas fa-file-invoice"></i>
               </div>
               <div class="db-info">
-                <h3>30+</h3>
-                <h6>Department</h6>
+                <h3>{{no_of_invoices}}</h3>
+                <h6>Invoices</h6>
               </div>
             </div>
           </div>
@@ -93,8 +94,8 @@ a:hover {
                 <i class="fas fa-file-invoice-dollar"></i>
               </div>
               <div class="db-info">
-                <h3>$505</h3>
-                <h6>Revenue</h6>
+                <h3>{{total_payables|intcomma}}</h3>
+                <h6>Payables</h6>
               </div>
             </div>
           </div>

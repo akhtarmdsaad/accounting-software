@@ -21,6 +21,7 @@
           </div>
         </div>
       </div>
+      {% if pagination_applied %}
       <div class="row pagination my-2">
           {% if invoices.number == 1 %}
             <a class="btn btn-outline-secondary disabled col-sm-2" href="?page=1">Go to First Page</a>
@@ -46,18 +47,19 @@
           
           {% if invoices.number == invoices.paginator.num_pages %}
           <a class="btn btn-outline-secondary disabled col-sm-2" href="?page={{ invoices.paginator.num_pages }}">Go to Last Page</a>
-        {% else %}
-        <a class="btn btn-outline-secondary col-sm-2" href="?page={{ invoices.paginator.num_pages }}">Go to Last Page</a>
+          {% else %}
+          <a class="btn btn-outline-secondary col-sm-2" href="?page={{ invoices.paginator.num_pages }}">Go to Last Page</a>
           {% endif %}
-          <div class="col-sm-1"></div>
           <form action="" method="get" class="mx-5 ">
             
-              <input type="text"
-              class="form-control" style="display:inline;" name="" id="" placeholder="Search Invoice Number">
-              {% comment %} <i class="fa fa-search" style="display:inline;" aria-hidden="true"></i> {% endcomment %}
+            <input type="text"
+            class="form-control" style="display:inline;" name="" id="" placeholder="Search Invoice Number">
+            {% comment %} <i class="fa fa-search" style="display:inline;" aria-hidden="true"></i> {% endcomment %}
           </form>
+          {% endif %}
   
       </div>
+      <div class="col-sm-1"></div>
       
       <div class="row">
         <div class="col-sm-12">
@@ -105,6 +107,7 @@
           </div>
         </div>
       </div>
+      {% if pagination_applied %}
       <div class="row my-2">
         {% if invoices.number == 1 %}
           <a class="btn btn-outline-secondary disabled col-sm-2" href="?page=1">Go to First Page</a>
@@ -143,7 +146,8 @@
         </form>
 
 
-    </div>
+      </div>
+      {% endif %}
     </div>
 
 

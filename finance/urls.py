@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path,include
 
-from finance import vendor_views
+from finance import report_views, vendor_views
 
 from . import views
 
@@ -81,10 +81,21 @@ urlpatterns = [
 
     # My Credit Notes
     path('view_vendor_credit_notes/',vendor_views.view_vendor_credit_notes,name="view_vendor_credit_notes"),
+    path('view_vendor_credit_notes/',vendor_views.view_vendor_credit_notes,name="view_vendor_credit_notes"),
     path('add_vendor_credit_notes/',vendor_views.add_vendor_credit_note,name="add_vendor_credit_notes"),
     path('edit_vendor_credit_notes/<int:id>/',vendor_views.edit_vendor_credit_note,name="edit_vendor_credit_note"),
     path('delete_vendor_credit_note/<int:id>/',vendor_views.delete_vendor_credit_note,name="delete_vendor_credit_note"),
     path('redeem_vendor_credit_note/<int:id>/',vendor_views.redeem_vendor_credit_note,name="my_credit_redeem"),
+
+    # Reports
+    path('report_sales_customer/',report_views.sales_by_customer,name="report_sales_customer"),
+    path('report_sales_item/',report_views.sales_by_item,name="report_sales_item"),
+    path('report_payment_customer/',report_views.payments_by_customers,name="report_payment_customer"),
+    # path('report_payment_item/',report_views.sales_by_item,name="report_payment_item"),
+    
+    path('report_inventory_item/',report_views.inventory_by_items,name="report_inventory_item"),
+
+
 
     path("test/",vendor_views.testme,name="testme"),
 

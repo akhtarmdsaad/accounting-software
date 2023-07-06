@@ -4,10 +4,10 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from finance.forms import TransactionForm
-from finance.models import Invoice, ItemGroup, Item,InventoryAdjustments,Customer, Payment, SaleReturn, Transaction
+from finance.models import Invoice, ItemGroup, Item,InventoryAdjustments,Customer, Payment, SaleReturn, Transaction, Vendor
 import datetime,decimal
 from company_settings import get_invoice
-
+from django.db.models import Sum
 
 # Create your views here.
 def test_form(request):
@@ -22,6 +22,10 @@ def dashboard(request):
     items = Item.objects.all()
     total_items = items.count()
     low_stock_items = 0
+    no_of_customers = Customer.objects.count()
+    total_recievables = Customer.objects.aggregate(Sum('current_balance'))['current_balance__sum']
+    total_payables = Vendor.objects.aggregate(Sum('current_balance'))['current_balance__sum']
+    no_of_invoices = Invoice.objects.count()
     for i in items:
         if i.current_stock <= i.min_stock:
             low_stock_items += 1
@@ -29,7 +33,11 @@ def dashboard(request):
     context = {
         "total_item_groups":total_item_groups,
         "total_items":total_items,
-        "low_stock_items":low_stock_items
+        "low_stock_items":low_stock_items,
+        "no_of_customers":no_of_customers,
+        "total_recievables":total_recievables,
+        "total_payables":total_payables,
+        "no_of_invoices":no_of_invoices,
     }
     return render(request,"hod/dashboard.html",context)
 
@@ -105,6 +113,16 @@ def view_items(request):
     if not request.user.has_perm('finance.view_item'):
         return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
     items = Item.objects.all()
+    context = {
+        "items":items
+    }
+    return render(request,"hod/view_items.html", context)
+
+@login_required(login_url="account_login")
+def view_low_stock_items(request):
+    if not request.user.has_perm('finance.view_item'):
+        return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
+    items = Item.objects.filter()
     context = {
         "items":items
     }
@@ -385,17 +403,20 @@ def delete_customer(request,id):
 def view_invoices(request):
     if not request.user.has_perm('finance.view_invoice'):
         return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
-    invoices = Invoice.objects.filter(valid=True)
-    
-
-
-    paginator = Paginator(invoices, 100)  # Show 10 invoices per page
-    page_number = request.GET.get('page')
-    invoices_paged = paginator.get_page(page_number)
+    invoices = Invoice.objects.filter(valid=True).order_by('-id')
+    pagination_applied = True
+    if(invoices.count() < 1000):
+        invoices_paged = invoices
+        pagination_applied = False
+    else:
+        paginator = Paginator(invoices, 100)  # Show 100 invoices per page
+        page_number = request.GET.get('page')
+        invoices_paged = paginator.get_page(page_number)
 
     
     return render(request,"hod/view_invoice.html",{
-        "invoices":invoices_paged
+        "invoices":invoices_paged,
+        "pagination_applied":pagination_applied
     })
 
 
