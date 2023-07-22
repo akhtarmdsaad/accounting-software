@@ -63,6 +63,27 @@
               </div>
               <div class="col-12 col-sm-6">
                 <div class="form-group">
+                  <label>Rate Change System</label>
+                  <select class="form-control" name="rate_change_system">
+                    <option value="1">Fixed</option>
+                    <option value="2">Last Entry</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="col-12 col-sm-6">
+                <div class="form-group">
+                  <label>Current Rate</label>
+                  <input
+                    required
+                    type="number" step="0.01"
+                    class="form-control"
+                    name="rate"
+                  />
+                </div>
+              </div>
+              <div class="col-12 col-sm-6">
+                <div class="form-group">
                   <label>HSN Code</label>
                   <input
                     required
@@ -74,12 +95,22 @@
               </div>
               <div class="col-12 col-sm-6">
                 <div class="form-group">
-                  <label>Unit</label>
+                  <label>Unit(For Single)</label>
                   <input
                     required
                     type="text"
                     class="form-control"
                     name="unit"
+                  />
+                </div>
+              </div>
+              <div class="col-12 col-sm-6">
+                <div class="form-group">
+                  <label>Unit(For Plural)</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="unit_plural"
                   />
                 </div>
               </div>

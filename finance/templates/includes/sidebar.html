@@ -25,16 +25,17 @@
           </ul>
         </li>
         <li class="menu-title">
-          <span>Customer</span>
+          <span>Vouchers</span>
         </li>
-        <li class="{% active_link 'view_customers' 'active' %}" >
-          <a href="{% url 'view_customers' %}"
-            ><i class="fas fa-user-alt"></i> <span>Customers</span></a
-          >
-        </li>
+        
         <li class="{% active_link 'view_invoices' 'active' %}" >
           <a href="{% url 'view_invoices' %}"
-            ><i class="fas fa-file-invoice"></i> <span>Invoices</span></a
+            ><i class="fas fa-file-invoice"></i> <span>Sale Invoice</span></a
+          >
+        </li>
+        <li class="{% active_link 'view_purchase_invoices' 'active' %}" >
+          <a href="{% url 'view_purchase_invoices' %}"
+            ><i class="fas fa-file-invoice-dollar"></i> <span>Purchase Invoice</span></a
           >
         </li>
         <li class="{% active_link 'view_payments' 'active' %}" >
@@ -43,32 +44,33 @@
             <span>Payments Received</span></a
           >
         </li>
-        <li class="{% active_link 'view_salereturns' 'active' %}" >
-          <a href="{% url 'view_salereturns' %}"><i class="fas fa-hand-point-left"></i> <span> Sale Returns</span></a>
-
-        </li>
-        <li class="menu-title">
-          <span>Vendors</span>
-        </li>
-        <li class="{% active_link 'view_vendors' 'active' %}" >
-          <a href="{% url 'view_vendors' %}"
-            ><i class="fas fa-store-alt"></i> <span>Vendors</span></a
-          >
-        </li>
-        <li class="{% active_link 'view_purchase_invoices' 'active' %}" >
-          <a href="{% url 'view_purchase_invoices' %}"
-            ><i class="fas fa-file-invoice-dollar"></i> <span>Bills</span></a
-          >
-        </li>
         <li class="{% active_link 'view_reciepts' 'active' %}" >
           <a href="{% url 'view_reciepts' %}"
             ><i class="fas fa-money-bill-wave"></i>
             <span>Payments Made</span></a
           >
         </li>
+        
+        <li class="{% active_link 'view_salereturns' 'active' %}" >
+          <a href="{% url 'view_salereturns' %}"><i class="fas fa-hand-point-left"></i> <span> Sale Returns</span></a>
+        </li>
         <li class="{% active_link 'view_vendor_credit_notes' 'active' %}" >
           <a href="{% url 'view_vendor_credit_notes' %}"
-            ><i class="fas fa-receipt"></i> <span>Vendor Credit Notes</span></a
+            ><i class="fas fa-receipt"></i> <span>Purchase Returns</span></a
+          >
+        </li>
+        
+        <li class="menu-title">
+          <span>Party</span>
+        </li>
+        <li class="{% active_link 'view_vendors' 'active' %}" >
+          <a href="{% url 'view_vendors' %}"
+            ><i class="fas fa-store-alt"></i> <span>Vendors / Purchaser / Supplier</span></a
+          >
+        </li>
+        <li class="{% active_link 'view_customers' 'active' %}" >
+          <a href="{% url 'view_customers' %}"
+            ><i class="fas fa-user-alt"></i> <span>Customers / Buyer</span></a
           >
         </li>
         <li class="{% active_link 'account_logout' 'active' %}" >

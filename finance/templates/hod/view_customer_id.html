@@ -41,8 +41,18 @@
                       >
                     </li>
                     <li>
-                      <span class="title-span">gstin : </span>
-                      <span class="info-span">{{elem.gstin|upper}}</span>
+                      <span class="title-span">GSTIN : </span>
+                      <span class="info-span">{{elem.gstin}}</span>
+                    </li>
+                    <li>
+                      <span class="title-span">PAN Card : </span>
+                      <span class="info-span">{{elem.pancard}}</span>
+                    </li>
+                    <li>
+                      <span class="title-span">Save Last Rate : </span>
+                      <span class="info-span">
+                        {% if elem.save_last_rate == 1 %} Yes {% else %} No {% endif %}
+                      </span>
                     </li>
                     <b>
                         <li>

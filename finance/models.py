@@ -2,6 +2,48 @@ import decimal
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from accounts.models import CustomUser
+
+#state name entry
+state_names = """
+Andaman & Nicobar Islands
+Andhra Pradesh
+Arunachal Pradesh
+Assam
+Bihar
+Chandigarh
+Chhattisgarh
+Dadra & Nagar Haveli and Daman & Diu
+Delhi
+Goa
+Gujarat
+Haryana
+Himachal Pradesh
+Jammu & Kashmir
+Jharkhand
+Karnataka
+Kerala
+Ladakh
+Lakshadweep
+Madhya Pradesh
+Maharashtra
+Manipur
+Meghalaya
+Mizoram
+Nagaland
+Odisha
+Puducherry
+Punjab
+Rajasthan
+Sikkim
+Tamil Nadu
+Telangana
+Tripura
+Uttarakhand
+Uttar Pradesh
+West Bengal
+""".strip("\n ")
+state_names = state_names.split("\n")
+
 # Create your models here.
 
 TAX_PREFERENCE = (
@@ -28,6 +70,11 @@ class ItemGroup(models.Model):
     def __str__(self) -> str:
         return self.name + " - " + self.brand
 
+RATE_CHANGE_CHOICES = (
+    (1,"Fixed"),
+    (2,"Last Rate"),
+)
+
 class Item(models.Model):
     name = models.CharField(_("name"), max_length=50)
     image = models.ImageField(upload_to="media/item_images",null=True)
@@ -37,6 +84,8 @@ class Item(models.Model):
     unit_plural = models.CharField(max_length=10)
     state_tax_rate = models.IntegerField()
     current_stock = models.DecimalField(max_digits=10, decimal_places=2)
+    rate_change_system = models.IntegerField(choices=RATE_CHANGE_CHOICES,default=2)
+    rate = models.DecimalField(max_digits=10, decimal_places=2,default=0)
     min_stock = models.DecimalField(max_digits=10, decimal_places=2,default=decimal.Decimal(0))
     created_at = models.DateTimeField(auto_now_add=True,null = True)
     updated_at = models.DateTimeField(auto_now_add=True,null = True)
@@ -65,16 +114,28 @@ class InventoryAdjustments(models.Model):
     def __str__(self):
         return str(self.item.name) + " - " + str(self.reason_title)
 
+YES_NO = (
+    (1,"Yes"),
+    (2, "No")
+)
+STATES = []
+for i,j in enumerate(state_names,start=1):
+    STATES.append((i,j))
+STATES = tuple(STATES)
+
 class Customer(models.Model):
     name = models.CharField(_("name"), max_length=50)
     email = models.EmailField(_("email"), max_length=254,null=True)
-    phone = models.CharField(_("phone"), max_length=50)
+    phone = models.CharField(_("phone"), max_length=50, null=True)
     address = models.TextField()
+    state = models.IntegerField(choices=STATES,default=1)
     gstin = models.CharField(_("gstin"), max_length=15,null=True)
+    pancard = models.CharField(_("pancard"), max_length=15,null=True)
+    save_last_rate = models.IntegerField(choices=YES_NO,default=2)
     current_balance = models.DecimalField(max_digits=10, decimal_places=2,default=decimal.Decimal(0))
     created_at = models.DateTimeField(auto_now_add=True,null = True)
     updated_at = models.DateTimeField(auto_now_add=True,null = True)
-    changed_by_user = models.ForeignKey(CustomUser,null=True,on_delete=models.PROTECT)
+    changed_by_user = models.ForeignKey(CustomUser,on_delete=models.PROTECT,null=True)
     
 
     def __str__(self):
@@ -242,3 +303,13 @@ class VendorCreditNote(models.Model):
     def __str__(self):
         return str(self.vendor.company) + " - " + str(self.amount)
     
+class LastItemRate(models.Model):
+    party = models.ForeignKey(Customer,on_delete=models.CASCADE)
+    item = models.ForeignKey(Item,on_delete=models.CASCADE)
+    rate = models.DecimalField(max_digits=10, decimal_places=2)
+    created_at = models.DateTimeField(auto_now_add=True,null = True)
+    updated_at = models.DateTimeField(auto_now_add=True,null = True)
+    changed_by_user = models.ForeignKey(CustomUser,null=True,on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.party.name} for {self.item.name} - {self.rate}"

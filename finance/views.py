@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from finance.forms import TransactionForm
-from finance.models import Invoice, ItemGroup, Item,InventoryAdjustments,Customer, Payment, SaleReturn, Transaction, Vendor
+from finance.models import Invoice, ItemGroup, Item,InventoryAdjustments,Customer, LastItemRate, Payment, SaleReturn, Transaction, Vendor
 import datetime,decimal
 from company_settings import get_invoice
 from django.db.models import Sum
@@ -133,8 +133,10 @@ def view_items_id(request,id):
     if not request.user.has_perm('finance.view_item'):
         return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
     item = get_object_or_404(Item,id=id)
+    rate_change_system = "Fixed" if item.rate_change_system==1 else "Last Entry"
     context = {
-        "item":item
+        "item":item,
+        "rate_change_system":rate_change_system
     }
     return render(request,"hod/view_item_id.html",context)
 
@@ -151,14 +153,20 @@ def add_item(request):
         hsn = request.POST.get('hsn')
         unit = request.POST.get('unit')
         tax = request.POST.get('tax')
+        rate_change_system = request.POST.get('rate_change_system')
+        rate = request.POST.get('rate')
         cur_stock = request.POST.get('cur_stock')
         min_stock = request.POST.get('min_stock')
-        unit_plural = unit+"s"
+        unit_plural = request.POST.get('unit_plural')
+        if not unit_plural:
+            unit_plural = unit+"s"
         elem = Item(
             name=name,
             image=image,
             item_group=item_group,
             hsn_code=hsn,
+            rate_change_system=rate_change_system,
+            rate=rate,
             unit=unit,
             unit_plural=unit_plural,
             state_tax_rate=tax,
@@ -187,6 +195,8 @@ def edit_item(request,id):
             elem.image = image
         item_group_id = request.POST.get('item_group')
         elem.item_group = get_object_or_404(ItemGroup,pk=item_group_id)
+        elem.rate_change_system = request.POST.get('rate_change_system')
+        elem.rate = request.POST.get('rate')
         elem.hsn_code = request.POST.get('hsn')
         elem.unit = request.POST.get('unit')
         elem.state_tax_rate = request.POST.get('tax')
@@ -351,7 +361,9 @@ def add_customer(request):
         email = request.POST.get('email')
         phone = request.POST.get('phone')
         address = request.POST.get('address')
-        gstin = request.POST.get('gstin')
+        gstin = request.POST.get('gstin').upper()
+        pancard = request.POST.get('pan_card').upper()
+        save_last_rate = request.POST.get('save_last_rate')
         current_balance = request.POST.get('balance')
 
         customer = Customer(
@@ -360,7 +372,9 @@ def add_customer(request):
             phone=phone,
             address=address,
             gstin=gstin,
-            current_balance = current_balance
+            pancard=pancard,
+            current_balance = current_balance,
+            save_last_rate=save_last_rate
         )
         
         customer.save()
@@ -377,7 +391,9 @@ def edit_customer(request,id):
         elem.email = request.POST.get('email')
         elem.phone = request.POST.get('phone')
         elem.address = request.POST.get('address')
-        elem.gstin = request.POST.get('gstin')
+        elem.gstin = request.POST.get('gstin').upper()
+        elem.pancard = request.POST.get('pan_card').upper()
+        elem.save_last_rate = request.POST.get('save_last_rate')
         elem.current_balance = request.POST.get('balance')
         elem.updated_at = datetime.datetime.now()
         elem.changed_by_user = request.user
@@ -453,8 +469,25 @@ def add_invoice(request):
         current_invoice.date = request.POST.get('date')
         customer_id = request.POST.get('customer_id')
         customer = get_object_or_404(Customer,id=customer_id)
-        current_invoice.customer = customer
         
+        # add customer is cash add customer
+        if customer.name.capitalize().strip() == "Cash":
+            new_name = request.POST.get('customer_name')
+            new_addr = request.POST.get('address')
+            if new_name and new_addr:
+                customer = Customer(
+                    name=new_name,
+                    address=new_addr
+                )
+                customer.save()
+                print("Customer Saved Successfully")
+            else:
+                current_invoice.customer = customer
+                current_invoice.save()
+                return redirect("add_invoices")
+                
+        
+        current_invoice.customer = customer
         customer.current_balance += current_invoice.total_amount
         customer.save()
         for tr in current_invoice.transaction_set.all():
@@ -462,6 +495,9 @@ def add_invoice(request):
             tr.item.save()
         
         current_invoice.valid = True
+
+        
+        
         current_invoice.save()
         return redirect("view_invoices")
     day = str(current_invoice.date.day).rjust(2,"0")
@@ -476,6 +512,18 @@ def add_invoice(request):
         "year":year,
         "transactions":transactions
     })
+
+def reset_invoice(request):
+    invoices = Invoice.objects.filter(valid=False)
+    if invoices:
+        invoice = invoices[0]
+        for i in invoice.transaction_set.all():
+            i.delete()
+        invoice.total_amount = 0
+        invoice.total_taxable_amount = 0
+        invoice.total_tax_amount = 0
+        invoice.save()
+    return redirect("add_invoices")
 
 @login_required(login_url="account_login")
 def delete_invoice(request,id):
@@ -549,6 +597,10 @@ def save_transaction(request):
         item_id = request.POST.get('item')
         item = get_object_or_404(Item,id=int(item_id))
 
+        customer_id = request.POST.get("customer_id_in_transaction")
+        print(customer_id)
+        customer = Customer.objects.get(id=customer_id)
+
         qnt = decimal.Decimal(request.POST.get('qnt'))
         rate = decimal.Decimal(request.POST.get('rate'))
         taxable_value = decimal.Decimal(request.POST.get('taxable_value'))
@@ -559,6 +611,17 @@ def save_transaction(request):
         total_amount = decimal.Decimal(request.POST.get('total_amount'))
 
         
+        # "if party has to save rate, then save it. dont change the item rate"
+        if customer.save_last_rate == 1 :
+            elem = LastItemRate(
+                party=customer,
+                item=item,
+                rate = rate 
+            )
+            elem.save()
+        # "else change the item rate"
+        elif item.rate_change_system == 2:
+            item.rate = rate
         
 
         transaction = Transaction(
@@ -624,6 +687,8 @@ def delete_transaction(request,id):
         return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
     elem = get_object_or_404(Transaction,id=id)
     elem.invoice.total_amount -= elem.amount
+    elem.invoice.total_taxable_amount -= elem.taxable_value
+    elem.invoice.total_taxable_amount -= (elem.state_tax + elem.central_tax)
     elem.invoice.save()
     elem.delete()
 
@@ -829,19 +894,80 @@ def get_available_quantity(request):
     item_id = request.GET.get('item_id')
 
     # Perform the necessary logic to retrieve the available quantity based on the item_id
+    item = Item.objects.get(pk=item_id)
+    
 
     # Assume available_quantity is retrieved from the server
-    available_quantity = 10
-    tax_percent = 6
+    available_quantity = item.current_stock
+    tax_percent = item.state_tax_rate
+
+    no_rate = False
+    # get the item rate
+    "If party with item rate present"
+    try:
+        party = Customer.objects.get(id=request.GET.get('customer_id'))
+        item_rate = LastItemRate.objects.get(party=party, item=item)
+        item_rate = item_rate.rate
+    except Customer.DoesNotExist:
+        print("error")
+        no_rate = True
+    except LastItemRate.DoesNotExist:
+        no_rate = True
+    if no_rate:
+        item_rate = item.rate
 
     # Return the available quantity as a JSON response
     return JsonResponse({
         'available_quantity': available_quantity,
-        'tax_percent': tax_percent
+        'tax_percent': tax_percent,
+        'item_id':item_id,
+        'item_rate':item_rate
         })
+
+def get_ifcash(request):
+    id = request.GET.get('customerId')
+    iscash = (id == "68")
+    return JsonResponse({
+        "customer_is_cash": iscash
+        })
+    
 
 def redeem_salereturn(request,id):
     elem = SaleReturn.objects.get(id=id)
     elem.status = 2
     elem.save()
     return  redirect("view_salereturns")
+
+def get_transaction_details(request):
+    transaction_id = request.GET.get('transaction_id')
+    transaction = Transaction.objects.get(id=transaction_id)
+
+    # Perform the necessary logic to retrieve the available quantity based on the item_id
+    item = transaction.item
+    
+
+    # Assume available_quantity is retrieved from the server
+    available_quantity = item.current_stock
+    tax_percent = item.state_tax_rate
+    
+    qnt=transaction.quantity
+    rate = transaction.rate
+    taxable_value = transaction.taxable_value
+    discount_percent = transaction.discount_percent
+    discount_amount = transaction.discount_amount
+    amount = transaction.amount
+
+    
+
+    # Return the available quantity as a JSON response
+    return JsonResponse({
+        'available_quantity': available_quantity,
+        'tax_percent': tax_percent,
+        'qnt':qnt,
+        'rate':rate,
+        'item_id':item.id,
+        'taxable_value':taxable_value,
+        'discount_percent':discount_percent,
+        'discount_amount':discount_amount,
+        'amount':amount,
+        })

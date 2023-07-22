@@ -63,7 +63,8 @@
               <div class="col-12 col-sm-6">
                 <div class="form-group">
                   <label>Customer</label>
-                  <select class="" id="customers_select" name="customer_id">
+                  <select id="customers_select" name="customer_id">
+                    <option>Select Customer</option>
                     {% for i in customers %}
                     <option value="{{i.id}}" {% if i.id == invoice.customer.id %} selected{% endif %} >
                       {{i.name}}
@@ -73,11 +74,14 @@
                   </select>
                 </div>
               </div>
+              <div class="random_customer">
+
+              </div>
 
               <table class="table mt-4 table-striped table-responsive">
                 <thead>
                   <tr>
-                    <th>Item</th>
+                    <th width="300">Item</th>
                     <th width="99">Quantity</th>
                     <th width="150">Rate</th>
                     <th>Taxable Value</th>
@@ -92,13 +96,7 @@
 					{% for transaction in transactions %}
                   <tr>
                     <td>
-                      <select class="form-control" name="item" disabled>
-                        {% for i in items %}
-                          <option value="{{i.id}}" tax="{{i.state_tax_rate}}" 
-                            {% if transaction.item.id == i.id %} selected {% endif %}
-                          > {{i.name}} {{i.address}} </option>
-                        {% endfor %}
-                      </select>
+                      <textbox rows="10" columns="10" >{{transaction.item.name}}</textbox>
                     </td>
                     <td>
                       <input
@@ -154,12 +152,18 @@
                     </td>
                     <td class="text-right">
                       <div class="actions">
+                        
+                        <button type="button" class="btn btn-sm bg-info-light mr-2" info="{{transaction.id}}" id="edit_transaction_button" data-toggle="modal" data-target="#editTransaction">
+                          <i class="fas fa-pen"></i>
+                      </button>
+
                         <a
                           href="{% url 'delete_transaction' transaction.id %}"
                           class="btn btn-sm bg-danger-light mr-2"
                         >
                           <i class="fas fa-trash"></i>
                         </a>
+                        
                         
                       </div>
                     </td>
@@ -171,7 +175,7 @@
                   <tr>
                     <td colspan=2>
                       <button
-                      type="button" class="btn btn-primary" data-toggle="modal" data-target="#addItem"
+                      type="button" class="btn btn-primary" id="add_item" data-toggle="modal" data-target="#addItem"
                       >
                         <i class="fa fa-plus"></i>&nbsp; Add Item
                       </button>
@@ -205,6 +209,11 @@
                     Preview Invoice
                   </button>
                 </div>
+                <div class="col-sm-2">
+                  <a href="{% url 'reset_invoice' %}" class="btn btn-danger" id="reset">
+                    Reset
+                  </a>
+                </div>
             </div>
             </form>
           </div>
@@ -215,11 +224,11 @@
 </div>
 
 
-<!-- Modal -->
+<!-- Modal For Creating transaction-->
 <div class="modal fade" id="addItem" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
-      <div class="modal-header">
+      <div class="modal-head er">
         <h5 class="modal-title" id="exampleModalLabel">Add Item</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
@@ -230,18 +239,24 @@
           {% csrf_token %}
           
           <div class="row col-12">
-            <div class="col-12 col-sm-4">
+            <div class="col-12 col-sm-3">
               <div class="form-group">  
                 <label for="item">Item</label>
-                <select class="" id="items_select" name="item" id="items_select" >
+                <select id="items_select" name="item">
+                  <option>Select Item</option>
                   {% for i in items %}
                   <option value="{{i.id}}" current_stock="{{i.current_stock}}" tax="{{i.state_tax_rate}}">
-                    {{i.name}} <br />
-                    {{i.address}}
+                    {{i.name}} 
                   </option>
                   {% endfor %}
                 </select>
               </div>
+            </div>
+            <div class="col-12 col-sm-1">
+              <label>Edit</label>
+              <a href="/finance/edit_items/1/" target="_blank" id="edit_item" class="btn btn-sm bg-success-light mr-2">
+                <i class="fas fa-pen"></i>
+              </a>
             </div>
             <div class="col-12 col-sm-2">
               <div class="form-group">
@@ -280,7 +295,7 @@
             </div>
             <div class="col-12 col-sm-6">
               <div class="form-group">
-                <label>Rate</label>
+                <label>Rate (Excluding Tax)</label>
                 <input
                   required
                   type="number" step="0.01"
@@ -309,18 +324,17 @@
                   class="form-control"
                   name="discount_percent" id="discount_percent"
                 />
-                <div class="col-12 col-sm-6">
+              </div>
                   <div class="form-group">
-                    <label>Total Rate</label>
+                    <label>Rate (Including Tax)</label>
                     <input
                       required
                       type="number" step="0.01"
                       class="form-control"
                       name="total_rate" id="total_rate"
                     />
-                  </div>
                 </div>
-              </div>
+              
             </div>
 
             <div class="col-12 col-sm-6">
@@ -332,8 +346,7 @@
                   class="form-control"
                   name="discount_amount" id="discount_amount"
                 />
-            
-            <div class="col-12 col-sm-12">
+              </div>
               <div class="form-group">
                 <label>Total Amount</label>
                 <input
@@ -343,17 +356,166 @@
                   name="total_amount" id="total_amount"
                 />
               </div>
-            </div>
             
-              </div>
+              
             </div>
             <input type="hidden" name="invoice_id" value="{{invoice.id}}">
+            <input type="hidden" name="customer_id_in_transaction" id="customer_id_in_transaction" value="2">
           </div>
         
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
         <button type="submit" class="btn btn-success">Add</button>
+      </div>
+    </div>
+  </form>
+  </div>
+</div>
+
+<!-- Modal To Edit the Transaction-->
+<div class="modal fade" id="editTransaction" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel2">Edit Transaction</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="modal-form2" method="post" action="">
+          {% csrf_token %}
+          
+          <div class="row col-12">
+            <div class="col-12 col-sm-3">
+              <div class="form-group">  
+                <label for="item">Item</label>
+                <select id="items_select2" name="item" >
+                  <option>Select Item</option>
+                  {% for i in items %}
+                  <option value="{{i.id}}" current_stock="{{i.current_stock}}" tax="{{i.state_tax_rate}}">
+                    {{i.name}}
+                  </option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="col-12 col-sm-1">
+              <label>Edit</label>
+              <a href="/finance/edit_items/1/" target="_blank" id="edit_item2" class="btn btn-sm bg-success-light mr-2">
+                <i class="fas fa-pen"></i>
+              </a>
+            </div>
+            <div class="col-12 col-sm-2">
+              <div class="form-group">
+                <label>Tax Percent</label>
+                <input
+                  required
+                  type="number" step="0.01"
+                  class="form-control"
+                  name="tax" id="tax2"
+                  disabled
+                />
+              </div>
+            </div>
+            <div class="col-12 col-sm-3">
+              <div class="form-group">
+                <label>Current Stock</label>
+                <input
+                  required
+                  type="number" step="0.01"
+                  class="form-control"
+                  id="current_stock2"
+                  disabled
+                />
+              </div>
+            </div>
+            <div class="col-12 col-sm-3">
+              <div class="form-group">
+                <label>Quantity</label>
+                <input
+                  required
+                  type="number" step="0.01"
+                  class="form-control"
+                  name="qnt" id="qnt2"
+                />
+              </div>
+            </div>
+            <div class="col-12 col-sm-6">
+              <div class="form-group">
+                <label>Rate (Excluding Tax)</label>
+                <input
+                  required
+                  type="number" step="0.01"
+                  class="form-control"
+                  name="rate" id="rate2"
+                />
+              </div>
+            </div>
+            <div class="col-12 col-sm-6">
+              <div class="form-group">
+                <label>Taxable Value</label>
+                <input
+                  required
+                  type="number" step="0.01"
+                  class="form-control"
+                  name="taxable_value" id="taxable_value2"
+                />
+              </div>
+            </div>
+            <div class="col-12 col-sm-6">
+              <div class="form-group">
+                <label>Discount (in %)</label>
+                <input
+                  required
+                  type="number" step="0.01"
+                  class="form-control"
+                  name="discount_percent" id="discount_percent2"
+                />
+              </div>
+                  <div class="form-group">
+                    <label>Rate (Including Tax)</label>
+                    <input
+                      required
+                      type="number" step="0.01"
+                      class="form-control"
+                      name="total_rate" id="total_rate2"
+                    />
+                </div>
+              
+            </div>
+
+            <div class="col-12 col-sm-6">
+              <div class="form-group">
+                <label>Discount Amount</label>
+                <input
+                  required
+                  type="number" step="0.01"
+                  class="form-control"
+                  name="discount_amount" id="discount_amount2"
+                />
+              </div>
+              <div class="form-group">
+                <label>Total Amount</label>
+                <input
+                  required
+                  type="number" step="0.01"
+                  class="form-control"
+                  name="total_amount" id="total_amount2"
+                />
+              </div>
+            </form>
+              
+            </div>
+            <input type="hidden" name="invoice_id" value="{{invoice.id}}">
+            <input type="hidden" name="customer_id_in_transaction" id="customer_id_in_transaction2" value="2">
+          </div>
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-info">Update</button>
       </div>
     </div>
   </div>
@@ -366,19 +528,65 @@
   function round(number,digits=2){
     var decimal = number * Math.pow(10,digits)
     decimal = Math.round(decimal) / 100
-    console.log(decimal)
     return(decimal)
   }
 
   invoice_no_input = document.getElementById("invoice_no")
   date_input = document.getElementById("date")
+  cust_sel = document.querySelector("#customers_select")
+  {% comment %} sessionStorage.setItem('cust_sel','Select Customer')  {% endcomment %}
+
+  function update_input_cash()
+  {
+    customer_name = document.getElementsByName("customer_name")[0]
+    address = document.getElementsByName("address")[0]
+    if(!customer_name)
+      return 0;
+    data = sessionStorage.getItem('customer_name') 
+    if(data)
+      customer_name.value = data;  
+    
+    data = sessionStorage.getItem('address') 
+    if(data)
+      address.value = data;
+
+    customer_name.addEventListener('input',(e)=>{
+      sessionStorage.setItem('customer_name',customer_name.value) 
+    });
+    
+    address.addEventListener('input',(e)=>{
+      sessionStorage.setItem('address',address.value) 
+    });
+    
+    
+  }
+
+  add_item_button = document.getElementById("add_item")
+  edit_transaction_button = document.getElementById("edit_transaction_button")
   
   data = sessionStorage.getItem('invoice_no') 
   if(data)
     invoice_no_input.value = data;
+  
+  data = sessionStorage.getItem('cust_sel') 
+  if(data)
+  {
+    cust_sel.value = data;
+    customer_id_in_transaction.value = data
+    customer_id_in_transaction2.value = data
+  }
   data = sessionStorage.getItem('date') 
   if(data)
     date_input.value = data;
+  
+
+
+  document.getElementById("reset").addEventListener("click",(e)=>{
+    sessionStorage.clear()
+    customer_id_in_transaction.value = "2"
+    customer_id_in_transaction2.value = "2"
+  })
+  
   // session storage
   invoice_no_input.addEventListener('input',(e)=>{
     sessionStorage.setItem('invoice_no',document.getElementById("invoice_no").value) 
@@ -390,17 +598,34 @@
   
   
   qnt = document.querySelector("#modal-form #qnt")
+  qnt2 = document.querySelector("#modal-form2 #qnt2")
+  
   rate = document.querySelector("#modal-form #rate")
+  rate2 = document.querySelector("#modal-form2 #rate2")
+  
   taxable_value = document.querySelector("#modal-form #taxable_value")
+  taxable_value2 = document.querySelector("#modal-form2 #taxable_value2")
+  
   discount_percent = document.querySelector("#modal-form #discount_percent")
+  discount_percent2 = document.querySelector("#modal-form2 #discount_percent2")
+  
   discount_amount = document.querySelector("#modal-form #discount_amount")
+  discount_amount2 = document.querySelector("#modal-form2 #discount_amount2")
+  
   total_rate = document.querySelector("#modal-form #total_rate")
+  total_rate2 = document.querySelector("#modal-form2 #total_rate2")
+  
   total_amount = document.querySelector("#modal-form #total_amount")
+  total_amount2 = document.querySelector("#modal-form2 #total_amount2")
   
   tax_button = document.querySelector("#modal-form #tax")
+  tax_button2 = document.querySelector("#modal-form2 #tax2")
+  
   current_stock_button = document.querySelector("#modal-form #current_stock")
+  current_stock_button2 = document.querySelector("#modal-form2 #current_stock2")
 
   item = document.querySelector("#modal-form #item")
+  item2 = document.querySelector("#modal-form2 #item2")
   {% comment %} tax_button.value = item.selectedOptions[0].getAttribute('tax'); {% endcomment %}
   {% comment %} current_stock_button.value = item.selectedOptions[0].getAttribute('current_stock'); {% endcomment %}
   {% comment %} item.onclick = (e)=>{
@@ -409,9 +634,38 @@
   
   }; {% endcomment %}
 
-  qnt.setAttribute("min","0");
-  qnt.setAttribute("max",current_stock_button.value);
+  qnt.setAttribute("min",0);
+  qnt.setAttribute("max",0);
+  qnt2.setAttribute("min",0);
+  qnt2.setAttribute("max",0);
+  
 
+  qnt.addEventListener("input",(e)=>{
+    qnt_no = qnt.value;
+    if(qnt_no){
+      taxable_value.value = round(rate.value * qnt_no,2);
+      total_amount.value = round( ((taxable_value.value-discount_amount.value) * (1 + (tax_button.value*2)/100)),2);
+      total_rate.value = round( total_amount.value / qnt_no,2);
+    }
+    else{
+      taxable_value.value =  0
+      total_amount.value = 0
+      total_rate.value = 0
+    }
+  }); 
+  qnt2.addEventListener("input",(e)=>{
+    qnt_no = qnt2.value;
+    if(qnt_no){
+      taxable_value2.value = round(rate2.value * qnt_no,2);
+      total_amount2.value = round( ((taxable_value2.value-discount_amount2.value) * (1 + (tax_button2.value*2)/100)),2);
+      total_rate2.value = round( total_amount2.value / qnt_no,2);
+    }
+    else{
+      taxable_value2.value =  0
+      total_amount2.value = 0
+      total_rate2.value = 0
+    }
+  }); 
 
   discount_percent.addEventListener("input",(e)=>{
     if(discount_percent.value){
@@ -424,6 +678,19 @@
       discount_amount.value = 0
       total_amount.value = round( ((taxable_value.value-discount_amount.value) * (1 + (tax_button.value*2)/100)),2);
       total_rate.value = round( total_amount.value / qnt.value,2);
+    }
+  })
+  discount_percent2.addEventListener("input",(e)=>{
+    if(discount_percent2.value){
+      discount_amount2.value =round( taxable_value2.value * discount_percent2.value / 100,2);
+      total_amount2.value = round( ((taxable_value2.value-discount_amount2.value) * (1 + (tax_button2.value*2)/100)),2);
+      total_rate2.value = round( total_amount2.value / qnt2.value,2);
+    }
+    else
+    {
+      discount_amount2.value = 0
+      total_amount2.value = round( ((taxable_value2.value-discount_amount2.value) * (1 + (tax_button2.value*2)/100)),2);
+      total_rate2.value = round( total_amount2.value / qnt2.value,2);
     }
   })
   
@@ -440,6 +707,20 @@
       total_rate.value = round( total_amount.value / qnt.value,2);
     }
   })
+  
+  discount_amount2.addEventListener("input",(e)=>{
+    if(discount_amount2.value){
+      discount_percent2.value = round( discount_amount2.value * 100 / taxable_value2.value,2);
+      total_amount2.value = round( ((taxable_value2.value-discount_amount2.value) * (1 + (tax_button2.value*2)/100)),2);
+      total_rate2.value = round( total_amount2.value / qnt2.value,2);
+    }
+    else
+    {
+      discount_percent2.value = 0
+      total_amount2.value = round( ((taxable_value2.value-discount_amount2.value) * (1 + (tax_button2.value*2)/100)),2);
+      total_rate2.value = round( total_amount2.value / qnt2.value,2);
+    }
+  })
 
   rate.addEventListener("input",(e)=>{
     qnt_no = qnt.value;
@@ -453,7 +734,20 @@
       total_amount.value = 0
       total_rate.value = 0
     }
-  });
+  }); 
+  rate2.addEventListener("input",(e)=>{
+    qnt_no = qnt2.value;
+    if(rate2.value){
+      taxable_value2.value = round(  rate2.value * qnt_no,2);
+      total_amount2.value = round( ((taxable_value2.value-discount_amount2.value) * (1 + (tax_button2.value*2)/100)),2);
+      total_rate2.value = round( total_amount2.value / qnt_no,2);
+    }
+    else{
+      taxable_value2.value =  0
+      total_amount2.value = 0
+      total_rate2.value = 0
+    }
+  }); 
 
   taxable_value.addEventListener("input",(e)=>{
     qnt_no = qnt.value;
@@ -466,7 +760,20 @@
       rate.value=0
       total_amount.value = 0
       total_rate.value = 0
+    } 
+  });
+  taxable_value2.addEventListener("input",(e)=>{
+    qnt_no = qnt2.value;
+    if(taxable_value2.value){
+      rate2.value = round( taxable_value2.value / qnt_no,2);
+      total_amount2.value = round( ((taxable_value2.value-discount_amount2.value) * (1 + (tax_button2.value*2)/100)),2);
+      total_rate2.value = round( total_amount2.value / qnt_no,2);
     }
+    else{
+      rate2.value=0
+      total_amount2.value = 0
+      total_rate2.value = 0
+    } 
   });
 
   total_amount.addEventListener("input",(e)=>{
@@ -486,6 +793,23 @@
       total_rate.value = 0
     }
   });
+  total_amount2.addEventListener("input",(e)=>{
+    qnt_no = qnt2.value;
+    if(total_amount2.value){
+      if(!discount_percent2.value){
+        discount_percent2.value = 0
+      }
+      taxable_value2.value = round( (total_amount2.value / (1 + (tax_button2.value*2)/100)) / (1 - (discount_percent2.value/100)),2);
+      discount_amount2.value = round( taxable_value2.value * discount_percent2.value / 100,2);
+      rate2.value = round( parseFloat(taxable_value2.value) / qnt_no,2);
+      total_rate2.value = round( total_amount2.value / qnt_no,2);
+    }
+    else{
+      rate2.value=0
+      taxable_value2.value =  0
+      total_rate2.value = 0
+    }
+  });
 
   total_rate.addEventListener("input",(e)=>{
     qnt_no = qnt.value;
@@ -501,19 +825,98 @@
       total_amount.value = 0
     }
   });
+  total_rate2.addEventListener("input",(e)=>{
+    qnt_no = qnt2.value;
+    if(total_rate2.value){
+      total_amount2.value = round( total_rate2.value * qnt_no,2);
+      taxable_value2.value = round( (total_amount2.value / (1 + (tax_button2.value*2)/100)) / (1 - (discount_percent2.value/100)),2);
+      discount_amount2.value = round( taxable_value2.value * discount_percent2.value / 100,2);
+      rate2.value = round( parseFloat(taxable_value2.value) / qnt_no,2);
+    }
+    else{
+      rate2.value=0
+      taxable_value2.value =  0
+      total_amount2.value = 0
+    }
+  });
 
 
   // Third Party Changes 
-
+  customer_id_in_transaction = document.getElementById("customer_id_in_transaction")
    function fetchAvailableQuantity(itemId) {
     $.ajax({
       url: '/finance/get_available_quantity/',
       method: 'GET',
-      data: { item_id: itemId },
+      data: { item_id: itemId, customer_id: customer_id_in_transaction.value },
       success: function(response) {
         // Handle the response and update the UI with the available quantity
         $('#current_stock').val(response.available_quantity);
         $('#tax').val(response.tax_percent);
+        $('#rate').val(response.item_rate);
+        if(current_stock_button.value) { val = current_stock_button.value }
+        else { val=0 }
+        qnt.setAttribute("max",val);
+
+        $('#edit_item').attr('href','/finance/edit_items/'+response.item_id+'/')
+      },
+      error: function(xhr, status, error) {
+        // Handle the error if needed
+        console.error(error);
+      }
+    });
+  }
+  customer_id_in_transaction2 = document.getElementById("customer_id_in_transaction2")
+   function fetchAvailableQuantity2(itemId) {
+    $.ajax({
+      url: '/finance/get_available_quantity/',
+      method: 'GET',
+      data: { item_id: itemId, customer_id: customer_id_in_transaction2.value },
+      success: function(response) {
+        // Handle the response and update the UI with the available quantity
+        $('#current_stock2').val(response.available_quantity);
+        $('#tax2').val(response.tax_percent);
+        $('#rate2').val(response.item_rate);
+        if(current_stock_button2.value) { val = current_stock_button2.value }
+        else { val=0 }
+        qnt2.setAttribute("max",val);
+
+        $('#edit_item2').attr('href','/finance/edit_items/'+response.item_id+'/')
+      },
+      error: function(xhr, status, error) {
+        // Handle the error if needed
+        console.error(error);
+      }
+    });
+  }
+
+  
+  let newRateValue = null;
+  function fetchIfCash(customerId) {
+    $.ajax({
+      url: '/finance/get_ifcash/',
+      method: 'GET',
+      data: { customerId: customerId },
+      success: function(response) {
+        node = document.querySelector(".random_customer");
+        if(response.customer_is_cash == 1)
+        {
+          // node.add(name_field)
+          name_code = '<div class="form-group"> <label>Customer name</label> <input required type="text" class="form-control remove_from_random_customer" name="customer_name" id="" value=""/></div>'
+          node.innerHTML += name_code
+          
+          // node.add(address_field)
+          address_code = '<div class="form-group"> <label>Address</label> <textarea class="form-control remove_from_random_customer" name="address" rows="10"></textarea></div>'
+          node.innerHTML += address_code
+          
+          node.classList.add("col-12")
+          node.classList.add("col-sm-6")
+
+          update_input_cash()
+        }
+        else
+        {
+          node.innerHTML = ""
+        }
       },
       error: function(xhr, status, error) {
         // Handle the error if needed
@@ -523,18 +926,89 @@
   }
   
   $(document).ready(function() {
+    
     $('#items_select').selectize({
     onChange: function(value) {
       // Make an AJAX request to fetch the available quantity
       fetchAvailableQuantity(value);
+      
+      }
+    });
+    $('#items_select2').selectize({
+    onChange: function(value) {
+      // Make an AJAX request to fetch the available quantity
+      fetchAvailableQuantity2(value);
+      console.log(value)
+      }
+    });
+    $('#items_select2')[0].selectize.setValue("2")
+    
+
+
+    
+
+    $(function () {
+      $("#customers_select").selectize({
+        onChange: function(value) {
+          // Make an AJAX request to fetch the available quantity
+          fetchIfCash(value);
+          sessionStorage.setItem('cust_sel',value) 
+          customer_id_in_transaction.value = value
+          customer_id_in_transaction2.value = value
+          
+          }
+      });
+    });
+    
+});
+fetchIfCash(document.getElementById("customers_select").value);
+
+
+
+// Get required values for the transaction edit using ajax function
+function fetchTransactionDetails() {
+  $.ajax({
+    url: '/finance/get_transaction_details/',
+    method: 'GET',
+    data: { transaction_id: edit_transaction_button.getAttribute("info"), customer_id: customer_id_in_transaction2.value },
+    success: function(response) {
+      newRateValue = response.rate;
+      // Handle the response and update the UI with the available quantity
+      $.when($('#items_select2')[0].selectize.setValue(response.item_id)).done(function (a)
+      {
+      $('#current_stock2').val(response.available_quantity);
+      $('#tax2').val(response.tax_percent);
+      if(current_stock_button2.value) { val = current_stock_button2.value }
+      else { val=0 }
+      qnt2.setAttribute("max",val);
+      qnt2.value = response.qnt
+      $('#rate2').val(response.rate);
+      $('#taxable_value2').val(response.taxable_value);
+      $('#discount_percent2').val(response.discount_percent);
+      $('#discount_amount2').val(response.discount_amount);
+      $('#total_amount2').val(response.amount);
+      total_rate2.value = round( total_amount2.value / qnt2.value,2);
+      $('#edit_item2').attr('href','/finance/edit_items/'+response.item_id+'/')
+      });
+    },
+    error: function(xhr, status, error) {
+      // Handle the error if needed
+      console.error(error);
     }
   });
+}
+
+edit_transaction_button.addEventListener("click",(e)=>{
+  e.preventDefault();
+  fetchTransactionDetails();
+})
+
+$(document).ajaxStop(function () {
+  if (newRateValue !== null) {
+    $('#rate2').val(newRateValue);
+    newRateValue = null; // Reset newRateValue after updating #rate2
+  }
 });
 
-
-
-  $(function () {
-    $("#customers_select").selectize();
-  });
 </script>
 {% endblock script %}

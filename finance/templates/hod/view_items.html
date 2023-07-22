@@ -47,6 +47,8 @@
                         <td>{{i.current_stock}} 
                             {% if i.current_stock == 1  %}
                                 {{i.unit}}
+                            {% elif i.current_stock == 0 %}
+                                {{i.unit}}
                             {% else %}
                                 {{i.unit_plural}}
                             {% endif %}
