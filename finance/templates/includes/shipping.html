@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dynamic Shipping Address Form</title>
+</head>
+<body>
+    <label>
+        <input type="checkbox" id="shippingCheckbox"> Enter Shipping Address
+    </label>
+
+    <div id="shippingAddressFields"></div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const shippingCheckbox = document.getElementById("shippingCheckbox");
+            const shippingAddressFields = document.getElementById("shippingAddressFields");
+
+            shippingCheckbox.addEventListener("change", function () {
+                if (shippingCheckbox.checked) {
+                    // Create and append the input fields when the checkbox is checked
+                    shippingAddressFields.innerHTML = `
+                        <label>Name: </label>
+                        <input type="text" name="customer"><br>
+                        <label>Address: </label>
+                        <textarea name="address"></textarea><br>
+                        <label>State: </label>
+                        <select name="state">
+                            <option value="">Select State</option>
+                            <option value="Alabama">Alabama</option>
+                            <option value="Alaska">Alaska</option>
+                            <!-- Add more state options as needed -->
+                        </select>
+                    `;
+                } else {
+                    // Remove the input fields when the checkbox is unchecked
+                    shippingAddressFields.innerHTML = "";
+                }
+            });
+        });
+    </script>
+</body>
+</html>
