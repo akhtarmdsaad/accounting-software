@@ -35,6 +35,7 @@ a:hover {
       <div class="col-xl-3 col-sm-6 col-12 d-flex">
         <div class="card bg-one w-100">
           <div class="card-body">
+            <a href="{% url 'view_customers' %}">
             <div
               class="db-widgets d-flex justify-content-between align-items-center"
             >
@@ -46,12 +47,14 @@ a:hover {
                 <h6>Customers</h6>
               </div>
             </div>
+          </a>
           </div>
         </div>
       </div>
       <div class="col-xl-3 col-sm-6 col-12 d-flex">
         <div class="card bg-two w-100">
           <div class="card-body">
+            <a href="{% url 'add_invoices' %}">
             <div
               class="db-widgets d-flex justify-content-between align-items-center"
             >
@@ -60,16 +63,18 @@ a:hover {
               </div>
               <div class="db-info">
                 
-                <h3>{{total_recievables|intcomma}}</h3>
-                <h6>Rs Recievable</h6>
+                <h3>Sale</h3>
+                <h6>Invoice</h6>
               </div>
             </div>
+          </a>
           </div>
         </div>
       </div>
       <div class="col-xl-3 col-sm-6 col-12 d-flex">
         <div class="card bg-three w-100">
           <div class="card-body">
+            <a href="{% url 'view_invoices' %}">
             <div
               class="db-widgets d-flex justify-content-between align-items-center"
             >
@@ -81,12 +86,14 @@ a:hover {
                 <h6>Invoices</h6>
               </div>
             </div>
+          </a>
           </div>
         </div>
       </div>
       <div class="col-xl-3 col-sm-6 col-12 d-flex">
         <div class="card bg-four w-100">
           <div class="card-body">
+            <a href="{% url 'add_purchase_invoices' %}">
             <div
               class="db-widgets d-flex justify-content-between align-items-center"
             >
@@ -94,10 +101,11 @@ a:hover {
                 <i class="fas fa-file-invoice-dollar"></i>
               </div>
               <div class="db-info">
-                <h3>{{total_payables|intcomma}}</h3>
-                <h6>Payables</h6>
+                <h3>Purchase</h3>
+                <h6>Invoice</h6>
               </div>
             </div>
+          </a>
           </div>
         </div>
       </div>
@@ -110,7 +118,7 @@ a:hover {
           </div>
           <ul class="list-group list-group-flush">
             <li class="list-group-item">
-              <a href="">No of Low Stock Items - {{low_stock_items}}</a>
+              <a href="{% url 'view_low_stock_items' %}">No of Low Stock Items - {{low_stock_items}}</a>
             </li>
             <li class="list-group-item">
               <a href="{% url 'view_items' %}">All Items - {{total_items}}</li></a>

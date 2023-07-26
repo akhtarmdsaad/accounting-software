@@ -7,7 +7,8 @@ from finance.forms import TransactionForm
 from finance.models import Invoice, ItemGroup, Item,InventoryAdjustments,Customer, LastItemRate, Payment, SaleReturn, Transaction, Vendor
 import datetime,decimal
 from company_settings import get_invoice
-from django.db.models import Sum
+from finance.common import state_names
+from django.db.models import Sum, F
 
 # Create your views here.
 def test_form(request):
@@ -122,11 +123,11 @@ def view_items(request):
 def view_low_stock_items(request):
     if not request.user.has_perm('finance.view_item'):
         return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
-    items = Item.objects.filter()
+    items = Item.objects.filter(current_stock__lt = F('min_stock'))
     context = {
         "items":items
     }
-    return render(request,"hod/view_items.html", context)
+    return render(request,"hod/view_low_stock_items.html", context)
 
 @login_required(login_url="account_login")
 def view_items_id(request,id):
@@ -510,7 +511,8 @@ def add_invoice(request):
         "day":day,
         "month":month,
         "year":year,
-        "transactions":transactions
+        "transactions":transactions,
+        "states":state_names
     })
 
 def reset_invoice(request):

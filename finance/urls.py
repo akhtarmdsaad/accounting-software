@@ -15,6 +15,7 @@ urlpatterns = [
     path('delete_item_groups/<int:id>/',views.delete_item_groups,name="delete_item_groups"),
     
     path('view_items/',views.view_items,name="view_items"),
+    path('view_low_stock_items/',views.view_low_stock_items,name="view_low_stock_items"),
     path('add_items/',views.add_item,name="add_items"),
     path('view_items/<int:id>/',views.view_items_id,name="view_items_id"),
     path('edit_items/<int:id>/',views.edit_item,name="edit_item"),

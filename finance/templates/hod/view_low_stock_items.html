@@ -5,18 +5,13 @@
       <div class="page-header">
         <div class="row align-items-center">
           <div class="col">
-            <h3 class="page-title">Item</h3>
+            <h3 class="page-title">Low Stock Item</h3>
             <ul class="breadcrumb">
               <li class="breadcrumb-item">
                 <a href="{% url 'finance_dashboard' %}">Dashboard</a>
               </li>
-              <li class="breadcrumb-item active">Item</li>
+              <li class="breadcrumb-item active">Low Stock Item</li>
             </ul>
-          </div>
-          <div class="col-auto text-right float-right ml-auto">
-            <a href="{% url 'add_items' %}" class="btn btn-primary"
-              ><i class="fas fa-plus"></i> &nbsp;Add Item
-            </a>
           </div>
         </div>
       </div>
@@ -33,6 +28,7 @@
                         <th>Item Group</th>
                         <th>Tax Rate</th>
                         <th>Current Stock</th>
+                        <th>Minimum Stock</th>
                         <th>Created At</th>
                         <th class="text-right">Action</th>
                       </tr>
@@ -46,6 +42,13 @@
                         <td>{{i.state_tax_rate}}%</td>
                         <td>{{i.current_stock}} 
                             {% if i.current_stock == 1  %}
+                                {{i.unit}}
+                            {% else %}
+                                {{i.unit_plural}}
+                            {% endif %}
+                        </td>
+                        <td>{{i.min_stock}} 
+                            {% if i.min_stock == 1  %}
                                 {{i.unit}}
                             {% else %}
                                 {{i.unit_plural}}

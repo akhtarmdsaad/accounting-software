@@ -1,3 +1,4 @@
+from django.core.validators import MaxValueValidator
 import decimal
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -159,6 +160,19 @@ class Payment(models.Model):
     def __str__(self):
         return f"{self.customer.name}-{self.amount}"
     
+
+class Address(models.Model):
+    place = models.CharField(_("address"), max_length=50)
+    state = models.IntegerField(choices=STATES,default=1)
+
+    class Meta:
+        verbose_name = _("Address")
+        verbose_name_plural = _("Addresses")
+
+    def __str__(self):
+        return self.name
+
+
 
 class Invoice(models.Model):
     invoice_no = models.CharField(_("invoice_no"), max_length=50)
