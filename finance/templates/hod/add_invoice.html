@@ -45,6 +45,7 @@
                       name="invoice_no"
                       id="invoice_no"
                       value="{{invoice.invoice_no}}"
+                      disabled
                     />
                   </div>
                 </div>
@@ -77,22 +78,32 @@
                 </div>
               </div>
               <div class="change_shipping_address col-sm-6 col-12 my-3">
-                  <div class="form-check form-check-inline">
-                    <label class="form-check-label" style="user-select: none;cursor: pointer;color: green;">
-                      <input class="form-check-input" type="checkbox" name="change_shipping_address" id="change_shipping_address" value="checkedValue"> Change Shipping Address
-                    </label>
-                  </div>
+                <div class="form-check form-check-inline">
+                  <label class="form-check-label" style="user-select: none;cursor: pointer;color: green;">
+                    <input class="form-check-input" type="checkbox" name="change_shipping_address" id="change_shipping_address" value="checkedValue"> Change Shipping Address
+                  </label>
+                </div>
               </div>
-              <div class="random_customer col-sm-6 col-12">
-                <div class="form-group">
-                  <label>Customer name</label>
-                  <input
-                    type="text"
-                    class="form-control remove_from_random_customer"
-                    name="customer_name"
-                    id="shipping_customer_name"
-                    value=""
-                  />
+              <div class="random_customer col-sm-12">
+                <div class="row">
+                  <div class="form-group col-sm-6">
+                    <label>Customer name</label>
+                    <input
+                      type="text"
+                      class="form-control remove_from_random_customer"
+                      name="customer_name"
+                      id="shipping_customer_name"
+                      value=""
+                    />
+                  </div>
+                  <div class="form-group col-sm-6">
+                    <label for="state">State</label>
+                    <select name="state" class="form-control" id="shipping_state">
+                      {% for i in states %}
+                        <option value="{{forloop.counter}}">{{i}}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
                 </div>
                 <div class="form-group">
                   <label>Address</label>
@@ -103,112 +114,93 @@
                     rows="10"
                   ></textarea>
                 </div>
-                <div class="form-group">
-                  <label for="state">State</label>
-                  <select name="state" class="form-control" id="shipping_state">
-                    {% for i in states %}
-                      <option value="{{forloop.counter}}">{{i}}</option>
-                    {% endfor %}
-                  </select>
-                </div>
               </div>
 
-              <table class="table mt-4 table-striped table-responsive">
+              <table class="table mt-4 table-striped table-responsive" id="myTable">
                 <thead>
                   <tr>
                     <th width="300">Item</th>
+                    <th>Tax (in %)</th>
                     <th width="99">Quantity</th>
                     <th width="150">Rate</th>
-                    <th>Taxable Value</th>
                     <th width="99">Discount (in %)</th>
-                    <th>Tax (in %)</th>
-                    <th>Tax (CGST / SGST)</th>
-                    <th>Amount</th>
+                    <th>Taxable Value</th>
                     <th class="text-right">Action</th>
                   </tr>
                 </thead>
                 <tbody>
-					{% for transaction in transactions %}
-                  <tr>
-                    <td>
-                      <textbox rows="10" columns="10" >{{transaction.item.name}}</textbox>
-                    </td>
-                    <td>
-                      <input
-                        required
-                        type="number" step="0.01"
-                        class="form-control"
-                        name="qnt"
-                        disabled
-                        value="{{transaction.quantity}}"
-                      />
-                    </td>
-                    <td>
-                      <input
-                        required
-                        type="number" step="0.01"
-                        class="form-control"
-                        name="rate"
-                        disabled
-                        value="{{transaction.rate}}"
-                      />
-                    </td>
-                    <td>
-                      <input
-                        required
-                        type="number" step="0.01"
-                        class="form-control"
-                        name="rate"
-                        disabled
-                        value="{{transaction.taxable_value}}"
-                      />
-                    </td>
-                    <td>
-                      <input
-                        required
-                        type="number" step="0.01"
-                        class="form-control"
-                        name="discount"
-                        value="{{transaction.discount_percent}}"
-                        disabled
-                      />
-                    </td>
-                    <td>
-                      {{transaction.item.state_tax_rate}}% / {{transaction.item.state_tax_rate}}%
+					        {% for transaction in transactions %}
+                    <tr>
+                      <td>
+                        <textbox rows="10" columns="10" >{{transaction.item.name}}</textbox>
+                      </td>
+                      <td>
+                        {{transaction.item.state_tax_rate}}% / {{transaction.item.state_tax_rate}}%
+                      </td>
+                      <td>
+                        <input
+                          required
+                          type="number" step="0.01"
+                          class="form-control"
+                          name="qnt"
+                          disabled
+                          value="{{transaction.quantity}}"
+                        />
+                      </td>
+                      <td>
+                        <input
+                          required
+                          type="number" step="0.01"
+                          class="form-control"
+                          name="rate"
+                          disabled
+                          value="{{transaction.rate}}"
+                        />
+                      </td>
+                      <td>
+                        <input
+                          required
+                          type="number" step="0.01"
+                          class="form-control"
+                          name="discount"
+                          value="{{transaction.discount_percent}}"
+                          disabled
+                        />
+                      </td>
+                      <td>
+                        <input
+                          required
+                          type="number" step="0.01"
+                          class="form-control"
+                          name="rate"
+                          disabled
+                          value="{{transaction.taxable_value}}"
+                        />
+                      </td>
+                      <td class="text-right">
+                        <div class="actions">
+                          
+                          <button type="button" class="btn btn-sm bg-info-light mr-2 edit_transaction_button" info="{{transaction.id}}" data-toggle="modal" data-target="#editTransaction">
+                            <i class="fas fa-pen"></i>
+                        </button>
 
-                    </td>
-                    <td>
-                      {{transaction.state_tax}} / {{transaction.central_tax}}
-
-                    </td>
-                    <td>
-                      {{transaction.amount}}
-
-                    </td>
-                    <td class="text-right">
-                      <div class="actions">
-                        
-                        <button type="button" class="btn btn-sm bg-info-light mr-2" info="{{transaction.id}}" id="edit_transaction_button" data-toggle="modal" data-target="#editTransaction">
-                          <i class="fas fa-pen"></i>
-                      </button>
-
-                        <a
-                          href="{% url 'delete_transaction' transaction.id %}"
-                          class="btn btn-sm bg-danger-light mr-2"
-                        >
-                          <i class="fas fa-trash"></i>
-                        </a>
-                        
-                        
-                      </div>
-                    </td>
-                  </tr>
-				  {% endfor %}
+                          <a
+                            href="{% url 'delete_transaction' transaction.id %}"
+                            class="btn btn-sm bg-danger-light mr-2"
+                          >
+                            <i class="fas fa-trash"></i>
+                          </a>
+                          
+                          
+                        </div>
+                      </td>
+                    </tr>
+                  {% endfor %}
                   
                 </tbody>
                 <tfoot>
                   <tr>
-                    <td colspan=2>
+                    <td colspan="2">
                       <button
                       type="button" class="btn btn-primary" id="add_item" data-toggle="modal" data-target="#addItem"
                       >
@@ -219,18 +211,59 @@
                   </tr>
                   <tr>
                     <td colspan="2"></td>
-                    <td class="text-end"><strong>Total Amount:</strong></td>
-                    <td colspan=3><b>{{invoice.total_taxable_amount}}</b></td>
-                    <td><b>{{invoice.total_tax_amount}}</b></td>
-                    <td style="
-                    display: grid;
-                    place-items: center;
+                    <td class="text-end" colspan="2"><strong>Total Taxable Amount:</strong></td>
+                    <td colspan="1"></td>
+                    <td align="right"><b>{{invoice.total_taxable_amount}}</b></td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td class="text-end" colspan="2"><strong>CGST:</strong></td>
+                    <td colspan="1"></td>
+                    <td align="right"><b>{{invoice.total_central_tax_amount}}</b></td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td class="text-end" colspan="2"><strong>SGST:</strong></td>
+                    <td colspan="1"></td>
+                    <td align="right"><b>{{invoice.total_state_tax_amount}}</b></td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td class="text-end" colspan="2"><strong>IGST:</strong></td>
+                    <td colspan="1"></td>
+                    <td align="right"><b>{{invoice.total_integrated_tax_amount}}</b></td>
+                  </tr>
+                  {% for u,v in extra_details.items %}
+                    <tr>
+                      <td colspan="2"></td>
+                      <td class="text-end" colspan="2"><strong>{{u}}</strong></td>
+                      <td colspan="1"></td>
+                      {% comment %} Make it a number {% endcomment %}
+                      <td align="right"><b>{{v|floatformat:2}}</b></td>
+                      <td>
+                        <a href="" class="btn btn-primary"><i class="fas fa-trash"></i></a>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                  <tr>
+                    <td colspan="2">
+                      <button
+                      type="button" class="btn btn-secondary" id="add_item" data-toggle="modal" data-target="#addTransaction"
+                      >
+                        <i class="fa fa-plus"></i>&nbsp; Add Transaction
+                      </button>
+                      
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="4"></td>
+                    <td colspan="2" align="right" style="
                     font-size: x-large;
                     color: green;
                     font-weight: 400;
-                "><b>{{invoice.total_amount}}</b></td>
+                    "><b>{{invoice.total_amount}}</b></td>
                   </tr>
-
                 </tfoot>
               </table>
               <div class="row">
@@ -249,7 +282,7 @@
                     Reset
                   </a>
                 </div>
-            </div>
+              </div>
             </form>
           </div>
         </div>
@@ -270,7 +303,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <form id="modal-form" method="post" action="{% url 'save_transaction' %}">
+        <form id="modal-form" method="post" action="">
           {% csrf_token %}
           
           <div class="row col-12">
@@ -360,15 +393,15 @@
                   name="discount_percent" id="discount_percent"
                 />
               </div>
-                  <div class="form-group">
-                    <label>Rate (Including Tax)</label>
-                    <input
-                      required
-                      type="number" step="0.01"
-                      class="form-control"
-                      name="total_rate" id="total_rate"
-                    />
-                </div>
+              <div class="form-group">
+                <label>Rate (Including Tax)</label>
+                <input
+                  required
+                  type="number" step="0.01"
+                  class="form-control"
+                  name="total_rate" id="total_rate"
+                />
+            </div>
               
             </div>
 
@@ -396,6 +429,8 @@
             </div>
             <input type="hidden" name="invoice_id" value="{{invoice.id}}">
             <input type="hidden" name="customer_id_in_transaction" id="customer_id_in_transaction" value="2">
+            <input type="hidden" name="shipping_checkbox_trxn" id="shipping_checkbox_trxn" value="0">
+            <input type="hidden" name="shipping_state_trxn" id="shipping_state_trxn" value="26">
           </div>
         
       </div>
@@ -408,6 +443,51 @@
   </div>
 </div>
 
+
+
+<form action="" method="post">
+  {% csrf_token %}
+<!-- Extra Details in Invoice (Discount, Round etc) Modal-->
+<div class="modal fade" id="addTransaction" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add Item</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <div class="row col-12">
+            <div class="form-group col-sm-12">
+              <label for="taxable_value_in_trxn">Total Taxable Value</label>
+              <input type="text" class="form-control" name="taxable_value_in_trxn" aria-describedby="helpId" value="{{invoice.total_taxable_amount}}" disabled>
+            </div>
+            <div class="form-group col-sm-4">
+              <input placeholder="Name" type="text" class="form-control" name="name_in_trxn" aria-describedby="helpId" >
+            </div>
+            <div class="form-group col-sm-4">
+              <input placeholder="Percent" type="number" step="0.01" class="form-control" name="percent_in_trxn" aria-describedby="helpId" >
+            </div>
+            <div class="form-group col-sm-4">
+              <input placeholder="Amount" type="number" step="0.01" class="form-control" name="amount_in_trxn" aria-describedby="helpId" >
+            </div>
+            <div class="form-group col-sm-12">
+              <label for="total_amount_in_trxn">Total Amount</label>
+              <input type="number" steps="0.01" class="form-control" name="total_amount_in_trxn" aria-describedby="helpId" value="{{invoice.total_amount}}" disabled>
+            </div>
+          </div>
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-success">Add</button>
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+
 <!-- Modal To Edit the Transaction-->
 <div class="modal fade" id="editTransaction" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
@@ -419,7 +499,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <form id="modal-form2" method="post" action="">
+        <form id="modal-form2" method="post" action="/finance/save_edit_transaction/1">
           {% csrf_token %}
           
           <div class="row col-12">
@@ -540,7 +620,7 @@
                   name="total_amount" id="total_amount2"
                 />
               </div>
-            </form>
+            
               
             </div>
             <input type="hidden" name="invoice_id" value="{{invoice.id}}">
@@ -555,9 +635,136 @@
     </div>
   </div>
 </div>
-
+</form>
 {% endblock content %}
 
 {% block script %}
+<script>
+  const checkbox_input = document.querySelector("input#change_shipping_address")
+  function checkCheckbox()
+  {
+    data = sessionStorage.getItem("checked_shipping")
+      if(data == 'true')
+      {
+        console.log('click') 
+        if(!checkbox_input.checked)
+          checkbox_input.click();
+        node.style.display="block" 
+        
+      }
+      else if(data == 'false')
+      {
+        console.log('click 2')
+        if (checkbox_input.checked)
+          checkbox_input.click();
+        node.style.display="none" 
+      }
+  }
+  {% comment %} document.querySelector('input#change_shipping_address').checked = true {% endcomment %}
+function change_tax(name)
+  {
+    if(name == "IGST")
+    {
+      console.log("Ran IGST")
+      changeInvoiceState("IGST")
+    }
+    else if(name == "CGST" || name == "SGST" || name == "OGST")
+    {
+      console.log("Ran CGST")
+      changeInvoiceState("CGST")
+    }
+    else
+      console.error("Not accepted this GST: ",name);
+  };
+CUSTOMER_IS_CASH = false ;
+console.log("Started")
+</script>
 <script src="{% static 'assets/js/add_invoice.js' %}"></script>
+console.log("Heading over")
+<script>
+  // cash customer check 
+  function checkIfCash(value)
+  {
+    if(value == {{cash_id}})
+    {
+      update_random_customer(1);
+      CUSTOMER_IS_CASH = true
+    }
+    else 
+    {
+      update_random_customer(3)
+      CUSTOMER_IS_CASH = false
+    }
+  }
+  $(function () {
+    $("#customers_select").selectize({
+      onChange: function(value) {
+        // Make an AJAX request to fetch the available quantity
+        checkIfCash(value)
+        getCustomerState(value)
+        sessionStorage.setItem('cust_sel',value) 
+        customer_id_in_transaction.value = value
+        customer_id_in_transaction2.value = value
+        
+        }
+    });
+  });
+  checkIfCash(document.getElementById("customers_select").value);
+
+  // ----------------------------------------------------------------------------------------------------
+  // SHIPPING 
+
+  state = document.getElementById("shipping_state")
+  state.addEventListener("change",
+    (e)=>{
+    // the first condition is for that check only if its tick on checkbox 
+    // this is to preserve the bug when the box is not checked but still giving changing Stuffs
+    if(sessionStorage.getItem("checked_shipping") == "true" && state.value != {{my_state_value}})
+      // its an IGST 
+      change_tax("IGST");
+    else if (CUSTOMER_IS_CASH == true && state.value != {{my_state_value}})
+      //its an IGST 
+      change_tax("IGST");
+    else  
+      // its an CGST
+      change_tax("CGST");  
+  });
+  console.log("Ended")
+
+  add_item_button = document.getElementById("add_item")
+  add_item_button.addEventListener("click",(e)=>{
+
+      data = sessionStorage.getItem('checked_shipping')
+      if(data && data == 'true') shipping_checkbox_trxn.value = "1";
+      else shipping_checkbox_trxn.value = "0";
+
+      data = sessionStorage.getItem('state')
+      if(data)
+        shipping_state_trxn.value = data
+      
+  })
+  document.addEventListener("DOMContentLoaded",(e)=>{
+    checkCheckbox()
+      
+  });
+
+  // adding event listener to percent input to update amount input in addTransaction
+  percent_input = document.querySelector("input[name='percent_in_trxn']")
+  amount_input = document.querySelector("input[name='amount_in_trxn']")
+  total_amount_input = document.querySelector("input[name='total_amount_in_trxn']")
+  percent_input.addEventListener("input",(e)=>{
+    amount_input.value = round((percent_input.value/100)*document.querySelector("input[name='taxable_value_in_trxn']").value);
+    total_amount_input.value = round(parseFloat(total_amount_input.value) + parseFloat(amount_input.value)) ;
+  })
+
+  // adding event listener to amount input to update percent input in addTransaction
+  amount_input.addEventListener("input",(e)=>{
+    if(amount_input.value && parseFloat(amount_input.value))
+      percent_input.value = round((amount_input.value/document.querySelector("input[name='taxable_value_in_trxn']").value)*100);
+    else
+      percent_input.value = 0;
+    total_amount_input.value = round(parseFloat({{invoice.total_amount}}) + parseFloat(amount_input.value)) ;
+  })
+
+</script>
 {% endblock script %}

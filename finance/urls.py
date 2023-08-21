@@ -36,14 +36,9 @@ urlpatterns = [
 
     #Invoice
     path('view_invoices/',views.view_invoices,name="view_invoices"),
-    path('add_invoices/',views.add_invoice,name="add_invoices"),
+    path('add_invoices/',views.add_invoices,name="add_invoices"),
     path('reset_invoices/',views.reset_invoice,name="reset_invoice"),
-    # path('view_invoices/<int:id>/',views.view_invoices_id,name="view_invoices_id"),
-    path('edit_invoices/<int:id>/',views.edit_invoice,name="edit_invoice"),
-    path('delete_invoice/<int:id>/',views.delete_invoice,name="delete_invoice"),
-    path('save_transaction/',views.save_transaction,name="save_transaction"),
-    path('save_edit_transaction/<int:id>',views.save_edit_transaction,name="save_edit_transaction"),
-    path('delete_transaction/<int:id>',views.delete_transaction,name="delete_transaction"),
+    
 
     #payments
     path('view_payments/',views.view_payments,name="view_payments"),
@@ -96,14 +91,5 @@ urlpatterns = [
     # path('report_payment_item/',report_views.sales_by_item,name="report_payment_item"),
     
     path('report_inventory_item/',report_views.inventory_by_items,name="report_inventory_item"),
-
-
-
     path("test/",vendor_views.testme,name="testme"),
-
-    # AJAX
-    path('get_available_quantity/', views.get_available_quantity, name='available_quantity'),
-    path('get_ifcash/', views.get_ifcash, name='ifcash'),
-    path('get_transaction_details/', views.get_transaction_details, name='get_transaction_details'),
-
 ]

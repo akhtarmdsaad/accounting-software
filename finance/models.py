@@ -5,45 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from accounts.models import CustomUser
 
 #state name entry
-state_names = """
-Andaman & Nicobar Islands
-Andhra Pradesh
-Arunachal Pradesh
-Assam
-Bihar
-Chandigarh
-Chhattisgarh
-Dadra & Nagar Haveli and Daman & Diu
-Delhi
-Goa
-Gujarat
-Haryana
-Himachal Pradesh
-Jammu & Kashmir
-Jharkhand
-Karnataka
-Kerala
-Ladakh
-Lakshadweep
-Madhya Pradesh
-Maharashtra
-Manipur
-Meghalaya
-Mizoram
-Nagaland
-Odisha
-Puducherry
-Punjab
-Rajasthan
-Sikkim
-Tamil Nadu
-Telangana
-Tripura
-Uttarakhand
-Uttar Pradesh
-West Bengal
-""".strip("\n ")
-state_names = state_names.split("\n")
+from finance.common import state_names
 
 # Create your models here.
 
@@ -84,6 +46,8 @@ class Item(models.Model):
     unit = models.CharField(max_length=10)
     unit_plural = models.CharField(max_length=10)
     state_tax_rate = models.IntegerField()
+    central_tax_rate = models.IntegerField(default=0)
+    integrated_tax_rate = models.IntegerField(default=0)
     current_stock = models.DecimalField(max_digits=10, decimal_places=2)
     rate_change_system = models.IntegerField(choices=RATE_CHANGE_CHOICES,default=2)
     rate = models.DecimalField(max_digits=10, decimal_places=2,default=0)
@@ -161,13 +125,14 @@ class Payment(models.Model):
         return f"{self.customer.name}-{self.amount}"
     
 
-class Address(models.Model):
-    place = models.CharField(_("address"), max_length=50)
+class ShippingDetail(models.Model):
+    name = models.CharField(_("name"),max_length=70)
+    address = models.CharField(_("address"), max_length=50)
     state = models.IntegerField(choices=STATES,default=1)
 
     class Meta:
-        verbose_name = _("Address")
-        verbose_name_plural = _("Addresses")
+        verbose_name = _("ShippingDetail")
+        verbose_name_plural = _("ShippingDetails")
 
     def __str__(self):
         return self.name
@@ -176,11 +141,15 @@ class Address(models.Model):
 
 class Invoice(models.Model):
     invoice_no = models.CharField(_("invoice_no"), max_length=50)
-    customer = models.ForeignKey(Customer,on_delete=models.CASCADE)
+    customer = models.ForeignKey(Customer,on_delete=models.CASCADE, null=True)
     date = models.DateField(_("date"), auto_now=False, auto_now_add=False)
-    total_taxable_amount = models.DecimalField(max_digits=10, decimal_places=2,null=True)
-    total_tax_amount = models.DecimalField(max_digits=10, decimal_places=2,null=True)
-    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    total_taxable_amount = models.DecimalField(max_digits=10, decimal_places=2,default=0)
+    total_state_tax_amount = models.DecimalField(max_digits=10, decimal_places=2,default=0)
+    total_central_tax_amount = models.DecimalField(max_digits=10, decimal_places=2,default=0)
+    total_integrated_tax_amount = models.DecimalField(max_digits=10, decimal_places=2,default=0)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2,default=0)
+    extra_details = models.JSONField(null=True)
+    shipping_details = models.ForeignKey(ShippingDetail,on_delete=models.CASCADE,null=True)
     valid = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True,null = True)
     updated_at = models.DateTimeField(auto_now_add=True,null = True)
@@ -200,9 +169,6 @@ class Transaction(models.Model):
     taxable_value = models.DecimalField(max_digits=10, decimal_places=2,null=True)
     discount_percent = models.DecimalField(max_digits=10, decimal_places=2,null=True)
     discount_amount = models.DecimalField(max_digits=10, decimal_places=2,null=True)
-    state_tax = models.DecimalField(max_digits=10, decimal_places=2,null=True)
-    central_tax = models.DecimalField(max_digits=10, decimal_places=2,null=True)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True,null = True)
     updated_at = models.DateTimeField(auto_now_add=True,null = True)
     changed_by_user = models.ForeignKey(CustomUser,null=True,on_delete=models.PROTECT)

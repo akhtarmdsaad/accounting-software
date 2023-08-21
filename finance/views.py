@@ -3,12 +3,16 @@ from django.http import JsonResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.urls import reverse
 from finance.forms import TransactionForm
-from finance.models import Invoice, ItemGroup, Item,InventoryAdjustments,Customer, LastItemRate, Payment, SaleReturn, Transaction, Vendor
+from finance.models import Invoice, ItemGroup, Item,InventoryAdjustments,Customer, LastItemRate, Payment, SaleReturn, Transaction, Vendor, ShippingDetail
 import datetime,decimal
 from company_settings import get_invoice
 from finance.common import state_names
 from django.db.models import Sum, F
+import json
+
+
 
 # Create your views here.
 def test_form(request):
@@ -171,6 +175,8 @@ def add_item(request):
             unit=unit,
             unit_plural=unit_plural,
             state_tax_rate=tax,
+            central_tax_rate = tax,
+            integrated_tax_rate = tax*2,
             current_stock=cur_stock,
             min_stock=min_stock
         )
@@ -201,6 +207,8 @@ def edit_item(request,id):
         elem.hsn_code = request.POST.get('hsn')
         elem.unit = request.POST.get('unit')
         elem.state_tax_rate = request.POST.get('tax')
+        elem.central_tax_rate = request.POST.get('tax')
+        elem.integrated_tax_rate = float(request.POST.get('tax')) * 2
         elem.current_stock = request.POST.get('cur_stock')
         elem.min_stock = request.POST.get('min_stock')
         elem.unit_plural = elem.unit+"s"
@@ -436,95 +444,20 @@ def view_invoices(request):
         "pagination_applied":pagination_applied
     })
 
-
-
-@login_required(login_url="account_login")
-def add_invoice(request):
-    if not request.user.has_perm('finance.add_invoice'):
-        return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
-    customers = Customer.objects.all()
-    items = Item.objects.all()
-    #get invoice
-    invoices = Invoice.objects.filter(valid=False)
-    if not invoices:
-        last_invoice = Invoice.objects.all().order_by('-id')
-        if last_invoice:
-            last_invoice = last_invoice[0]
-            new_inv_no = get_invoice(last_invoice.invoice_no)
-        else:
-            new_inv_no = get_invoice("0")
-        current_invoice = Invoice.objects.create(
-            invoice_no=new_inv_no,
-            customer = Customer.objects.all()[0],
-            date = datetime.date.today(),
-            total_taxable_amount=0,
-            total_tax_amount=0,
-            total_amount = 0
-        )
-    else:
-        current_invoice = invoices[0]
-    
-    transactions = current_invoice.transaction_set.all()
-    if request.method == "POST":
-        current_invoice.invoice_no = request.POST.get('invoice_no')
-        current_invoice.date = request.POST.get('date')
-        customer_id = request.POST.get('customer_id')
-        customer = get_object_or_404(Customer,id=customer_id)
-        
-        # add customer is cash add customer
-        if customer.name.capitalize().strip() == "Cash":
-            new_name = request.POST.get('customer_name')
-            new_addr = request.POST.get('address')
-            if new_name and new_addr:
-                customer = Customer(
-                    name=new_name,
-                    address=new_addr
-                )
-                customer.save()
-                print("Customer Saved Successfully")
-            else:
-                current_invoice.customer = customer
-                current_invoice.save()
-                return redirect("add_invoices")
-                
-        
-        current_invoice.customer = customer
-        customer.current_balance += current_invoice.total_amount
-        customer.save()
-        for tr in current_invoice.transaction_set.all():
-            tr.item.current_stock -= tr.quantity
-            tr.item.save()
-        
-        current_invoice.valid = True
-
-        
-        
-        current_invoice.save()
-        return redirect("view_invoices")
-    day = str(current_invoice.date.day).rjust(2,"0")
-    month = str(current_invoice.date.month).rjust(2,"0")
-    year = str(current_invoice.date.year).rjust(4,"0")
-    return render(request,"hod/add_invoice.html",{
-        "customers":customers,
-        "items":items,
-        "invoice":current_invoice,
-        "day":day,
-        "month":month,
-        "year":year,
-        "transactions":transactions,
-        "states":state_names
-    })
+def add_invoices(request):
+    return render(request,"hod/add_invoice.html")
 
 def reset_invoice(request):
-    invoices = Invoice.objects.filter(valid=False)
-    if invoices:
-        invoice = invoices[0]
-        for i in invoice.transaction_set.all():
-            i.delete()
-        invoice.total_amount = 0
-        invoice.total_taxable_amount = 0
-        invoice.total_tax_amount = 0
-        invoice.save()
+    invoice = Invoice.objects.last()
+    for i in invoice.transaction_set.all():
+        i.delete()
+    invoice.total_amount = 0
+    invoice.total_taxable_amount = 0
+    invoice.total_state_tax_amount = 0
+    invoice.total_central_tax_amount = 0
+    invoice.total_integrated_tax_amount = 0
+    invoice.extra_details = ""
+    invoice.save()
     return redirect("add_invoices")
 
 @login_required(login_url="account_login")
@@ -543,154 +476,23 @@ def delete_invoice(request,id):
     return redirect("view_invoices")
 
 @login_required(login_url="account_login")
-def edit_invoice(request,id):
-    if not request.user.has_perm('finance.change_invoice'):
-        return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
-    customers = Customer.objects.all()
-    items = Item.objects.all()
-    #get invoice
-    current_invoice = get_object_or_404(Invoice,id=id)
-    transactions = current_invoice.transaction_set.all()
-    if request.method == "POST":
-        if current_invoice.valid:
-            current_invoice.customer.current_balance -= current_invoice.total_amount
-            current_invoice.customer.save()
-            for tr in current_invoice.transaction_set.all():
-                tr.item.current_stock += tr.quantity
-                tr.item.save()
-        current_invoice.invoice_no = request.POST.get('invoice_no')
-        current_invoice.date = request.POST.get('date')
-        customer_id = request.POST.get('customer_id')
-        customer = get_object_or_404(Customer,id=customer_id)
-        current_invoice.customer = customer
-        current_invoice.valid = True
-        current_invoice.updated_at = datetime.datetime.now()
-        current_invoice.changed_by_user = request.user
-
-        customer.current_balance += current_invoice.total_amount
-        customer.save()
-        for tr in current_invoice.transaction_set.all():
-            tr.item.current_stock -= tr.quantity
-            tr.item.save()
-
-        current_invoice.save()
-        return redirect("view_invoices")
-    day = str(current_invoice.date.day).rjust(2,"0")
-    month = str(current_invoice.date.month).rjust(2,"0")
-    year = str(current_invoice.date.year).rjust(4,"0")
-    return render(request,"hod/edit_invoice.html",{
-        "customers":customers,
-        "items":items,
-        "invoice":current_invoice,
-        "day":day,
-        "month":month,
-        "year":year,
-        "transactions":transactions
-    })
-
-
-@login_required(login_url="account_login")
-def save_transaction(request):
-    if not request.user.has_perm('finance.add_invoice'):
-        return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
-    if request.method == "POST":
-        invoice_id = request.POST.get("invoice_id")
-        invoice = get_object_or_404(Invoice,id=invoice_id)
-        item_id = request.POST.get('item')
-        item = get_object_or_404(Item,id=int(item_id))
-
-        customer_id = request.POST.get("customer_id_in_transaction")
-        print(customer_id)
-        customer = Customer.objects.get(id=customer_id)
-
-        qnt = decimal.Decimal(request.POST.get('qnt'))
-        rate = decimal.Decimal(request.POST.get('rate'))
-        taxable_value = decimal.Decimal(request.POST.get('taxable_value'))
-        discount_percent = decimal.Decimal(request.POST.get('discount_percent'))
-        discount_amount = decimal.Decimal(request.POST.get('discount_amount'))
-        state_tax = (taxable_value-discount_amount) * item.state_tax_rate/100
-        central_tax = state_tax 
-        total_amount = decimal.Decimal(request.POST.get('total_amount'))
-
-        
-        # "if party has to save rate, then save it. dont change the item rate"
-        if customer.save_last_rate == 1 :
-            elem = LastItemRate(
-                party=customer,
-                item=item,
-                rate = rate 
-            )
-            elem.save()
-        # "else change the item rate"
-        elif item.rate_change_system == 2:
-            item.rate = rate
-        
-
-        transaction = Transaction(
-            invoice = invoice,
-            item = item,
-            quantity = qnt,
-            rate = rate,
-            taxable_value = taxable_value,
-            discount_percent = discount_percent,
-            discount_amount = discount_amount,
-            state_tax = state_tax,
-            central_tax = central_tax,
-            amount = total_amount
-        )
-        
-        transaction.save()
-        invoice.total_taxable_amount += transaction.taxable_value
-        invoice.total_tax_amount += transaction.state_tax + transaction.central_tax
-        invoice.total_amount += transaction.amount 
-        invoice.save()
-
-    return redirect("add_invoices")
-
-@login_required(login_url="account_login")
-def save_edit_transaction(request,id):
-    if not request.user.has_perm('finance.change_invoice'):
-        return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
-    if request.method == "POST":
-        invoice_id = request.POST.get("invoice_id")
-        invoice = get_object_or_404(Invoice,id=invoice_id)
-        item_id = request.POST.get('item')
-        item = get_object_or_404(Item,id=int(item_id))
-
-        qnt = decimal.Decimal(request.POST.get('qnt'))
-        amount = decimal.Decimal(request.POST.get('amount'))
-        discount = request.POST.get('discount')
-        rate = amount / qnt
-        taxable_amount = amount / (1 + decimal.Decimal(item.state_tax_rate*2) / 100)
-        tax_amount = taxable_amount * decimal.Decimal(item.state_tax_rate) / 100 * 2
-
-
-        transaction = Transaction(
-            invoice = invoice,
-            item = item,
-            quantity = qnt,
-            rate = rate,
-            discount = discount,
-            tax = tax_amount,
-            amount = amount
-
-        )
-        transaction.updated_at = datetime.datetime.now()
-        transaction.changed_by_user = request.user
-        transaction.save()
-        invoice.total_amount += transaction.amount 
-        invoice.save()
-
-    return redirect("edit_invoice",id)
-
-@login_required(login_url="account_login")
 def delete_transaction(request,id):
     if not request.user.has_perm('finance.delete_invoice'):
         return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
     elem = get_object_or_404(Transaction,id=id)
     elem.invoice.total_amount -= elem.amount
     elem.invoice.total_taxable_amount -= elem.taxable_value
-    elem.invoice.total_taxable_amount -= (elem.state_tax + elem.central_tax)
+    state_tax = 0
+    central_tax = 0
+    integrated_tax = 0
+    if elem.invoice.customer.state == "26" :                  # hardcoding the state code for now
+        state_tax = elem.item.state_tax_rate * elem.taxable_value / 100
+        central_tax = elem.item.central_tax_rate * elem.taxable_value / 100
+    else:
+        integrated_tax = elem.item.integrated_tax_rate * elem.taxable_value / 100
+    elem.invoice.total_state_tax_amount -= state_tax
+    elem.invoice.total_central_tax_amount -= central_tax
+    elem.invoice.total_integrated_tax_amount -= integrated_tax
     elem.invoice.save()
     elem.delete()
 
@@ -892,46 +694,6 @@ def edit_salereturn(request,id):
 
 
 
-def get_available_quantity(request):
-    item_id = request.GET.get('item_id')
-
-    # Perform the necessary logic to retrieve the available quantity based on the item_id
-    item = Item.objects.get(pk=item_id)
-    
-
-    # Assume available_quantity is retrieved from the server
-    available_quantity = item.current_stock
-    tax_percent = item.state_tax_rate
-
-    no_rate = False
-    # get the item rate
-    "If party with item rate present"
-    try:
-        party = Customer.objects.get(id=request.GET.get('customer_id'))
-        item_rate = LastItemRate.objects.get(party=party, item=item)
-        item_rate = item_rate.rate
-    except Customer.DoesNotExist:
-        print("error")
-        no_rate = True
-    except LastItemRate.DoesNotExist:
-        no_rate = True
-    if no_rate:
-        item_rate = item.rate
-
-    # Return the available quantity as a JSON response
-    return JsonResponse({
-        'available_quantity': available_quantity,
-        'tax_percent': tax_percent,
-        'item_id':item_id,
-        'item_rate':item_rate
-        })
-
-def get_ifcash(request):
-    id = request.GET.get('customerId')
-    iscash = (id == "68")
-    return JsonResponse({
-        "customer_is_cash": iscash
-        })
     
 
 def redeem_salereturn(request,id):
@@ -940,36 +702,15 @@ def redeem_salereturn(request,id):
     elem.save()
     return  redirect("view_salereturns")
 
-def get_transaction_details(request):
-    transaction_id = request.GET.get('transaction_id')
-    transaction = Transaction.objects.get(id=transaction_id)
 
-    # Perform the necessary logic to retrieve the available quantity based on the item_id
-    item = transaction.item
-    
-
-    # Assume available_quantity is retrieved from the server
-    available_quantity = item.current_stock
-    tax_percent = item.state_tax_rate
-    
-    qnt=transaction.quantity
-    rate = transaction.rate
-    taxable_value = transaction.taxable_value
-    discount_percent = transaction.discount_percent
-    discount_amount = transaction.discount_amount
-    amount = transaction.amount
-
-    
-
-    # Return the available quantity as a JSON response
+   
+    customer_id = request.GET.get('customer_id')
+    if not customer_id.isdigit():
+        state = 0
+    else:
+        customer = Customer.objects.get(id=customer_id)
+        state = customer.state
     return JsonResponse({
-        'available_quantity': available_quantity,
-        'tax_percent': tax_percent,
-        'qnt':qnt,
-        'rate':rate,
-        'item_id':item.id,
-        'taxable_value':taxable_value,
-        'discount_percent':discount_percent,
-        'discount_amount':discount_amount,
-        'amount':amount,
-        })
+        'state':state,
+        'url':reverse("add_invoices")
+    })

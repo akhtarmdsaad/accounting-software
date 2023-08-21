@@ -18,12 +18,10 @@ function update_random_customer(case_no)
   // 3 (else). Customer doesnt need any of that
 
   node = document.querySelector(".random_customer")
-  checkbox = document.querySelector(".change_shipping_address") 
-  checkbox_input = document.querySelector("input #change_shipping_address") 
+  // checkbox = document.querySelector(".change_shipping_address") 
   customer_name = document.getElementById("shipping_customer_name")
   address = document.getElementById("shipping_address")
   state = document.getElementById("shipping_state")
-  
   if(case_no == 1)
   {
     node.style.display="block"
@@ -51,7 +49,7 @@ function update_random_customer(case_no)
     });
     
     state.addEventListener('change',(e)=>{
-      sessionStorage.setItem('state',state.value) 
+      sessionStorage.setItem('state',state.value);
     });
 
     // add the required role here
@@ -62,10 +60,6 @@ function update_random_customer(case_no)
   else if(case_no == 2)
   {
     node.style.display="block" 
-    
-    data = sessionStorage.getItem("checked_shipping")
-    if(data && checkbox_input)
-      checkbox_input.checked = true;
     
     data = sessionStorage.getItem('customer_name') 
     if(data)
@@ -100,10 +94,6 @@ function update_random_customer(case_no)
     node.style.display = "none"
     checkbox.style.display = "block"
 
-    data = sessionStorage.getItem("checked_shipping")
-    if(data && checkbox_input)
-      checkbox_input.checked = true
-
     customer_name.removeAttribute("required") 
     address.removeAttribute("required")
 
@@ -121,7 +111,7 @@ function update_random_customer(case_no)
   }
 } // closed update input random customer
 
-checkbox = document.getElementById("change_shipping_address")
+const checkbox = document.getElementById("change_shipping_address")
 checkbox.addEventListener("change",(e)=>{
   if(e.target.checked)
   {
@@ -135,7 +125,7 @@ checkbox.addEventListener("change",(e)=>{
 })
 
 add_item_button = document.getElementById("add_item")
-edit_transaction_button = document.getElementById("edit_transaction_button")
+edit_transaction_buttons = document.querySelectorAll(".edit_transaction_button")
 
 data = sessionStorage.getItem('invoice_no') 
 if(data)
@@ -464,29 +454,6 @@ customer_id_in_transaction2 = document.getElementById("customer_id_in_transactio
 
 
 let newRateValue = null;
-function fetchIfCash(customerId) {
-  $.ajax({
-    url: '/finance/get_ifcash/',
-    method: 'GET',
-    data: { customerId: customerId },
-    success: function(response) {
-      node = document.querySelector(".random_customer");
-      if(response.customer_is_cash == 1)
-      {
-        update_random_customer(1)
-      }
-      else
-      {
-        update_random_customer(3)
-      }
-    },
-    error: function(xhr, status, error) {
-      // Handle the error if needed
-      console.error(error);
-    }
-  });
-}
-
 $(document).ready(function() {
   
   $('#items_select').selectize({
@@ -504,35 +471,16 @@ $(document).ready(function() {
     }
   });
   $('#items_select2')[0].selectize.setValue("2")
-  
-
-
-  
-
-  $(function () {
-    $("#customers_select").selectize({
-      onChange: function(value) {
-        // Make an AJAX request to fetch the available quantity
-        fetchIfCash(value);
-        sessionStorage.setItem('cust_sel',value) 
-        customer_id_in_transaction.value = value
-        customer_id_in_transaction2.value = value
-        
-        }
-    });
   });
-  
-});
-fetchIfCash(document.getElementById("customers_select").value);
 
 
 
 // Get required values for the transaction edit using ajax function
-function fetchTransactionDetails() {
+function fetchTransactionDetails(transaction_id) {
 $.ajax({
   url: '/finance/get_transaction_details/',
   method: 'GET',
-  data: { transaction_id: edit_transaction_button.getAttribute("info"), customer_id: customer_id_in_transaction2.value },
+  data: { transaction_id: transaction_id, customer_id: customer_id_in_transaction2.value },
   success: function(response) {
     newRateValue = response.rate;
     // Handle the response and update the UI with the available quantity
@@ -551,6 +499,8 @@ $.ajax({
     $('#total_amount2').val(response.amount);
     total_rate2.value = round( total_amount2.value / qnt2.value,2);
     $('#edit_item2').attr('href','/finance/edit_items/'+response.item_id+'/')
+    $('#modal-form2').attr('action','/finance/save_edit_transaction/'+transaction_id+'/')
+    console.log("Done the changes");
     });
   },
   error: function(xhr, status, error) {
@@ -560,10 +510,12 @@ $.ajax({
 });
 }
 
-edit_transaction_button.addEventListener("click",(e)=>{
-e.preventDefault();
-fetchTransactionDetails();
-})
+edit_transaction_buttons.forEach((button)=>{
+    button.addEventListener("click",(e)=>{
+      e.preventDefault();
+      console.log(button);
+  });
+});
 
 $(document).ajaxStop(function () {
 if (newRateValue !== null) {
@@ -571,3 +523,7 @@ if (newRateValue !== null) {
   newRateValue = null; // Reset newRateValue after updating #rate2
 }
 });
+
+
+
+console.log("Completed add_invoice.js")
