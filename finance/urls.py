@@ -37,6 +37,8 @@ urlpatterns = [
     #Invoice
     path('view_invoices/',views.view_invoices,name="view_invoices"),
     path('add_invoices/',views.add_invoices,name="add_invoices"),
+    path('edit_invoices/<int:id>/',views.edit_customer,name="edit_invoice"),
+    path('delete_invoice/<int:id>/',views.delete_customer,name="delete_invoice"),
     path('reset_invoices/',views.reset_invoice,name="reset_invoice"),
     
 
@@ -92,4 +94,7 @@ urlpatterns = [
     
     path('report_inventory_item/',report_views.inventory_by_items,name="report_inventory_item"),
     path("test/",vendor_views.testme,name="testme"),
+
+    # AJAX 
+    path('get_tax_quantity/',views.get_tax_quantity,name="get_tax_quantity"),
 ]

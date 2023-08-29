@@ -445,7 +445,26 @@ def view_invoices(request):
     })
 
 def add_invoices(request):
-    return render(request,"hod/add_invoice.html")
+    current_invoice = Invoice.objects.get(valid=False)
+    if not current_invoice:
+        new_invoice_no = get_invoice(Invoice.objects.last().invoice_no)
+        current_invoice = Invoice(
+            invoice_no=new_invoice_no
+        )
+    invoice_no = current_invoice.invoice_no
+    date = current_invoice.date
+    print(date,type(date))
+    context = {
+        "cash_id":68,
+        "invoice_no":invoice_no,
+        "day":str(date.day).rjust(2,'0'),
+        "month":str(date.month).rjust(2,'0'),
+        "year":str(date.year).rjust(4,'0'),
+        "customers":Customer.objects.all(),
+        "states":state_names,
+        "items":Item.objects.all()
+    }
+    return render(request,"hod/add_invoice.html",context)
 
 def reset_invoice(request):
     invoice = Invoice.objects.last()
@@ -704,13 +723,31 @@ def redeem_salereturn(request,id):
 
 
    
+
+# AJAX
+def get_tax_quantity(request):
+    '''
+    $('#rate').val(data.rate);
+        $('#tax').val(data.tax);
+        $('#current_stock').val(data.available_quantity);
+    '''
     customer_id = request.GET.get('customer_id')
-    if not customer_id.isdigit():
-        state = 0
-    else:
-        customer = Customer.objects.get(id=customer_id)
-        state = customer.state
-    return JsonResponse({
-        'state':state,
-        'url':reverse("add_invoices")
-    })
+    customer = get_object_or_404(Customer,id=customer_id)
+
+    item_id = request.GET.get('item_id')
+    item = get_object_or_404(Item,id=item_id)
+    
+
+    data = {
+            "tax":item.state_tax_rate,
+            "available_quantity":item.current_stock,
+            "edit_item_url": reverse("edit_item",args=[item.id])
+        }
+    
+    # check if lastItemrate present
+    last_rate = LastItemRate.objects.filter(party=customer,item=item)
+    if last_rate:data["rate"] = last_rate[0].rate
+    else:data["rate"] = item.rate
+        
+    
+    return JsonResponse(data)

@@ -4,9 +4,11 @@ function round(number,digits=2){
   return(decimal)
 }
 
-invoice_no_input = document.getElementById("invoice_no")
-date_input = document.getElementById("date")
-cust_sel = document.querySelector("#customers_select")
+const invoice_no_input = document.getElementById("invoice_no")
+const date_input = document.getElementById("date")
+const cust_sel = document.querySelector("#customers_select")
+const item_selector = document.querySelector("#items_select")
+const item_selector2 = document.querySelector("#items_select2")
 // sessionStorage.setItem('cust_sel','Select Customer') 
 
 function update_random_customer(case_no)
@@ -17,15 +19,14 @@ function update_random_customer(case_no)
   // 2. Customer has to enter shipping address 
   // 3 (else). Customer doesnt need any of that
 
-  node = document.querySelector(".random_customer")
   // checkbox = document.querySelector(".change_shipping_address") 
   customer_name = document.getElementById("shipping_customer_name")
   address = document.getElementById("shipping_address")
   state = document.getElementById("shipping_state")
   if(case_no == 1)
   {
+    console.log("Case 1 executed")
     node.style.display="block"
-    checkbox.style.display="none"
     
     data = sessionStorage.getItem('customer_name') 
     if(data)
@@ -59,6 +60,7 @@ function update_random_customer(case_no)
   }
   else if(case_no == 2)
   {
+    console.log("Case 2 executed")
     node.style.display="block" 
     
     data = sessionStorage.getItem('customer_name') 
@@ -160,8 +162,8 @@ date_input.addEventListener('input',(e)=>{
 });
 
 
-qnt = document.querySelector("#modal-form #qnt")
-qnt2 = document.querySelector("#modal-form2 #qnt2")
+const qnt = document.querySelector("#modal-form #qnt")
+const qnt2 = document.querySelector("#modal-form2 #qnt2")
 
 rate = document.querySelector("#modal-form #rate")
 rate2 = document.querySelector("#modal-form2 #rate2")
@@ -315,7 +317,8 @@ rate2.addEventListener("input",(e)=>{
 taxable_value.addEventListener("input",(e)=>{
   qnt_no = qnt.value;
   if(taxable_value.value){
-    rate.value = round( taxable_value.value / qnt_no,2);
+    console.log(taxable_value.value)
+    rate.value = round( parseFloat(taxable_value.value) / qnt_no,2);
     total_amount.value = round( ((taxable_value.value-discount_amount.value) * (1 + (tax_button.value*2)/100)),2);
     total_rate.value = round( total_amount.value / qnt_no,2);
   }
@@ -403,112 +406,60 @@ total_rate2.addEventListener("input",(e)=>{
   }
 });
 
-
-// Third Party Changes 
-customer_id_in_transaction = document.getElementById("customer_id_in_transaction")
- function fetchAvailableQuantity(itemId) {
-  $.ajax({
-    url: '/finance/get_available_quantity/',
-    method: 'GET',
-    data: { item_id: itemId, customer_id: customer_id_in_transaction.value },
-    success: function(response) {
-      // Handle the response and update the UI with the available quantity
-      $('#current_stock').val(response.available_quantity);
-      $('#tax').val(response.tax_percent);
-      $('#rate').val(response.item_rate);
-      if(current_stock_button.value) { val = current_stock_button.value }
-      else { val=0 }
-      qnt.setAttribute("max",val);
-
-      $('#edit_item').attr('href','/finance/edit_items/'+response.item_id+'/')
-    },
-    error: function(xhr, status, error) {
-      // Handle the error if needed
-      console.error(error);
-    }
-  });
-}
-customer_id_in_transaction2 = document.getElementById("customer_id_in_transaction2")
- function fetchAvailableQuantity2(itemId) {
-  $.ajax({
-    url: '/finance/get_available_quantity/',
-    method: 'GET',
-    data: { item_id: itemId, customer_id: customer_id_in_transaction2.value },
-    success: function(response) {
-      // Handle the response and update the UI with the available quantity
-      $('#current_stock2').val(response.available_quantity);
-      $('#tax2').val(response.tax_percent);
-      $('#rate2').val(response.item_rate);
-      if(current_stock_button2.value) { val = current_stock_button2.value }
-      else { val=0 }
-      qnt2.setAttribute("max",val);
-
-      $('#edit_item2').attr('href','/finance/edit_items/'+response.item_id+'/')
-    },
-    error: function(xhr, status, error) {
-      // Handle the error if needed
-      console.error(error);
-    }
-  });
-}
-
-
 let newRateValue = null;
 $(document).ready(function() {
   
   $('#items_select').selectize({
-  onChange: function(value) {
-    // Make an AJAX request to fetch the available quantity
-    fetchAvailableQuantity(value);
-    
+    onChange: function(value) {
+      // Make an AJAX request to fetch the available quantity and tax percent for the selected item
+      $.ajax({
+        url: '/finance/get_tax_quantity/',
+        data: {
+          'item_id': value,
+          "customer_id":customer_id_in_transaction.value
+        },
+        dataType: 'json',
+        success: function (data) {
+          // Update the #current_stock field,#rate field and #tax field
+          $('#rate').val(data.rate);
+          $('#tax').val(data.tax);
+          $('#current_stock').val(data.available_quantity);
+          $('#edit_item').attr('href',data.edit_item_url)
+          // update the #qnt field
+          qnt.setAttribute("max",data.available_quantity);
+          qnt.value = 0;
+        }
+      });
+      
     }
   });
   $('#items_select2').selectize({
   onChange: function(value) {
-    // Make an AJAX request to fetch the available quantity
-    fetchAvailableQuantity2(value);
-    console.log(value)
+    // Make an AJAX request to fetch the available quantity and tax percent for the selected item
+    $.ajax({
+      url: '/finance/get_tax_quantity/',
+      data: {
+        'item_id': value,
+        "customer_id":customer_id_in_transaction2.value
+      },
+      dataType: 'json',
+      success: function (data) {
+        // Update the #current_stock field,#rate field and #tax field
+        $('#rate2').val(data.rate);
+        $('#tax2').val(data.tax);
+        $('#current_stock2').val(data.available_quantity);
+        $('#edit_item2').attr('href',data.edit_item_url)
+
+        // update the #qnt field
+        qnt2.setAttribute("max",data.available_quantity);
+        qnt2.value = 0;
+      }
+    });
     }
   });
-  $('#items_select2')[0].selectize.setValue("2")
-  });
-
-
-
-// Get required values for the transaction edit using ajax function
-function fetchTransactionDetails(transaction_id) {
-$.ajax({
-  url: '/finance/get_transaction_details/',
-  method: 'GET',
-  data: { transaction_id: transaction_id, customer_id: customer_id_in_transaction2.value },
-  success: function(response) {
-    newRateValue = response.rate;
-    // Handle the response and update the UI with the available quantity
-    $.when($('#items_select2')[0].selectize.setValue(response.item_id)).done(function (a)
-    {
-    $('#current_stock2').val(response.available_quantity);
-    $('#tax2').val(response.tax_percent);
-    if(current_stock_button2.value) { val = current_stock_button2.value }
-    else { val=0 }
-    qnt2.setAttribute("max",val);
-    qnt2.value = response.qnt
-    $('#rate2').val(response.rate);
-    $('#taxable_value2').val(response.taxable_value);
-    $('#discount_percent2').val(response.discount_percent);
-    $('#discount_amount2').val(response.discount_amount);
-    $('#total_amount2').val(response.amount);
-    total_rate2.value = round( total_amount2.value / qnt2.value,2);
-    $('#edit_item2').attr('href','/finance/edit_items/'+response.item_id+'/')
-    $('#modal-form2').attr('action','/finance/save_edit_transaction/'+transaction_id+'/')
-    console.log("Done the changes");
-    });
-  },
-  error: function(xhr, status, error) {
-    // Handle the error if needed
-    console.error(error);
-  }
 });
-}
+
+
 
 edit_transaction_buttons.forEach((button)=>{
     button.addEventListener("click",(e)=>{
@@ -526,4 +477,128 @@ if (newRateValue !== null) {
 
 
 
-console.log("Completed add_invoice.js")
+// table 
+table = document.querySelector("#myTable tbody")
+// updating th values on add button click
+add_button = document.querySelector("#addItem .submit")
+update_button = document.querySelector("#editTransaction .submit")
+
+add_button.addEventListener("click",(e)=>{
+  e.preventDefault();
+  // add the table row fields(Item	Tax (in %)	Quantity	Rate	Discount (in %)	Taxable Value)
+  row = table.insertRow(-1);
+  row.innerHTML = `
+  <td>${item_selector.selectize.getItem(item_selector.value)[0].textContent.split("\n")[1].trim()}</td>
+  <td>${tax_button.value}</td>
+  <td>${qnt.value}</td>
+  <td>${rate.value}</td>
+  <td>${discount_percent.value}</td>
+  <td>${taxable_value.value}</td>
+  `;
+  z = document.createElement("td")
+  z.classList.add("text-end")
+
+  // for edit button
+  btn = document.createElement("button")
+  btn.classList.add("btn","btn-primary","btn-sm","edit_row","m-2")
+  // set atrributes data-toggle="modal" data-target="#addItem"
+  btn.setAttribute("data-toggle","modal")
+  btn.setAttribute("data-target","#editTransaction")
+  btn.textContent = "Edit"
+  z.appendChild(btn)
+  // to open modal #modal-form2
+  btn.onclick = (e)=>{
+    e.preventDefault();
+    
+    // remove all .edit row from the table 
+    document.querySelectorAll(".edit_row").forEach((row)=>{
+      row.classList.remove("edit_row")
+    })
+    
+    // add to its row class list .edit_row 
+    row = e.target.parentElement.parentElement
+    row.classList.add("edit_row")
+
+    // update the values of the modal form
+    item_selector2.selectize.setValue(item_selector2.selectize.search(row.children[0].textContent).items[0].id)
+    tax_button2.value = row.children[1].textContent
+    qnt2.value = row.children[2].textContent
+    rate2.value = row.children[3].textContent
+    discount_percent2.value = row.children[4].textContent
+    discount_amount2.value = round( taxable_value2.value * discount_percent2.value / 100,2);
+    taxable_value2.value = row.children[5].textContent
+    total_amount2.value = round( ((taxable_value2.value-discount_amount2.value) * (1 + (tax_button2.value*2)/100)),2);
+    total_rate2.value = round( total_amount2.value / qnt2.value,2);
+  }
+  btn = document.createElement("button")
+  btn.classList.add("btn","btn-danger","btn-sm","delete_row")
+  btn.textContent = "Delete"
+  z.appendChild(btn)
+  row.appendChild(z)
+  btn.onclick = (e)=>{
+    e.preventDefault();
+    row = e.target.parentElement.parentElement
+    row.remove()
+    update_totals()
+  }  
+  invoice_taxable_value += parseFloat(taxable_value.value)
+  invoice_total_amount += parseFloat(total_amount.value)
+  update_totals();
+});
+
+update_button.addEventListener("click",(e)=>{
+  e.preventDefault()
+  // get the row for which it is called 
+  row = document.querySelector(".edit_row")
+  row.children[0].textContent = item_selector2.selectize.getItem(item_selector2.value)[0].textContent.split("\n")[1].trim()
+  row.children[1].textContent = tax_button2.value
+  row.children[2].textContent = qnt2.value
+  row.children[3].textContent = rate2.value
+  row.children[4].textContent = discount_percent2.value
+  row.children[5].textContent = taxable_value2.value
+
+});
+
+// add transaction button 
+add_transaction_button = document.querySelector("#addTransaction .submit")
+// my table foot 
+extra_detail = document.querySelector("#myTable tfoot")
+name_input = document.querySelector('#addTransaction input[name="name_in_trxn"]')
+amount_input = document.querySelector('#addTransaction input[name="amount_in_trxn"]')
+add_transaction_button.addEventListener("click",(e)=>{
+  
+  e.preventDefault();
+  // add two input fields 
+  // 1. name  
+  // 2. value
+  // 3. delete button
+  string = `<td colspan="2"></td>
+  <td class="text-end" colspan="2"><strong><input class="form-control" value = "${name_input.value}" type="text" /></strong></td>
+  <td colspan="1"></td>
+  <td><input class="form-control" value = "${amount_input.value}" type="number" step="0.01" /></td>
+  `
+
+  el = document.createElement("tr")
+  el.innerHTML = string
+  btn = document.createElement("button")
+  btn.classList.add("btn","btn-danger","btn-sm","delete_row")
+  btn.innerHTML = "<i class='fas fa-trash'></i>"
+
+  btn.onclick = (e)=>{
+    e.preventDefault();
+    row = e.target.parentElement.parentElement
+    while (row.tagName != "TR")
+    {
+      row = row.parentElement
+    }
+    row.remove()
+    update_totals()
+  }
+  x = document.createElement("td")
+  x.appendChild(btn)
+  el.appendChild(x)
+
+  // insert to second last position
+  extra_detail.insertBefore(el,extra_detail.children[extra_detail.children.length-5])
+  update_totals()
+});
