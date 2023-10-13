@@ -9,6 +9,77 @@ const date_input = document.getElementById("date")
 const cust_sel = document.querySelector("#customers_select")
 const item_selector = document.querySelector("#items_select")
 const item_selector2 = document.querySelector("#items_select2")
+const separator = "$$$"
+const divide_separator = "$$$&&^^@#"
+const table = document.querySelector("#myTable tbody")
+const add_button = document.querySelector("#addItem .submit")
+const update_button = document.querySelector("#editTransaction .submit")
+
+// function to get transactions
+function get_trxn_from_storage(string_value)
+{
+  var trxn = string_value.split(divide_separator)
+  trxn.forEach((elem,index)=>{
+    trxn[index] = elem.split(separator);
+  });
+  return trxn;
+}
+
+function update_trxn_session_storage()
+{
+  z = table.children 
+  
+}
+
+function get_edit_delete_btn()
+{
+  z = document.createElement("td")
+  z.classList.add("text-end")
+
+  // for edit button
+  btn = document.createElement("button")
+  btn.classList.add("btn","btn-primary","btn-sm","edit_row","m-2")
+  btn.setAttribute("data-toggle","modal")
+  btn.setAttribute("data-target","#editTransaction")
+  btn.textContent = "Edit"
+  z.appendChild(btn)
+  // to open modal #modal-form2
+  btn.onclick = (e)=>{
+    e.preventDefault();
+    
+    // remove all .edit row from the table 
+    document.querySelectorAll(".edit_row").forEach((row)=>{
+      row.classList.remove("edit_row")
+    })
+    
+    // add to its row class list .edit_row 
+    row = e.target.parentElement.parentElement
+    row.classList.add("edit_row")
+
+    // update the values of the modal form
+    item_selector2.selectize.setValue(item_selector2.selectize.search(row.children[0].textContent).items[0].id)
+    tax_button2.value = row.children[1].textContent
+    qnt2.value = row.children[2].textContent
+    rate2.value = row.children[3].textContent
+    discount_percent2.value = row.children[4].textContent
+    discount_amount2.value = round( taxable_value2.value * discount_percent2.value / 100,2);
+    taxable_value2.value = row.children[5].textContent
+    total_amount2.value = round( ((taxable_value2.value-discount_amount2.value) * (1 + (tax_button2.value*2)/100)),2);
+    total_rate2.value = round( total_amount2.value / qnt2.value,2);
+  }
+  btn = document.createElement("button")
+  btn.classList.add("btn","btn-danger","btn-sm","delete_row")
+  btn.textContent = "Delete"
+  btn.onclick = (e)=>{
+    e.preventDefault();
+    row = e.target.parentElement.parentElement
+    row.remove()
+    update_totals()
+  }
+  z.appendChild(btn)
+  return z;
+}
+
 // sessionStorage.setItem('cust_sel','Select Customer') 
 
 function update_random_customer(case_no)
@@ -143,6 +214,28 @@ if(data)
 data = sessionStorage.getItem('date') 
 if(data)
   date_input.value = data;
+
+data = sessionStorage.getItem('transaction')
+if(data)
+{
+  trxn = get_trxn_from_storage(data)
+  table.innerHTML = ""
+  trxn.forEach((elem,index)=>{
+    row = table.insertRow(-1);
+    row.innerHTML = `
+    <td>${elem[1]}</td>
+    <td>${elem[2]}</td>
+    <td>${elem[3]}</td>
+    <td>${elem[4]}</td>
+    <td>${elem[5]}</td>
+    <td>${elem[6]}</td>
+    `;
+    z = get_edit_delete_btn()
+    row.appendChild(z);
+    invoice_taxable_value += parseFloat(taxable_value.value)
+    invoice_total_amount += parseFloat(total_amount.value)
+  })
+}
 
 
 
@@ -478,69 +571,53 @@ if (newRateValue !== null) {
 
 
 // table 
-table = document.querySelector("#myTable tbody")
 // updating th values on add button click
-add_button = document.querySelector("#addItem .submit")
-update_button = document.querySelector("#editTransaction .submit")
 
 add_button.addEventListener("click",(e)=>{
   e.preventDefault();
   // add the table row fields(Item	Tax (in %)	Quantity	Rate	Discount (in %)	Taxable Value)
   row = table.insertRow(-1);
+  var item_name = item_selector.selectize.getItem(item_selector.value)[0].textContent.split("\n")[1].trim();
+  var id = table.children.length + 1
   row.innerHTML = `
-  <td>${item_selector.selectize.getItem(item_selector.value)[0].textContent.split("\n")[1].trim()}</td>
+  <td>${item_name}</td>
   <td>${tax_button.value}</td>
   <td>${qnt.value}</td>
   <td>${rate.value}</td>
   <td>${discount_percent.value}</td>
   <td>${taxable_value.value}</td>
   `;
-  z = document.createElement("td")
-  z.classList.add("text-end")
-
-  // for edit button
-  btn = document.createElement("button")
-  btn.classList.add("btn","btn-primary","btn-sm","edit_row","m-2")
-  // set atrributes data-toggle="modal" data-target="#addItem"
-  btn.setAttribute("data-toggle","modal")
-  btn.setAttribute("data-target","#editTransaction")
-  btn.textContent = "Edit"
-  z.appendChild(btn)
-  // to open modal #modal-form2
-  btn.onclick = (e)=>{
-    e.preventDefault();
-    
-    // remove all .edit row from the table 
-    document.querySelectorAll(".edit_row").forEach((row)=>{
-      row.classList.remove("edit_row")
-    })
-    
-    // add to its row class list .edit_row 
-    row = e.target.parentElement.parentElement
-    row.classList.add("edit_row")
-
-    // update the values of the modal form
-    item_selector2.selectize.setValue(item_selector2.selectize.search(row.children[0].textContent).items[0].id)
-    tax_button2.value = row.children[1].textContent
-    qnt2.value = row.children[2].textContent
-    rate2.value = row.children[3].textContent
-    discount_percent2.value = row.children[4].textContent
-    discount_amount2.value = round( taxable_value2.value * discount_percent2.value / 100,2);
-    taxable_value2.value = row.children[5].textContent
-    total_amount2.value = round( ((taxable_value2.value-discount_amount2.value) * (1 + (tax_button2.value*2)/100)),2);
-    total_rate2.value = round( total_amount2.value / qnt2.value,2);
+  
+  // save to storage 
+  // js obj 
+  
+  obj = [
+    id,
+		item_name,
+		tax_button.value,
+		qnt.value,
+		rate.value,
+		discount_percent.value,
+		taxable_value.value
+  ]   // 7 rows
+  
+  
+  // get the old string
+  old_string = sessionStorage.getItem("transaction")
+  if (!old_string)
+  {
+    sessionStorage.setItem("transaction",obj.join(separator))
   }
-  btn = document.createElement("button")
-  btn.classList.add("btn","btn-danger","btn-sm","delete_row")
-  btn.textContent = "Delete"
-  z.appendChild(btn)
+  else
+  {
+    obj = old_string + divide_separator + obj.join(separator)
+    sessionStorage.setItem("transaction",obj)
+  }
+  
+  
+  z = get_edit_delete_btn();
   row.appendChild(z)
-  btn.onclick = (e)=>{
-    e.preventDefault();
-    row = e.target.parentElement.parentElement
-    row.remove()
-    update_totals()
-  }  
+    
   invoice_taxable_value += parseFloat(taxable_value.value)
   invoice_total_amount += parseFloat(total_amount.value)
   update_totals();

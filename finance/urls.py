@@ -87,6 +87,7 @@ urlpatterns = [
     path('redeem_vendor_credit_note/<int:id>/',vendor_views.redeem_vendor_credit_note,name="my_credit_redeem"),
 
     # Reports
+    path('report_home/',report_views.home,name="report_home"),
     path('report_sales_customer/',report_views.sales_by_customer,name="report_sales_customer"),
     path('report_sales_item/',report_views.sales_by_item,name="report_sales_item"),
     path('report_payment_customer/',report_views.payments_by_customers,name="report_payment_customer"),

@@ -61,7 +61,7 @@
                             >
                               <i class="fas fa-pen"></i>
                             </a>
-                            <button type="button" class="btn btn-primary delete-vendor" id="{{i.id}}" data-toggle="modal" data-target="#modal">
+                            <button type="button" class="btn btn-primary delete" id="{{i.id}}" data-toggle="modal" data-target="#modal">
                               <i class="fa fa-trash" aria-hidden="true"></i>
                             </button>
                           </div>
@@ -94,7 +94,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        <a class="btn btn-danger modal-delete" href="#">Delete</a>
+        <a class="btn btn-danger modal" href="#">Delete</a>
       </div>
     </div>
   </div>
@@ -102,19 +102,12 @@
     {% endblock content %}
 {% block script %}
 <script>
-del_buttons = document.querySelectorAll("button.btn.delete-vendor")
-to_change = document.querySelector("a.modal-delete")
-del_buttons.forEach(function(btn){
-  btn.addEventListener("click", function(e){
-    // change the modal url 
-    btn = e.target 
-    while(btn.tagName != "BUTTON")
-    {
-      btn = btn.parentElement
-    }
-    console.log(btn)
-    to_change.setAttribute("href","/finance/delete_vendor/" + btn.getAttribute("id") + "/")
-  })
+del_button = document.querySelector("btn.delete")
+to_change = document.querySelector("a.modal")
+del_button.addEventListener("click", function(e){
+  // change the modal url 
+    to_change.href = "/finance/delete_vendor/" + e.target.getAttribute("id")
+
 })
 
 </script>

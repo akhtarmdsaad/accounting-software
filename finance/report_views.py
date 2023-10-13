@@ -15,6 +15,8 @@ class Table:
         return iter(self.row_items)
 
 
+def home(request):
+    return render(request,"hod/report_home.html")
 
 def sales_by_customer(request):
     table_list = []

@@ -445,6 +445,11 @@ def view_invoices(request):
     })
 
 def add_invoices(request):
+    if request.method == "POST":
+        print("POSTS:")
+        print(request.POST)
+        print("\nGETS:")
+        print(request.GET)
     current_invoice = Invoice.objects.get(valid=False)
     if not current_invoice:
         new_invoice_no = get_invoice(Invoice.objects.last().invoice_no)
@@ -453,7 +458,7 @@ def add_invoices(request):
         )
     invoice_no = current_invoice.invoice_no
     date = current_invoice.date
-    print(date,type(date))
+    
     context = {
         "cash_id":68,
         "invoice_no":invoice_no,

@@ -24,6 +24,11 @@
             <li><a href="{% url 'view_item_adjustment' %}"  class="{% active_link 'view_item_adjustment' 'active' %}"   >Inventory Adjustment</a></li>
           </ul>
         </li>
+        <li class="{% active_link 'finance_dashboard' 'active' %}">
+          <a href="{% url 'finance_dashboard' %}"
+            ><i class="fa fa-book" aria-hidden="true"></i> <span>Reports</span></a
+          >
+        </li>
         <li class="menu-title">
           <span>Vouchers</span>
         </li>

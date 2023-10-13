@@ -80,7 +80,7 @@
               <div class="col-12 col-sm-6">
                 <div class="form-group">
                   <label>Tax Type</label>
-                  <select class="form-control" id="tax_type">
+                  <select class="form-control" id="tax_type" name='tax_type'>
                     <option value="1">CGST/SGST</option>
                     <option value="2">IGST</option>
                   </select>
@@ -103,11 +103,13 @@
                       name="customer_name"
                       id="shipping_customer_name"
                       value=""
+                      required = "false"
                     />
                   </div>
                   <div class="form-group col-sm-6">
                     <label for="state">State</label>
-                    <select name="state" class="form-control" id="shipping_state">
+                    <select name="state" class="form-control" id="shipping_state" 
+                    required = "false">
                       {% for i in states %}
                         <option value="{{forloop.counter}}">{{i}}</option>
                       {% endfor %}
@@ -121,6 +123,7 @@
                     name="address"
                     id="shipping_address"
                     rows="10"
+                    required = "false"
                   ></textarea>
                 </div>
               </div>
@@ -138,74 +141,7 @@
                   </tr>
                 </thead>
                 <tbody>
-					        {% for transaction in transactions %}
-                    <tr>
-                      <td>
-                        <textbox rows="10" columns="10" >{{transaction.item.name}}</textbox>
-                      </td>
-                      <td>
-                        {{transaction.item.state_tax_rate}}% / {{transaction.item.state_tax_rate}}%
-                      </td>
-                      <td>
-                        <input
-                          required
-                          type="number" step="0.01"
-                          class="form-control"
-                          name="qnt"
-                          disabled
-                          value="{{transaction.quantity}}"
-                        />
-                      </td>
-                      <td>
-                        <input
-                          required
-                          type="number" step="0.01"
-                          class="form-control"
-                          name="rate"
-                          disabled
-                          value="{{transaction.rate}}"
-                        />
-                      </td>
-                      <td>
-                        <input
-                          required
-                          type="number" step="0.01"
-                          class="form-control"
-                          name="discount"
-                          value="{{transaction.discount_percent}}"
-                          disabled
-                        />
-                      </td>
-                      <td>
-                        <input
-                          required
-                          type="number" step="0.01"
-                          class="form-control"
-                          name="rate"
-                          disabled
-                          value="{{transaction.taxable_value}}"
-                        />
-                      </td>
-                      <td class="text-right">
-                        <div class="actions">
-                          
-                          <button type="button" class="btn btn-sm bg-info-light mr-2 edit_transaction_button" info="{{transaction.id}}" data-toggle="modal" data-target="#editTransaction">
-                            <i class="fas fa-pen"></i>
-                        </button>
-
-                          <a
-                            href="{% url 'delete_transaction' transaction.id %}"
-                            class="btn btn-sm bg-danger-light mr-2"
-                          >
-                            <i class="fas fa-trash"></i>
-                          </a>
-                          
-                          
-                        </div>
-                      </td>
-                    </tr>
-                  {% endfor %}
-                  
+					        
                 </tbody>
                 <tfoot>
                   <tr>
@@ -270,9 +206,7 @@
               </table>
               <div class="row">
                 <div class="col-sm-2">
-                  <button type="submit" class="btn btn-primary">
-                    Save Invoice
-                  </button>
+                  <input type="submit" value="Save Invoice" class = "btn btn-primary">
                 </div>
                 <div class="col-sm-2">
                   <button type="button" class="btn btn-secondary">
@@ -315,7 +249,7 @@
             <div class="col-12 col-sm-3">
               <div class="form-group">  
                 <label for="item">Item</label>
-                <select id="items_select" name="item">
+                <select id="items_select">
                   <option>Select Item</option>
                   {% for i in items %}
                   <option value="{{i.id}}" current_stock="{{i.current_stock}}" tax="{{i.state_tax_rate}}">
@@ -338,7 +272,7 @@
                   required
                   type="number" step="0.01"
                   class="form-control"
-                  name="tax" id="tax"
+                  id="tax"
                   disabled
                 />
               </div>
@@ -362,7 +296,7 @@
                   required
                   type="number" step="0.01"
                   class="form-control"
-                  name="qnt" id="qnt"
+                  id="qnt"
                 />
               </div>
             </div>
@@ -373,7 +307,7 @@
                   required
                   type="number" step="0.01"
                   class="form-control"
-                  name="rate" id="rate"
+                  id="rate"
                 />
               </div>
             </div>
@@ -395,7 +329,7 @@
                   required
                   type="number" step="0.01"
                   class="form-control"
-                  name="discount_percent" id="discount_percent"
+                  id="discount_percent"
                 />
               </div>
               <div class="form-group">
@@ -404,7 +338,7 @@
                   required
                   type="number" step="0.01"
                   class="form-control"
-                  name="total_rate" id="total_rate"
+                  id="total_rate"
                 />
             </div>
               
@@ -417,7 +351,7 @@
                   required
                   type="number" step="0.01"
                   class="form-control"
-                  name="discount_amount" id="discount_amount"
+                  id="discount_amount"
                 />
               </div>
               <div class="form-group">
@@ -426,16 +360,16 @@
                   required
                   type="number" step="0.01"
                   class="form-control"
-                  name="total_amount" id="total_amount"
+                  id="total_amount"
                 />
               </div>
             
               
             </div>
-            <input type="hidden" name="invoice_id" value="{{invoice.id}}">
-            <input type="hidden" name="customer_id_in_transaction" id="customer_id_in_transaction" value="2">
-            <input type="hidden" name="shipping_checkbox_trxn" id="shipping_checkbox_trxn" value="0">
-            <input type="hidden" name="shipping_state_trxn" id="shipping_state_trxn" value="26">
+            <input type="hidden" value="{{invoice.id}}">
+            <input type="hidden" id="customer_id_in_transaction" value="2">
+            <input type="hidden" id="shipping_checkbox_trxn" value="0">
+            <input type="hidden" id="shipping_state_trxn" value="26">
           </div>
         
       </div>
@@ -508,7 +442,7 @@
             <div class="col-12 col-sm-3">
               <div class="form-group">  
                 <label for="item">Item</label>
-                <select id="items_select2" name="item" >
+                <select id="items_select2" >
                   <option>Select Item</option>
                   {% for i in items %}
                   <option value="{{i.id}}" current_stock="{{i.current_stock}}" tax="{{i.state_tax_rate}}">
@@ -531,7 +465,7 @@
                   required
                   type="number" step="0.01"
                   class="form-control"
-                  name="tax" id="tax2"
+                  id="tax2"
                   disabled
                 />
               </div>
@@ -555,7 +489,7 @@
                   required
                   type="number" step="0.01"
                   class="form-control"
-                  name="qnt" id="qnt2"
+                  id="qnt2"
                 />
               </div>
             </div>
@@ -566,7 +500,7 @@
                   required
                   type="number" step="0.01"
                   class="form-control"
-                  name="rate" id="rate2"
+                  id="rate2"
                 />
               </div>
             </div>
@@ -577,7 +511,7 @@
                   required
                   type="number" step="0.01"
                   class="form-control"
-                  name="taxable_value" id="taxable_value2"
+                  id="taxable_value2"
                   />
               </div>
             </div>
@@ -588,7 +522,7 @@
                   required
                   type="number" step="0.01"
                   class="form-control"
-                  name="discount_percent" id="discount_percent2"
+                  id="discount_percent2"
                 />
               </div>
                   <div class="form-group">
@@ -597,7 +531,7 @@
                       required
                       type="number" step="0.01"
                       class="form-control"
-                      name="total_rate" id="total_rate2"
+                      id="total_rate2"
                     />
                 </div>
               
@@ -610,7 +544,7 @@
                   required
                   type="number" step="0.01"
                   class="form-control"
-                  name="discount_amount" id="discount_amount2"
+                  id="discount_amount2"
                 />
               </div>
               <div class="form-group">
@@ -619,15 +553,15 @@
                   required
                   type="number" step="0.01"
                   class="form-control"
-                  name="total_amount" id="total_amount2"
+                  id="total_amount2"
                 />
               </div>
             </div>
             
           
           </div>
-          <input type="hidden" name="invoice_id" value="{{invoice.id}}">
-          <input type="hidden" name="customer_id_in_transaction" id="customer_id_in_transaction2" value="2">
+          <input type="hidden" value="{{invoice.id}}">
+          <input type="hidden" id="customer_id_in_transaction2" value="2">
         </div>
       </div> 
       <div class="modal-footer">
@@ -790,7 +724,6 @@ console.log("Heading over")
   function update_totals()
   {
     // get table body 
-    table = document.querySelector("#myTable tbody")
     z = table.children
     x=0
     total_taxable = 0 
@@ -830,9 +763,9 @@ console.log("Heading over")
 
     document.querySelector("#invoice_taxable_value").textContent = total_taxable
     taxable_value_in_trxn.value = total_taxable
-    document.querySelector("#invoice_central_tax_value").textContent = total_cgst
-    document.querySelector("#invoice_state_tax_value").textContent = total_sgst
-    document.querySelector("#invoice_integrated_tax_value").textContent = total_igst
+    document.querySelector("#invoice_central_tax_value").textContent = round(total_cgst,2)
+    document.querySelector("#invoice_state_tax_value").textContent = round(total_sgst,2)
+    document.querySelector("#invoice_integrated_tax_value").textContent = round(total_igst,2)
     
     // calculate total amount
     x = 1 
@@ -848,8 +781,8 @@ console.log("Heading over")
       }
       x+=1
     }
-    document.querySelector("#invoice_total_amount").textContent = invoice_total_amount
-    total_amount_in_trxn.value = invoice_total_amount
+    document.querySelector("#invoice_total_amount").textContent = round(invoice_total_amount,2)
+    total_amount_in_trxn.value = round(invoice_total_amount,2)
     console.log("Ran Update Totals")
   }
   update_totals()
@@ -864,6 +797,6 @@ console.log("Heading over")
   }
   document.querySelector("#tax_type").addEventListener("change",(e)=>{tax_is_changed(e)})
   document.querySelector("#refresh_total").addEventListener("click",()=>{update_totals()})
-  update_random_customer(2)
+  update_random_customer(3)
 </script>
 {% endblock script %}
