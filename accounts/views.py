@@ -12,8 +12,9 @@ def user_login(request):
     if request.method == "POST":
         email = request.POST.get('email')
         password = request.POST.get('password')
-
-        if authenticate(request,email=email,password=password):
+        print(email,password)
+        print(authenticate(request,username=email,password=password))
+        if authenticate(request,email=email,password=password) or authenticate(request,username=email,password=password):
             print("Yes authentication")
             user = CustomUser.objects.get(email=email)
             login(request,user)
@@ -30,3 +31,7 @@ def user_login(request):
             messages.error(request,"Email or Password is Incorrect")
 
     return render(request,"accounts/login.html")
+
+def user_logout(request):
+    logout(request)
+    return redirect("login")

@@ -450,12 +450,17 @@ def add_invoices(request):
         print(request.POST)
         print("\nGETS:")
         print(request.GET)
-    current_invoice = Invoice.objects.get(valid=False)
+    current_invoice = Invoice.objects.filter(valid=False)
     if not current_invoice:
         new_invoice_no = get_invoice(Invoice.objects.last().invoice_no)
         current_invoice = Invoice(
-            invoice_no=new_invoice_no
+            invoice_no=new_invoice_no,
+            date=datetime.datetime.today(),
+            valid=False
         )
+        current_invoice.save()
+    else:
+        current_invoice = current_invoice[0]
     invoice_no = current_invoice.invoice_no
     date = current_invoice.date
     
@@ -756,3 +761,122 @@ def get_tax_quantity(request):
         
     
     return JsonResponse(data)
+
+# Ajax
+def save_invoice(request):
+    # get async data 
+    '''
+    data = {
+    "invoice_no":invoice_no,
+    "date":date,
+    "customer":customer,
+    "tax_type":tax_type,
+    "change_shipping_address":change_shipping_address,
+    "customer_shipping":customer_shipping,
+    "state":state,
+    "address":address,
+    "transaction":transaction,
+    "transaction_addon":transaction_addon
+  }
+    '''
+    invoice_no = request.GET.get('invoice_no')
+    date = request.GET.get('date')
+    customer_id = request.GET.get('customer_id')
+    tax_type = request.GET.get('tax_type')
+    change_shipping_address = request.GET.get('change_shipping_address')
+    shipping_customer_name = request.GET.get('shipping_customer_name')
+    state = request.GET.get('state')
+    address = request.GET.get('address')
+    transaction = request.GET.get('transaction')
+    transaction_addon = request.GET.get('transaction_addon')
+    shipping = None
+    if change_shipping_address == "true":
+        # create a new Customer
+        customer = Customer(
+            name = shipping_customer_name,
+            address = address,
+            state = state
+        )
+        customer.save()
+        shipping = ShippingDetail(
+            state = state,
+            address = address
+        )
+        shipping.save()
+    else:
+        customer = get_object_or_404(Customer,id=int(customer_id))
+
+    # print(customer,type(customer))
+    
+    invoice = Invoice.objects.get(valid=False)
+    invoice.invoice_no = invoice_no
+    invoice.customer = customer
+    invoice.date = date
+    invoice.shipping_details = shipping
+    invoice.save()
+    # add transaction
+    separator = "$$$"
+    divide_separator = "$$$&&^^@#"
+    
+    transaction = transaction.split(divide_separator)
+    # transaction_addon = {}
+    # transaction_addon = transaction_addon.split(divide_separator)
+
+    total_taxable_amount = 0
+    total_state_tax_amount = 0
+    total_central_tax_amount = 0
+    total_integrated_tax_amount = 0
+    total_invoice_amount = 0
+
+    for tr in transaction:
+        sl_no,item,tax,qnt,rate,dis_per,taxable_value = tr.split(separator)
+        item = get_object_or_404(Item,name=item)
+        print(taxable_value,type(taxable_value), dis_per,type(dis_per))
+        taxable_value = float(taxable_value)
+        dis_per = float(dis_per)
+        dis_amt = taxable_value * dis_per / 100
+        tr = Transaction(
+            invoice=invoice,
+            item = item,
+            quantity = qnt,
+            rate = rate,
+            taxable_value = taxable_value,
+            discount_percent = dis_per,
+            discount_amount = dis_amt,
+        )
+        x = (taxable_value - dis_amt) 
+        total_taxable_amount += x
+        if tax_type=="1":
+            total_state_tax_amount += (x * item.state_tax_rate/100)
+            total_central_tax_amount += (x * item.central_tax_rate/100)
+        else:
+            total_integrated_tax_amount += (x * item.integrated_tax_rate / 100)
+        total_invoice_amount += x * (1 + (item.state_tax_rate+item.central_tax_rate)/100)
+        tr.save()
+
+    l = transaction_addon.split(divide_separator)
+    json_dict = {}
+    # makeit to json (name,value) pair
+    for i in l:
+        if i:
+            name,value = i.split(separator)
+            json_dict[name] = value
+
+    # add to invoice
+    invoice.extra_details = json.dumps(json_dict)
+    
+    # tax calculation
+    invoice.total_taxable_amount = total_taxable_amount
+    invoice.total_state_tax_amount = total_state_tax_amount
+    invoice.total_central_tax_amount = total_central_tax_amount
+    invoice.total_integrated_tax_amount = total_integrated_tax_amount
+    invoice.total_amount = total_invoice_amount
+    
+    
+    invoice.valid = True
+    invoice.save()
+
+
+    # invoice.delete()
+    return JsonResponse({"status":"success"})
+    

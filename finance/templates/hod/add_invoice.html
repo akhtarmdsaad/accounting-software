@@ -206,7 +206,7 @@
               </table>
               <div class="row">
                 <div class="col-sm-2">
-                  <input type="submit" value="Save Invoice" class = "btn btn-primary">
+                  <input type="submit" id = "saveInvoice" value="Save Invoice" class = "btn btn-primary">
                 </div>
                 <div class="col-sm-2">
                   <button type="button" class="btn btn-secondary">
@@ -650,7 +650,6 @@ CUSTOMER_IS_CASH = false ;
 console.log("Started")
 </script>
 <script src="{% static 'assets/js/add_invoice.js' %}"></script>
-console.log("Heading over")
 <script>
   // cash customer check 
   function checkIfCash(value)
@@ -678,7 +677,7 @@ console.log("Heading over")
   });
   // ----------------------------------------------------------------------------------------------------
   // SHIPPING 
-  add_item_button = document.getElementById("add_item")
+  // add_item_button = document.getElementById("add_item")
   add_item_button.addEventListener("click",(e)=>{
 
       data = sessionStorage.getItem('checked_shipping')
@@ -771,8 +770,11 @@ console.log("Heading over")
     x = 1 
     y = extra_detail.children.length-2
     invoice_total_amount = 0
-    while (x < y){
-      c = extra_detail.children[x].children[3].children[0]
+    while (x < y && extra_detail.children[x].children[3]){
+      console.log("1",extra_detail.children[x])
+      console.log("2",extra_detail.children[x].children[3])
+      console.log("3",extra_detail.children[x].children[3].children[0])
+      c = extra_detail.children[x].children[3].children[0];
       if(c.tagName == "INPUT"){
         invoice_total_amount += parseFloat(c.value)
       }
@@ -783,6 +785,7 @@ console.log("Heading over")
     }
     document.querySelector("#invoice_total_amount").textContent = round(invoice_total_amount,2)
     total_amount_in_trxn.value = round(invoice_total_amount,2)
+    update_trxn_addon_session_storage();
     console.log("Ran Update Totals")
   }
   update_totals()

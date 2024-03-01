@@ -14,6 +14,10 @@ const divide_separator = "$$$&&^^@#"
 const table = document.querySelector("#myTable tbody")
 const add_button = document.querySelector("#addItem .submit")
 const update_button = document.querySelector("#editTransaction .submit")
+const save_invoice_button = document.querySelector('#saveInvoice')
+const extra_detail = document.querySelector("#myTable tfoot")
+const add_item_button = document.getElementById("add_item")
+var edit_transaction_buttons = document.querySelectorAll(".edit_transaction_button")
 
 // function to get transactions
 function get_trxn_from_storage(string_value)
@@ -25,14 +29,47 @@ function get_trxn_from_storage(string_value)
   return trxn;
 }
 
+function get_trxn_addon_from_storage(string_value)
+{
+  var trxn = string_value.split(divide_separator)
+  trxn.forEach((elem,index)=>{
+    trxn[index] = elem.split(separator);
+  });
+  return trxn;
+}
+
+function update_trxn_addon_session_storage()
+{
+  obj = []
+  for(j=2;j<extra_detail.children.length-5;j++)
+    {
+        let name = extra_detail.children[j].querySelector("input[type='text']").value
+        let value = extra_detail.children[j].querySelector("input[type='number']").value
+        s = name+separator+value
+        obj.push(s)
+    }
+  sessionStorage.setItem("transaction_addon",obj.join(divide_separator))
+}
 function update_trxn_session_storage()
 {
   z = table.children 
-  
+  obj = []
+  for(let i=0;i<z.length;i++){
+    s = []
+    for(let j=0;j<6;j++){
+        // console.log(z[i])
+        s.push(z[i].children[j].textContent)
+    }
+    obj.push(s.join(separator))
+  }
+  obj = obj.join(divide_separator)
+  sessionStorage.setItem("transaction",obj)
 }
 
 function get_edit_delete_btn()
 {
+  // exclusively only for transaction part
+  //NOTE: dont even use it in transaction addons
   z = document.createElement("td")
   z.classList.add("text-end")
 
@@ -197,8 +234,7 @@ checkbox.addEventListener("change",(e)=>{
   sessionStorage.setItem("checked_shipping",e.target.checked)
 })
 
-add_item_button = document.getElementById("add_item")
-edit_transaction_buttons = document.querySelectorAll(".edit_transaction_button")
+
 
 data = sessionStorage.getItem('invoice_no') 
 if(data)
@@ -236,6 +272,36 @@ if(data)
     invoice_total_amount += parseFloat(total_amount.value)
   })
 }
+data = sessionStorage.getItem('transaction_addon')
+
+if(data)
+{
+  trxn = get_trxn_addon_from_storage(data)
+  // index = 2
+  trxn.forEach((elem,index)=>{
+    row = extra_detail.insertRow(index+2);
+    console.log(elem)
+    row.innerHTML = `
+    <td colspan="2"></td>
+  <td class="text-end" colspan="2"><strong><input class="form-control" value="${elem[0]}" type="text" disabled></strong></td>
+  <td colspan="1"></td>
+  <td><input class="form-control px-0" value="${elem[1]}" type="number" step="0.01" disabled ></td>
+    `;
+
+    // add one more td
+    td = document.createElement("td")
+    btn = document.createElement("button")
+    btn.classList.add("btn","btn-danger","btn-sm","delete_row")
+    btn.innerHTML = `<i class="fas fa-trash"></i>`
+    btn.onclick = ()=>{
+      row.remove();
+    }
+    td.appendChild(btn)
+    row.appendChild(td);
+    // invoice_taxable_value += parseFloat(taxable_value.value)
+    invoice_total_amount += parseFloat(elem[1])
+    })
+  }
 
 
 
@@ -380,6 +446,7 @@ discount_amount2.addEventListener("input",(e)=>{
   }
 })
 
+
 rate.addEventListener("input",(e)=>{
   qnt_no = qnt.value;
   if(rate.value){
@@ -499,6 +566,15 @@ total_rate2.addEventListener("input",(e)=>{
   }
 });
 
+
+edit_transaction_buttons.forEach((button)=>{
+  button.addEventListener("click",(e)=>{
+    e.preventDefault();
+    console.log(button);
+});
+});
+console.log("Edit Transaction Buttons:",edit_transaction_buttons)
+
 let newRateValue = null;
 $(document).ready(function() {
   
@@ -553,13 +629,6 @@ $(document).ready(function() {
 });
 
 
-
-edit_transaction_buttons.forEach((button)=>{
-    button.addEventListener("click",(e)=>{
-      e.preventDefault();
-      console.log(button);
-  });
-});
 
 $(document).ajaxStop(function () {
 if (newRateValue !== null) {
@@ -633,13 +702,14 @@ update_button.addEventListener("click",(e)=>{
   row.children[3].textContent = rate2.value
   row.children[4].textContent = discount_percent2.value
   row.children[5].textContent = taxable_value2.value
+  update_trxn_session_storage()
 
 });
 
 // add transaction button 
 add_transaction_button = document.querySelector("#addTransaction .submit")
-// my table foot 
-extra_detail = document.querySelector("#myTable tfoot")
+// my table footer 
+
 name_input = document.querySelector('#addTransaction input[name="name_in_trxn"]')
 amount_input = document.querySelector('#addTransaction input[name="amount_in_trxn"]')
 add_transaction_button.addEventListener("click",(e)=>{
@@ -675,7 +745,84 @@ add_transaction_button.addEventListener("click",(e)=>{
   x.appendChild(btn)
   el.appendChild(x)
 
+  obj = [
+    name_input.value,
+    amount_input.value
+  ]
+
+  old_string = sessionStorage.getItem("transaction_addon")
+  if (!old_string)
+  {
+    sessionStorage.setItem("transaction_addon",obj.join(separator))
+  }
+  else
+  {
+    obj = old_string + divide_separator + obj.join(separator)
+    sessionStorage.setItem("transaction_addon",obj)
+  }
+  
+
   // insert to second last position
   extra_detail.insertBefore(el,extra_detail.children[extra_detail.children.length-5])
   update_totals()
+});
+
+
+save_invoice_button.addEventListener("click",(e)=>{
+  e.preventDefault();
+  // get the form data
+  invoice_no = invoice_no_input.value
+  date = date_input.value
+  customer_id = customer_id_in_transaction.value
+  tax_type = document.querySelector("#tax_type").value
+
+  // get the shipping address
+  change_shipping_address = document.querySelector("#change_shipping_address").checked
+  shipping_customer_name = document.querySelector("#shipping_customer_name").value
+  state = document.querySelector("#shipping_state").value
+  address = document.querySelector("#shipping_address").value
+
+  // get the transaction data
+  transaction = sessionStorage.getItem("transaction")
+  // get the transaction addon data
+  transaction_addon = sessionStorage.getItem("transaction_addon")
+
+  // wrap them into json
+  data = {
+    "invoice_no":invoice_no,
+    "date":date,
+    "customer_id":customer_id,
+    "tax_type":tax_type,
+    "change_shipping_address":change_shipping_address,
+    "customer_shipping":shipping_customer_name,
+    "state":state,
+    "address":address,
+    "transaction":transaction,
+    "transaction_addon":transaction_addon
+  }
+  
+
+  // async save them
+  $.ajax({
+    type: "GET",
+    url: "/finance/save_invoice/",
+    data: data,
+    dataType: "json",
+    success: function (response) {
+      if(response.status == "success")
+      {
+        window.location.href = "/finance/view_invoices/"
+      }
+      else
+      {
+        console.warn(response)
+      }
+    }
+  });
+  // send data to "/finance/save_invoice/" async 
+
+
+  // get the response
+  // if success then redirect to the invoice page
+  // else show the error message
 });

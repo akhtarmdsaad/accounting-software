@@ -1,22 +1,30 @@
 from django.shortcuts import get_object_or_404, redirect, render,HttpResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from finance.models import Invoice, Customer, Item
-
-class Table:
-    def __init__(self, row_items):
-        self.row_items = row_items
-        self.td_string = ""
-    
-    def prepare_td(self):
-        for i in self.row_items:
-            self.td_string += f"<td>{i}</td>\n"
-    def __iter__(self):
-        return iter(self.row_items)
+from finance.models import *
+import datetime
 
 
+class Transaction:
+    def __init__(self,no,date,customer="",voucher="",amount=""):
+        pass
 def home(request):
-    return render(request,"hod/report_home.html")
+    table_list = []
+    invoices = Invoice.objects.filter(date = datetime.date.today())
+    payments = Payment.objects.filter(date = datetime.date.today())
+    reciepts = Reciept.objects.filter(date = datetime.date.today())
+    purchases = PurchaseInvoice.objects.filter(date = datetime.date.today())
+    sale_returns = SaleReturn.objects.filter(date = datetime.date.today())
+    purchase_returns = PurchaseReturn.objects.filter(date = datetime.date.today())
+    context = {
+        "invoices":invoices,
+        "payments":payments,
+        "reciepts":reciepts,
+        "purchases":purchases,
+        "salereturns":sale_returns,
+        "purchasereturns":purchase_returns
+    }
+    return render(request,"reports/daybook.html")
 
 def sales_by_customer(request):
     table_list = []

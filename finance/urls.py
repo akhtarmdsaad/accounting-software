@@ -98,4 +98,5 @@ urlpatterns = [
 
     # AJAX 
     path('get_tax_quantity/',views.get_tax_quantity,name="get_tax_quantity"),
+    path('save_invoice/',views.save_invoice,name="save_invoice"),
 ]

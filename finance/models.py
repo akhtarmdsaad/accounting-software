@@ -266,7 +266,24 @@ class Reciept(models.Model):
 
     def __str__(self):
         return f"{self.vendor.company}-{self.amount}"
-  
+
+class PurchaseReturn(models.Model):
+    date = models.DateField(_("date"), auto_now=False, auto_now_add=False)
+    vendor = models.ForeignKey(Vendor,on_delete=models.CASCADE)
+    item = models.ForeignKey(Item,on_delete=models.CASCADE)
+    quantity = models.DecimalField(max_digits=10, decimal_places=2)
+    description = models.TextField(default="")
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.IntegerField(choices=STATUS,default = 1)
+    created_at = models.DateTimeField(auto_now_add=True,null = True)
+    updated_at = models.DateTimeField(auto_now_add=True,null = True)
+    changed_by_user = models.ForeignKey(CustomUser,null=True,on_delete=models.PROTECT)
+    
+    
+    def __str__(self):
+        return str(self.vendor.name) + " - " + str(self.amount)
+
+
 class VendorCreditNote(models.Model):
     date = models.DateField(_("date"), auto_now=False, auto_now_add=False)
     vendor = models.ForeignKey(Vendor,on_delete=models.CASCADE)

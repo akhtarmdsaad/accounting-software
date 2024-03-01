@@ -1,0 +1,104 @@
+{% extends 'base.html' %} 
+{% block content %}
+<div class="main-wrapper">
+  <div class="page-wrapper">
+    <div class="content container-fluid">
+      <div class="page-header">
+        <div class="row align-items-center">
+          <div class="col">
+            <h3 class="page-title">Daybook</h3>
+            <ul class="breadcrumb">
+              <li class="breadcrumb-item">
+                <a href="{% url 'finance_dashboard' %}">Dashboard</a>
+              </li>
+              <li class="breadcrumb-item active">Daybook</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="card card-table">
+            <div class="card-body">
+              <div class="table-responsive">
+                <table id="table_id" class="table table-hover table-center mb-0">
+                    <thead>
+                      <tr>
+                        <th>Bill No</th>
+                        <th>Date</th>
+                        <th>Party</th>
+                        <th>Voucher Type</th>
+                        <th>Total Amount</th>
+                        {% comment %} <th>Payables</th> {% endcomment %}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for i in invoices %}
+                      <tr>
+                        <td>{{i.invoice_no}}</td>
+                        <td>{{i.date}}</td>
+                        <td>{{i.customer.name}}</td>
+                        <td>Sale</td>
+                        <td>{{i.total_amount}} </td>
+                      </tr>
+                      {% endfor %}
+                      
+                      {% for i in payments %}
+                      <tr>
+                        <td>{{i.id}}</td>
+                        <td>{{i.date}}</td>
+                        <td>{{i.customer.name}}</td>
+                        <td>Paid By Customer</td>
+                        <td>{{i.amount}} </td>
+                      </tr>
+                      {% endfor %}
+                      {% for i in receipts %}
+                      <tr>
+                        <td>{{i.id}}</td>
+                        <td>{{i.date}}</td>
+                        <td>{{i.vendor.name}}</td>
+                        <td>Paid to Supplier</td>
+                        <td>{{i.amount}} </td>
+                      </tr>
+                      {% endfor %}
+                      {% for i in purchases %}
+                      <tr>
+                        <td>{{i.invoice_no}}</td>
+                        <td>{{i.date}}</td>
+                        <td>{{i.vendor.name}}</td>
+                        <td>Purchase</td>
+                        <td>{{i.total_amount}} </td>
+                      </tr>
+                      {% endfor %}
+                      {% for i in salereturns %}
+                      <tr>
+                        <td>{{i.id}}</td>
+                        <td>{{i.date}}</td>
+                        <td>{{i.customer.name}}</td>
+                        <td>Sale Return</td>
+                        <td>{{i.amount}} </td>
+                      </tr>
+                      {% endfor %}
+                      {% for i in purchasereturns %}
+                      <tr>
+                        <td>{{i.id}}</td>
+                        <td>{{i.date}}</td>
+                        <td>{{i.vendor.name}}</td>
+                        <td>Invoice</td>
+                        <td>{{i.amount}} </td>
+                      </tr>
+                      {% endfor %}
+
+                    </tbody>
+                  </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+        
+
+{% endblock content %}
