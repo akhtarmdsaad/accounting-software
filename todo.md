@@ -8,6 +8,9 @@
 - Profile of User
 - Inbox of user
 - Remove ID column from each table
+- Implement check on every invoice
+- Fix Dashboard
+- **Fix gitignore**
 <hr />
 
 ### *Sale Invoice*
