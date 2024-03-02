@@ -1,3 +1,4 @@
+
 function round(number,digits=2){
   var decimal = number * Math.pow(10,digits)
   decimal = Math.round(decimal) / 100
@@ -770,6 +771,12 @@ add_transaction_button.addEventListener("click",(e)=>{
 
 save_invoice_button.addEventListener("click",(e)=>{
   e.preventDefault();
+
+  // Add the loading screen
+  const pagewrapper = document.querySelector("body")
+  pagewrapper.classList.add("loading")
+
+
   // get the form data
   invoice_no = invoice_no_input.value
   date = date_input.value
@@ -817,6 +824,14 @@ save_invoice_button.addEventListener("click",(e)=>{
       {
         console.warn(response)
       }
+      // remove the loading screen
+      pagewrapper.classList.remove("loading")
+    },
+    error: function (response){
+      console.log("Saad There is problem")
+      alert("Error:"+response.statusText)
+      // remove the loading screen
+      pagewrapper.classList.remove("loading")
     }
   });
   // send data to "/finance/save_invoice/" async 

@@ -9,6 +9,7 @@
 - Inbox of user
 - Remove ID column from each table
 - Implement check on every invoice
+- Correct the CSS during shrinking window
 - Fix Dashboard
 <hr />
 
@@ -17,7 +18,7 @@
 - Add print Invoice
 - Fix Delete trxn addon button  - After refreshing page, delete button stop working correctly
 - Add edit button to trxn addon
-- Change sessionStorage to localStorage
+<!-- - Change sessionStorage to localStorage -->
 - Remove all console.log methods
 <!-- - Make all inputs in trxn addon disabled (to prevent miscalculation) - The name input can be left enabled -->
 - Put a loading screen during save invoice async
@@ -25,7 +26,7 @@
 - Is state required in change shipping address ?
 - Add CGST to "tax percent" -> "CGST tax percent" in Add Item modal and in the table.
 - **Take Suggestion**: Reset data after click of Add Button.  
-- Correct the CSS during shrinking window
+- Handle the Async in backend and return appropriate statuses
 ### *View Invoice*
 - Enable Search Invoice no
 - **Suggestions**: Is dual pagination good? 

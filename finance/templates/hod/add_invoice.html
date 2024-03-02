@@ -1,9 +1,18 @@
-{% extends 'base.html' %} {% block content %}
-
+{% extends 'base.html' %} 
 {% load static %}
 
+{% block head %}
+<link rel="stylesheet" href="{% static 'assets/css/add_invoice.css' %}">
+{% endblock head %}
+
+
+
+{% block content %}
+
+
 <div class="main-wrapper">
-  <div class="page-wrapper">
+  <div class="page-wrapper loading" id="page-wrapper">
+    {% comment %} <div class="loading" style="width:100%;height:100%;background-color:green;"></div> {% endcomment %}
     <div class="content container-fluid">
       <div class="page-header">
         <div class="row align-items-center">
