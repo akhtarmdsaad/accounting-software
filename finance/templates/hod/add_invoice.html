@@ -575,9 +575,9 @@
 
 {% block script %}
 <script>
-  if(!sessionStorage.getItem("checked_shipping"))
+  if(!localStorage.getItem("checked_shipping"))
   {
-    sessionStorage.setItem("checked_shipping",false)
+    localStorage.setItem("checked_shipping",false)
   }
   const total_taxable_amount = document.querySelector("total_taxable_value")
   var invoice_taxable_value = 0
@@ -592,7 +592,7 @@
   const node = document.querySelector(".random_customer")
   function checkCheckbox()
   {
-    data = sessionStorage.getItem("checked_shipping")
+    data = localStorage.getItem("checked_shipping")
       if(data == 'true')
       {
         console.log('click')
@@ -668,7 +668,7 @@ console.log("Started")
   $(function () {
     $("#customers_select").selectize({
       onChange: function(value) {
-        sessionStorage.setItem('cust_sel',value) 
+        localStorage.setItem('cust_sel',value) 
         customer_id_in_transaction.value = value
         customer_id_in_transaction2.value = value
         
@@ -680,11 +680,11 @@ console.log("Started")
   // add_item_button = document.getElementById("add_item")
   add_item_button.addEventListener("click",(e)=>{
 
-      data = sessionStorage.getItem('checked_shipping')
+      data = localStorage.getItem('checked_shipping')
       if(data && data == 'true') shipping_checkbox_trxn.value = "1";
       else shipping_checkbox_trxn.value = "0";
 
-      data = sessionStorage.getItem('state')
+      data = localStorage.getItem('state')
       if(data) 
         shipping_state_trxn.value = data
       

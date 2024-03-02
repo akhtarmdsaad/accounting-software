@@ -48,7 +48,7 @@ function update_trxn_addon_session_storage()
         s = name+separator+value
         obj.push(s)
     }
-  sessionStorage.setItem("transaction_addon",obj.join(divide_separator))
+  localStorage.setItem("transaction_addon",obj.join(divide_separator))
 }
 function update_trxn_session_storage()
 {
@@ -63,7 +63,7 @@ function update_trxn_session_storage()
     obj.push(s.join(separator))
   }
   obj = obj.join(divide_separator)
-  sessionStorage.setItem("transaction",obj)
+  localStorage.setItem("transaction",obj)
 }
 
 function get_edit_delete_btn()
@@ -117,7 +117,7 @@ function get_edit_delete_btn()
   return z;
 }
 
-// sessionStorage.setItem('cust_sel','Select Customer') 
+// localStorage.setItem('cust_sel','Select Customer') 
 
 function update_random_customer(case_no)
 {
@@ -136,29 +136,29 @@ function update_random_customer(case_no)
     console.log("Case 1 executed")
     node.style.display="block"
     
-    data = sessionStorage.getItem('customer_name') 
+    data = localStorage.getItem('customer_name') 
     if(data)
       customer_name.value = data;  
     
-    data = sessionStorage.getItem('address') 
+    data = localStorage.getItem('address') 
     if(data)
       address.value = data;
     
-    data = sessionStorage.getItem('state') 
+    data = localStorage.getItem('state') 
     if(data)
       state.value = data
       
 
     customer_name.addEventListener('input',(e)=>{
-      sessionStorage.setItem('customer_name',customer_name.value) 
+      localStorage.setItem('customer_name',customer_name.value) 
     });
     
     address.addEventListener('input',(e)=>{
-      sessionStorage.setItem('address',address.value) 
+      localStorage.setItem('address',address.value) 
     });
     
     state.addEventListener('change',(e)=>{
-      sessionStorage.setItem('state',state.value);
+      localStorage.setItem('state',state.value);
     });
 
     // add the required role here
@@ -171,29 +171,29 @@ function update_random_customer(case_no)
     console.log("Case 2 executed")
     node.style.display="block" 
     
-    data = sessionStorage.getItem('customer_name') 
+    data = localStorage.getItem('customer_name') 
     if(data)
       customer_name.value = data;  
     
-    data = sessionStorage.getItem('address') 
+    data = localStorage.getItem('address') 
     if(data)
       address.value = data;
     
-    data = sessionStorage.getItem('state') 
+    data = localStorage.getItem('state') 
     if(data)
       state.value = data;
       
 
     customer_name.addEventListener('input',(e)=>{
-      sessionStorage.setItem('customer_name',customer_name.value) 
+      localStorage.setItem('customer_name',customer_name.value) 
     });
     
     address.addEventListener('input',(e)=>{
-      sessionStorage.setItem('address',address.value) 
+      localStorage.setItem('address',address.value) 
     });
     
     state.addEventListener('change',(e)=>{
-      sessionStorage.setItem('state',state.value) 
+      localStorage.setItem('state',state.value) 
     });
 
     customer_name.setAttribute("required",true) 
@@ -208,15 +208,15 @@ function update_random_customer(case_no)
     address.removeAttribute("required")
 
     customer_name.removeEventListener('input',(e)=>{
-      sessionStorage.setItem('customer_name',customer_name.value) 
+      localStorage.setItem('customer_name',customer_name.value) 
     });
     
     address.removeEventListener('input',(e)=>{
-      sessionStorage.setItem('address',address.value) 
+      localStorage.setItem('address',address.value) 
     });
     
     state.removeEventListener('change',(e)=>{
-      sessionStorage.setItem('state',state.value) 
+      localStorage.setItem('state',state.value) 
     });
   }
 } // closed update input random customer
@@ -231,27 +231,27 @@ checkbox.addEventListener("change",(e)=>{
   {
     update_random_customer(3)
   }
-  sessionStorage.setItem("checked_shipping",e.target.checked)
+  localStorage.setItem("checked_shipping",e.target.checked)
 })
 
 
 
-data = sessionStorage.getItem('invoice_no') 
+data = localStorage.getItem('invoice_no') 
 if(data)
   invoice_no_input.value = data;
 
-data = sessionStorage.getItem('cust_sel') 
+data = localStorage.getItem('cust_sel') 
 if(data)
 {
   cust_sel.value = data;
   customer_id_in_transaction.value = data
   customer_id_in_transaction2.value = data
 }
-data = sessionStorage.getItem('date') 
+data = localStorage.getItem('date') 
 if(data)
   date_input.value = data;
 
-data = sessionStorage.getItem('transaction')
+data = localStorage.getItem('transaction')
 if(data)
 {
   trxn = get_trxn_from_storage(data)
@@ -272,7 +272,7 @@ if(data)
     invoice_total_amount += parseFloat(total_amount.value)
   })
 }
-data = sessionStorage.getItem('transaction_addon')
+data = localStorage.getItem('transaction_addon')
 
 if(data)
 {
@@ -306,18 +306,18 @@ if(data)
 
 
 document.getElementById("reset").addEventListener("click",(e)=>{
-  sessionStorage.clear()
+  localStorage.clear()
   customer_id_in_transaction.value = "2"
   customer_id_in_transaction2.value = "2"
 })
 
 // session storage
 invoice_no_input.addEventListener('input',(e)=>{
-  sessionStorage.setItem('invoice_no',document.getElementById("invoice_no").value) 
+  localStorage.setItem('invoice_no',document.getElementById("invoice_no").value) 
 });
 
 date_input.addEventListener('input',(e)=>{
-  sessionStorage.setItem('date',document.getElementById("date").value) 
+  localStorage.setItem('date',document.getElementById("date").value) 
 });
 
 
@@ -672,15 +672,15 @@ add_button.addEventListener("click",(e)=>{
   
   
   // get the old string
-  old_string = sessionStorage.getItem("transaction")
+  old_string = localStorage.getItem("transaction")
   if (!old_string)
   {
-    sessionStorage.setItem("transaction",obj.join(separator))
+    localStorage.setItem("transaction",obj.join(separator))
   }
   else
   {
     obj = old_string + divide_separator + obj.join(separator)
-    sessionStorage.setItem("transaction",obj)
+    localStorage.setItem("transaction",obj)
   }
   
   
@@ -750,15 +750,15 @@ add_transaction_button.addEventListener("click",(e)=>{
     amount_input.value
   ]
 
-  old_string = sessionStorage.getItem("transaction_addon")
+  old_string = localStorage.getItem("transaction_addon")
   if (!old_string)
   {
-    sessionStorage.setItem("transaction_addon",obj.join(separator))
+    localStorage.setItem("transaction_addon",obj.join(separator))
   }
   else
   {
     obj = old_string + divide_separator + obj.join(separator)
-    sessionStorage.setItem("transaction_addon",obj)
+    localStorage.setItem("transaction_addon",obj)
   }
   
 
@@ -783,9 +783,9 @@ save_invoice_button.addEventListener("click",(e)=>{
   address = document.querySelector("#shipping_address").value
 
   // get the transaction data
-  transaction = sessionStorage.getItem("transaction")
+  transaction = localStorage.getItem("transaction")
   // get the transaction addon data
-  transaction_addon = sessionStorage.getItem("transaction_addon")
+  transaction_addon = localStorage.getItem("transaction_addon")
 
   // wrap them into json
   data = {
