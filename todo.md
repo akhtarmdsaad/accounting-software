@@ -16,7 +16,7 @@
 ### *Sale Invoice*
 - Add preview Invoice
 - Add print Invoice
-- Set timeout for refresh (probably will work)
+- Fix Delete trxn addon button  - After refreshing page, delete button stop working correctly
 - Add edit button to trxn addon
 - Change sessionStorage to localStorage
 - Remove all console.log methods

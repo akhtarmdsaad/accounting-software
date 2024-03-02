@@ -283,7 +283,7 @@ if(data)
     console.log(elem)
     row.innerHTML = `
     <td colspan="2"></td>
-  <td class="text-end" colspan="2"><strong><input class="form-control" value="${elem[0]}" type="text" disabled></strong></td>
+  <td class="text-end" colspan="2"><strong><input class="form-control" value="${elem[0]}" type="text"></strong></td>
   <td colspan="1"></td>
   <td><input class="form-control px-0" value="${elem[1]}" type="number" step="0.01" disabled ></td>
     `;
@@ -715,14 +715,14 @@ amount_input = document.querySelector('#addTransaction input[name="amount_in_trx
 add_transaction_button.addEventListener("click",(e)=>{
   
   e.preventDefault();
-  // add two input fields 
+  // add two input fields //
   // 1. name  
   // 2. value
   // 3. delete button
   string = `<td colspan="2"></td>
   <td class="text-end" colspan="2"><strong><input class="form-control" value = "${name_input.value}" type="text" /></strong></td>
   <td colspan="1"></td>
-  <td><input class="form-control" value = "${amount_input.value}" type="number" step="0.01" /></td>
+  <td><input class="form-control" value = "${amount_input.value}" type="number" step="0.01" disabled /></td>
   `
 
   el = document.createElement("tr")

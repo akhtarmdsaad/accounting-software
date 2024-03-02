@@ -800,6 +800,7 @@ console.log("Started")
   }
   document.querySelector("#tax_type").addEventListener("change",(e)=>{tax_is_changed(e)})
   document.querySelector("#refresh_total").addEventListener("click",()=>{update_totals()})
+  // setInterval(()=>{update_totals()},5000)
   update_random_customer(3)
 </script>
 {% endblock script %}
