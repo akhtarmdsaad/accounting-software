@@ -1,1 +1,12 @@
 Django==4.2.2
+django-active-link==0.1.8
+django-allauth==0.54.0
+google-api-core==2.11.1
+google-api-python-client==2.92.0
+google-auth==2.21.0
+google-auth-httplib2==0.1.0
+google-auth-oauthlib==1.0.0
+google-pasta==0.2.0
+googleapis-common-protos==1.59.1
+Jinja2==3.1.2
+oauthlib==3.2.2

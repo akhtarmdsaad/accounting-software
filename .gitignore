@@ -4,3 +4,6 @@
 
 # Exclude docs
 media/*
+
+# env
+env/

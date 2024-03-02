@@ -19,7 +19,7 @@
 - Add edit button to trxn addon
 - Change sessionStorage to localStorage
 - Remove all console.log methods
-- Make all inputs in trxn addon disabled (to prevent miscalculation) - The name input can be left enabled
+<!-- - Make all inputs in trxn addon disabled (to prevent miscalculation) - The name input can be left enabled -->
 - Put a loading screen during save invoice async
 - Show error in the modal dialog
 - Is state required in change shipping address ?
