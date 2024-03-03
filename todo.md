@@ -31,8 +31,11 @@
 - Enable Search Invoice no
 - **Suggestions**: Is dual pagination good? 
 - Fix Search Invoice no at last scroll
-- Edit invoices URL takes to Custoer update page
-
+- Edit invoices URL takes to Customer update page
+### *Purchase Invoice*
+- Write complete code similar to Sale invoice
+  - Find a way to async save file
+  - Rest of code must be similar to sale invoice (Helps in good UI)
 ### *Sale return*
 - Remove redeem options
 ### *Purchase return*
