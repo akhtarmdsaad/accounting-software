@@ -1,4 +1,3 @@
-
 function round(number,digits=2){
   var decimal = number * Math.pow(10,digits)
   decimal = Math.round(decimal) / 100
@@ -294,8 +293,16 @@ if(data)
     btn = document.createElement("button")
     btn.classList.add("btn","btn-danger","btn-sm","delete_row")
     btn.innerHTML = `<i class="fas fa-trash"></i>`
-    btn.onclick = ()=>{
-      row.remove();
+    btn.onclick = (e)=>{
+      e.preventDefault();
+      row = e.target.parentElement.parentElement
+      while (row.tagName != "TR")
+      {
+        row = row.parentElement
+      }
+      row.remove()
+      update_totals()
+      // upfate();
     }
     td.appendChild(btn)
     row.appendChild(td);
