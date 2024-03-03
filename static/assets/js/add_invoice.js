@@ -133,7 +133,7 @@ function update_random_customer(case_no)
   state = document.getElementById("shipping_state")
   if(case_no == 1)
   {
-    console.log("Case 1 executed")
+    // console.log("Case 1 executed")
     node.style.display="block"
     
     data = localStorage.getItem('customer_name') 
@@ -168,7 +168,7 @@ function update_random_customer(case_no)
   }
   else if(case_no == 2)
   {
-    console.log("Case 2 executed")
+    // console.log("Case 2 executed")
     node.style.display="block" 
     
     data = localStorage.getItem('customer_name') 
@@ -280,7 +280,7 @@ if(data)
   // index = 2
   trxn.forEach((elem,index)=>{
     row = extra_detail.insertRow(index+2);
-    console.log(elem)
+    // console.log(elem)
     row.innerHTML = `
     <td colspan="2"></td>
   <td class="text-end" colspan="2"><strong><input class="form-control" value="${elem[0]}" type="text"></strong></td>
@@ -485,7 +485,7 @@ rate2.addEventListener("input",(e)=>{
 taxable_value.addEventListener("input",(e)=>{
   qnt_no = qnt.value;
   if(taxable_value.value){
-    console.log(taxable_value.value)
+    // console.log(taxable_value.value)
     rate.value = round( parseFloat(taxable_value.value) / qnt_no,2);
     total_amount.value = round( ((taxable_value.value-discount_amount.value) * (1 + (tax_button.value*2)/100)),2);
     total_rate.value = round( total_amount.value / qnt_no,2);
@@ -578,10 +578,10 @@ total_rate2.addEventListener("input",(e)=>{
 edit_transaction_buttons.forEach((button)=>{
   button.addEventListener("click",(e)=>{
     e.preventDefault();
-    console.log(button);
+    // console.log(button);
 });
 });
-console.log("Edit Transaction Buttons:",edit_transaction_buttons)
+// console.log("Edit Transaction Buttons:",edit_transaction_buttons)
 
 let newRateValue = null;
 $(document).ready(function() {
@@ -836,7 +836,7 @@ save_invoice_button.addEventListener("click",(e)=>{
       pagewrapper.classList.remove("loading")
     },
     error: function (response){
-      console.log("Saad There is problem")
+      // console.log("Saad There is problem")
       document.querySelector("#error_desc").innerHTML = response.statusText
       document.querySelector("#launch_error").click();
       // remove the loading screen
