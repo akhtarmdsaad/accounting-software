@@ -16,13 +16,13 @@
 ### *Sale Invoice*
 - Add preview Invoice
 - Add print Invoice
-- Fix Delete trxn addon button  - After refreshing page, delete button stop working correctly
-- Add edit button to trxn addon
+- Fix Delete trxn addon button  - After refreshing page, delete button stop working correctly - ***Assigned***
+- Add edit button to trxn addon - ***Assigned***
 <!-- - Change sessionStorage to localStorage -->
 - Remove all console.log methods
 <!-- - Make all inputs in trxn addon disabled (to prevent miscalculation) - The name input can be left enabled -->
-- Put a loading screen during save invoice async
-- Show error in the modal dialog
+- Put a loading screen during save invoice async - ***Assigned***
+<!-- - Show error in the modal dialog after save_invoice press - done -->
 - Is state required in change shipping address ?
 - Add CGST to "tax percent" -> "CGST tax percent" in Add Item modal and in the table.
 - **Take Suggestion**: Reset data after click of Add Button.  

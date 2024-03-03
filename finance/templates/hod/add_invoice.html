@@ -29,6 +29,10 @@
             <a href="{% url 'view_invoices' %}" class="btn btn-primary"
               ><i class="fas fa-plus"></i> &nbsp;View Invoice
             </a>
+            <!-- Button trigger modal -->
+<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#modelId" id="launch_error" style="display:none;">
+  Launch
+</button>
           </div>
         </div>
       </div>
@@ -578,6 +582,28 @@
         <button type="button" class="btn btn-info submit">Update</button>
       </div>
     </div> 
+  </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="modelId" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-danger" id="error_heading">Error</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+      </div>
+      <div class="modal-body" id="error_desc">
+        Internal Server Error Occured
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        {% comment %} <button type="button" class="btn btn-primary">Save</button> {% endcomment %}
+      </div>
+    </div>
   </div>
 </div>
 {% endblock content %}

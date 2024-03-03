@@ -819,6 +819,7 @@ save_invoice_button.addEventListener("click",(e)=>{
       if(response.status == "success")
       {
         window.location.href = "/finance/view_invoices/"
+        localStorage.clear()
       }
       else
       {
@@ -829,7 +830,8 @@ save_invoice_button.addEventListener("click",(e)=>{
     },
     error: function (response){
       console.log("Saad There is problem")
-      alert("Error:"+response.statusText)
+      document.querySelector("#error_desc").innerHTML = response.statusText
+      document.querySelector("#launch_error").click();
       // remove the loading screen
       pagewrapper.classList.remove("loading")
     }
