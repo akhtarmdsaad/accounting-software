@@ -145,7 +145,7 @@
                 <thead>
                   <tr>
                     <th width="300">Item</th>
-                    <th>Tax (in %)</th>
+                    <th>CGST / SGST %</th>
                     <th width="99">Quantity</th>
                     <th width="150">Rate</th>
                     <th width="99">Discount (in %)</th>
@@ -280,7 +280,8 @@
             </div>
             <div class="col-12 col-sm-2">
               <div class="form-group">
-                <label>Tax Percent</label>
+                {% comment %} <label>Tax Percent</label> {% endcomment %}
+                <label>CGST/SGST</label>
                 <input
                   required
                   type="number" step="0.01"
@@ -630,7 +631,7 @@
     data = localStorage.getItem("checked_shipping")
       if(data == 'true')
       {
-        console.log('click')
+        // console.log('click')
         if(!checkbox_input.checked)
           checkbox_input.click();
         node.style.display="block"
@@ -638,7 +639,7 @@
       }
       else if(data == 'false')
       {
-        console.log('click 2')
+        // console.log('click 2')
         if (checkbox_input.checked)
           checkbox_input.click();
         node.style.display="none" 
@@ -668,13 +669,13 @@ function change_tax(name)
   {
     if(name == "IGST")
     {
-      console.log("Ran IGST")
+      // console.log("Ran IGST")
       current_gst_applied = "IGST"
       changeInvoiceState("IGST")
     }
     else if(name == "CGST" || name == "SGST" || name == "OGST")
     {
-      console.log("Ran CGST")
+      // console.log("Ran CGST")
       current_gst_applied = "CGST"
       changeInvoiceState("CGST")
     }
@@ -682,7 +683,7 @@ function change_tax(name)
       console.error("Not accepted this GST: ",name);
   };
 CUSTOMER_IS_CASH = false ;
-console.log("Started")
+// console.log("Started")
 </script>
 <script src="{% static 'assets/js/add_invoice.js' %}"></script>
 <script>
@@ -806,9 +807,9 @@ console.log("Started")
     y = extra_detail.children.length-2
     invoice_total_amount = 0
     while (x < y && extra_detail.children[x].children[3]){
-      console.log("1",extra_detail.children[x])
-      console.log("2",extra_detail.children[x].children[3])
-      console.log("3",extra_detail.children[x].children[3].children[0])
+      // console.log("1",extra_detail.children[x])
+      // console.log("2",extra_detail.children[x].children[3])
+      // console.log("3",extra_detail.children[x].children[3].children[0])
       c = extra_detail.children[x].children[3].children[0];
       if(c.tagName == "INPUT"){
         invoice_total_amount += parseFloat(c.value)
@@ -821,7 +822,7 @@ console.log("Started")
     document.querySelector("#invoice_total_amount").textContent = round(invoice_total_amount,2)
     total_amount_in_trxn.value = round(invoice_total_amount,2)
     update_trxn_addon_session_storage();
-    console.log("Ran Update Totals")
+    // console.log("Ran Update Totals")
   }
   update_totals()
   function tax_is_changed(e){
