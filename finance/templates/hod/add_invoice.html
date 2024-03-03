@@ -145,7 +145,7 @@
                 <thead>
                   <tr>
                     <th width="300">Item</th>
-                    <th>Tax (in %)</th>
+                    <th>CGST / SGST %</th>
                     <th width="99">Quantity</th>
                     <th width="150">Rate</th>
                     <th width="99">Discount (in %)</th>
@@ -280,7 +280,8 @@
             </div>
             <div class="col-12 col-sm-2">
               <div class="form-group">
-                <label>Tax Percent</label>
+                {% comment %} <label>Tax Percent</label> {% endcomment %}
+                <label>CGST/SGST</label>
                 <input
                   required
                   type="number" step="0.01"

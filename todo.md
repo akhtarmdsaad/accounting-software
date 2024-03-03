@@ -24,7 +24,7 @@
 <!-- - Put a loading screen during save invoice async -->
 <!-- - Show error in the modal dialog after save_invoice press - done -->
 - Add State to Shipping detail in invoice async save (backend)
-- Add CGST to "tax percent" -> "CGST tax percent" in Add Item modal and in the table.
+<!-- - Add CGST to "tax percent" -> "CGST tax percent" in Add Item modal and in the table. -->
 - **Take Suggestion**: Reset data after click of Add Button.  
 - Handle the Async in backend and return appropriate statuses
 ### *View Invoice*
