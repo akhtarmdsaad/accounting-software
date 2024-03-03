@@ -19,7 +19,7 @@
 <!-- - Fix Delete trxn addon button  - After refreshing page, delete button stop working correctly - Fixed -->
 <!-- - Add edit button to trxn addon - I think its better not to add it. -->
 <!-- - Change sessionStorage to localStorage -->
-- Remove all console.log methods
+<!-- - Remove all console.log methods -->
 <!-- - Make all inputs in trxn addon disabled (to prevent miscalculation) - The name input can be left enabled -->
 <!-- - Put a loading screen during save invoice async -->
 <!-- - Show error in the modal dialog after save_invoice press - done -->
