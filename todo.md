@@ -14,7 +14,7 @@
 <hr />
 
 ### *Sale Invoice*
-- Add preview Invoice
+- Add preview Invoice - *already working*
 - Add print Invoice
 <!-- - Fix Delete trxn addon button  - After refreshing page, delete button stop working correctly - Fixed -->
 <!-- - Add edit button to trxn addon - I think its better not to add it. -->
@@ -44,7 +44,7 @@
 ### *Customer / Vendor*
 - Add Checking for valid GST (Automatic check internet if possible)
 - Add Checking for valid PAN card (Automatic check internet if possible)
-
+- Add edit option inside the view single customer
 <hr />
 
 # Addons

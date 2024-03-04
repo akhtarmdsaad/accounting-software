@@ -10,3 +10,4 @@ env/
 
 # pip list
 mypiplist.txt
+*.jpeg
