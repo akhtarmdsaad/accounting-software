@@ -790,21 +790,35 @@ def save_invoice(request):
     transaction = request.GET.get('transaction')
     transaction_addon = request.GET.get('transaction_addon')
     shipping = None
+
+    if customer_id.isdigit():
+        customer_id = int(customer_id)
+    else:
+        return JsonResponse({
+            "error":"customer id is invalid"
+        })
+    
+
+    # Name of Customer who is Purchasing 
+    try:
+        customer = Customer.objects.get(id=(customer_id))      # we need customer in both cases (shipping = true or false)
+    except Customer.DoesNotExist:
+        return JsonResponse({
+            "error":"No such Customer Found"
+        })
+    if not shipping_customer_name or not state or not address:
+        return JsonResponse({
+            "error":"Invalid Shipping Details"
+        })
     if change_shipping_address == "true":
-        # create a new Customer
-        customer = Customer(
-            name = shipping_customer_name,
-            address = address,
-            state = state
-        )
-        customer.save()
+        # Name of party where the goods are being transported
         shipping = ShippingDetail(
+            name = shipping_customer_name,
             state = state,
             address = address
         )
         shipping.save()
-    else:
-        customer = get_object_or_404(Customer,id=int(customer_id))
+    
 
     # print(customer,type(customer))
     
@@ -830,8 +844,11 @@ def save_invoice(request):
 
     for tr in transaction:
         sl_no,item,tax,qnt,rate,dis_per,taxable_value = tr.split(separator)
+        
+        "Should i get the item from `name` or `id` ??"
         item = get_object_or_404(Item,name=item)
-        print(taxable_value,type(taxable_value), dis_per,type(dis_per))
+        
+        # print(taxable_value,type(taxable_value), dis_per,type(dis_per))
         taxable_value = float(taxable_value)
         dis_per = float(dis_per)
         dis_amt = taxable_value * dis_per / 100
@@ -878,5 +895,7 @@ def save_invoice(request):
 
 
     # invoice.delete()
-    return JsonResponse({"status":"success"})
+    return JsonResponse({
+        "status":"success"
+        })
     
