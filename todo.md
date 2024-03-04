@@ -42,8 +42,9 @@
 - Remove redeem options
 
 ### *Customer / Vendor*
-- Add Checking for valid GST (Automatic check internet if possible)
-- Add Checking for valid PAN card (Automatic check internet if possible)
+<!-- - Add Checking for valid GST (Automatic check internet if possible) -->
+- Add (Automatic check internet gst details)
+<!-- - Add Checking for valid PAN card (Automatic check internet if possible) -->
 - Add edit option inside the view single customer
 <hr />
 
