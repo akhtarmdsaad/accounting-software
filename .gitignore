@@ -8,5 +8,6 @@ media/*
 # env
 env/
 
-# pip list
+# privacy
 mypiplist.txt
+invoice_design/*.jpeg
