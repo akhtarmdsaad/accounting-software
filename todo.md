@@ -15,7 +15,11 @@
 
 ### *Sale Invoice*
 - Add preview Invoice - *already working*
+  - Decide format of invoice
+  - Design in HTML/CSS (probably)
+  - Ability to convert it into pdf file and save locally 
 - Add print Invoice
+  - simple Browser printer (maybe we can use this to convert to pdf)
 <!-- - Fix Delete trxn addon button  - After refreshing page, delete button stop working correctly - Fixed -->
 <!-- - Add edit button to trxn addon - I think its better not to add it. -->
 <!-- - Change sessionStorage to localStorage -->

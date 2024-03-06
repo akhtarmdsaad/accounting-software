@@ -828,6 +828,11 @@ save_invoice_button.addEventListener("click",(e)=>{
         window.location.href = "/finance/view_invoices/"
         localStorage.clear()
       }
+      else if (response.error){
+        document.querySelector("#error_desc").innerHTML = response.error
+        document.querySelector("#launch_error").click();
+      }
+
       else
       {
         console.warn(response)
