@@ -1,7 +1,101 @@
+*{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin:0px;
+    padding: 0px;
+}
+
 div.container{
     margin: 5px;
     padding: 5px;
     border: 5px solid blue;
     width:100px;
     height: 100px;
+}
+
+div.container#invoice{
+    width: 420px;
+    height: 594px;
+}
+
+div.heading{
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    font-family:Verdana;
+}
+div.inv_details{
+    font-size: 10px;
+
+}
+div.inv_details span{
+    font-weight: 800;
+}
+div.cust_details span{
+    font-weight: 800;
+}
+
+hr{
+    margin: 10px 0px;
+}
+
+
+
+div.cust_details{
+    width: 50%;
+    font-size: 10px;
+
+}
+
+
+
+
+/*Styling the table*/
+
+table{
+    border: 1px solid grey;
+    border-radius: 10px;
+    background: rgba(216, 216, 216, 0.75);
+}
+
+table *{
+    font-size: 10px;
+}
+
+thead{
+    background: rgba(138, 132, 132, 0.5);
+    /* border-radius: 100px; */
+}
+tbody tr, tfoot tr{
+    background: white;
+    height: 10px;
+    width: 100%;
+    /* outline: grey solid 1px; */
+    border-radius: 3px;
+}
+thead tr th{
+    /* border: 1px solid black; */
+    width: 100%;
+    margin: 0px;
+    padding: 10px;
+}
+
+tbody tr td, tfoot tr td.amount{
+    text-align: center;
+    justify-content: center;
+    height: 25px;
+}
+
+/* tbody tr td::last-child{
+    text-align: right;
+    justify-content: center;
+} */
+
+tfoot tr td{
+    
+    height: 25px;
+}
+
+tfoot tr{
+    background: rgba(216, 216, 216, 0.75);
+    font-weight: 500;
 }
