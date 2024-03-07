@@ -55,7 +55,11 @@
 - Add (Automatic check internet gst details)
 <!-- - Add Checking for valid PAN card (Automatic check internet if possible) -->
 - Add edit option inside the view single customer
+- Fix website in vendors details
 <hr />
+
+# Reports 
+- Fix navbar link
 
 # Addons
 - Short description of each tab on inside modal with button written "details" on it. with info part
