@@ -13,10 +13,13 @@
 - Fix Dashboard
 <hr />
 
+### *Edit Invoice*
+- Add `edit_invoice.html` to templates
 ### *Sale Invoice*
 - Add preview Invoice - *already working*
   - Decide format of invoice
   - Design in HTML/CSS (probably)
+  - integrate it with django
   - Ability to convert it into pdf file and save locally 
 - Add print Invoice
   - simple Browser printer (maybe we can use this to convert to pdf)
@@ -28,6 +31,7 @@
 <!-- - Put a loading screen during save invoice async -->
 <!-- - Show error in the modal dialog after save_invoice press - done -->
 - Add State to Shipping detail in invoice async save (backend)
+- Update Customer balance, item quantities etc in save_invoice in views(backend)
 <!-- - Add CGST to "tax percent" -> "CGST tax percent" in Add Item modal and in the table. -->
 - **Take Suggestion**: Reset data after click of Add Button.  
 <!-- - Handle the Async in backend and return appropriate statuses - *already working* -->
