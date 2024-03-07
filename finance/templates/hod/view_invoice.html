@@ -50,15 +50,14 @@
           {% else %}
           <a class="btn btn-outline-secondary col-sm-2" href="?page={{ invoices.paginator.num_pages }}">Go to Last Page</a>
           {% endif %}
-          <form action="" method="get" class="mx-5 ">
-            
-            <input type="text"
-            class="form-control" style="display:inline;" name="" id="" placeholder="Search Invoice Number">
-            {% comment %} <i class="fa fa-search" style="display:inline;" aria-hidden="true"></i> {% endcomment %}
-          </form>
           {% endif %}
   
       </div>
+          <form action="" method="get" class="mx-5 my-3">
+            <input type="text"
+            class="form-control" style="display:inline;" name="inv_search" id="" placeholder="Search Invoice Number">
+            {% comment %} <i class="fa fa-search" style="display:inline;" aria-hidden="true"></i> {% endcomment %}
+          </form>
       <div class="col-sm-1"></div>
       
       <div class="row">
@@ -136,18 +135,17 @@
         <a class="btn btn-outline-secondary disabled col-sm-2" href="?page={{ invoices.paginator.num_pages }}">Go to Last Page</a>
       {% else %}
       <a class="btn btn-outline-secondary col-sm-2" href="?page={{ invoices.paginator.num_pages }}">Go to Last Page</a>
-        {% endif %}
-      <div class="col-sm-1"></div>
-        <form action="" method="get" class="mx-5 ">
-          
-            <input type="text"
-            class="form-control" style="display:inline;" name="" id="" placeholder="Search Invoice Number">
-            {% comment %} <i class="fa fa-search" style="display:inline;" aria-hidden="true"></i> {% endcomment %}
-        </form>
+        {% endif %} 
 
 
       </div>
       {% endif %}
+        <form action="" method="get" class="mx-5 my-3">
+          
+            <input type="text"
+            class="form-control" style="display:inline;" name="inv_search" id="" placeholder="Search Invoice Number">
+            {% comment %} <i class="fa fa-search" style="display:inline;" aria-hidden="true"></i> {% endcomment %}
+        </form>
     </div>
 
 

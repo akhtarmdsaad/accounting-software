@@ -428,7 +428,11 @@ def delete_customer(request,id):
 def view_invoices(request):
     if not request.user.has_perm('finance.view_invoice'):
         return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
-    invoices = Invoice.objects.filter(valid=True).order_by('-id')
+    inv_no = request.GET.get("inv_search")
+    if inv_no:
+        invoices = Invoice.objects.filter(invoice_no__contains=inv_no,valid=True).order_by('-id')
+    else:
+        invoices = Invoice.objects.filter(valid=True).order_by('-id')
     pagination_applied = True
     if(invoices.count() < 1000):
         invoices_paged = invoices

@@ -36,6 +36,7 @@
 - **Suggestions**: Is dual pagination good? 
 - Fix Search Invoice no at last scroll
 - Edit invoices URL takes to Customer update page
+- Delete url takes to customer page
 ### *Purchase Invoice*
 - Write complete code similar to Sale invoice
   - Find a way to async save file
