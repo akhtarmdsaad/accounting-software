@@ -17,8 +17,8 @@
 - Add `edit_invoice.html` to templates
 ### *Sale Invoice*
 - Add preview Invoice - *already working*
-  - Decide format of invoice
-  - Design in HTML/CSS (probably)
+  <!-- - Decide format of invoice -->
+  <!-- - Design in HTML/CSS (probably) -->
   - integrate it with django
   - Ability to convert it into pdf file and save locally 
 - Add print Invoice
@@ -39,12 +39,12 @@
 - **Take Suggestion**: Reset data after click of Add Button.  
 <!-- - Handle the Async in backend and return appropriate statuses - *already working* -->
 ### *View Invoice*
-- Enable Search Invoice no
+<!-- - Enable Search Invoice no -->
 - **Suggestions**: Is dual pagination good? 
-- Fix Search Invoice no at last scroll
+<!-- - Fix Search Invoice no at last scroll -->
 - Edit invoices URL takes to Customer update page
 - Delete url takes to customer page
-- Add Preview Button to each list item 
+- Add Preview/print Button to each list item 
 ### *Purchase Invoice*
 - Write complete code similar to Sale invoice
   - Find a way to async save file
@@ -59,7 +59,7 @@
 - Add (Automatic check internet gst details)
 <!-- - Add Checking for valid PAN card (Automatic check internet if possible) -->
 - Add edit option inside the view single customer
-- Fix website in vendors details
+- Fix website url in vendors details
 <hr />
 
 # Reports 
