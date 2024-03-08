@@ -1,0 +1,178 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accountease</title>
+    
+    <link href="{% static 'assets/css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/invoice.css' %}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+	<div class="container invoice">
+    <section id="invoice">
+        <div class="container">
+            <div class="d-md-flex justify-content-between my-5">
+                <div class="mt-5 mt-md-0" style="width:270px;">
+                    <p class="fw-bold text-primary">Invoice From</p>
+                    <h4>{{NAME}}</h4>
+                    <ul class="list-unstyled m-0">
+                        {% comment %} <li>ABC Company</li> {% endcomment %}
+                        <li>{{ADDR}}</li>
+                        {% if GST %}
+                            <li>GSTIN - {{GST}}</li>
+                        {% endif %}
+                        <li>{{EMAIL}}</li>
+                    </ul>
+                </div>
+                <div class="mt-5 mt-md-0" style="width:270px;">
+                    <p class="fw-bold text-primary">Invoice To</p>
+                    <h4>{{inv.customer.name}}</h4>
+                    <ul class="list-unstyled m-0">
+                        <li>{{inv.customer.address}}</li>
+                        {% if inv.customer.gstin %}
+                            <li>GSTIN - {{inv.customer.gstin}}</li>
+                        {% endif %}
+                        <li>{{inv.customer.email}}</li>
+                    </ul>
+                </div>
+                
+            </div>
+            {% if inv.shipping_details %}
+                <div class="mt-5 mt-md-0">
+                    <p class="fw-bold text-primary">Shipping Details</p>
+                    <h4>William Peter</h4>
+                    <ul class="list-unstyled m-0">
+                        <li>ABC Company</li>
+                        <li>info@abccompany.com</li>
+                        <li>456 Main Street</li>
+                    </ul>
+                </div>
+            {% endif %}
+
+            <div
+                class=" d-md-flex justify-content-between align-items-center border-top border-bottom border-primary my-5 py-3">
+                <h2 class="display-6 fw-bold m-0">Invoice </h2>
+                <div>
+                    <p class="m-0"> <span class="fw-medium">Invoice No:</span> {{inv.invoice_no}}</p>
+                    <p class="m-0"> <span class="fw-medium">Invoice Date:</span> {{inv.date}}</p>
+                    {% comment %} <p class="m-0"> <span class="fw-medium">Due Date:</span> 20 June, 2024</p> {% endcomment %}
+                </div>
+
+            </div>
+
+            <div class="py-1">
+                <table class="table table-striped border my-5">
+                    <thead>
+                        <tr>
+                            <th scope="col">No.</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Quantity</th>
+                            <th scope="col">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t in transactions %}
+                            <tr>
+                                <th scope="row">{{forloop.counter}}</th>
+                                <td>{{t.item.name}}</td>
+                                <td>{{t.rate}}</td>
+                                <td>{{t.quantity}}</td>
+                                <td>{{t.taxable_value}}</td>
+                            </tr>
+                        {% endfor %}
+
+                        <tr>
+                            <th></th>
+                            <td></td>
+                            <td></td>
+                            <td class="">Sub-Total</td>
+                            <td>{{inv.total_taxable_amount}}</td>
+                        </tr>
+                            <tr>
+                                <th></th>
+                                <td></td>
+                                <td></td>
+                                <td class="">CGST</td>
+                                <td>{{inv.total_central_tax_amount}}</td>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <td></td>
+                                <td></td>
+                                <td class="">SGST</td>
+                                <td>{{inv.total_state_tax_amount}}</td>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <td></td>
+                                <td></td>
+                                <td class="">IGST</td>
+                                <td>{{inv.total_integrated_tax_amount}}</td>
+                            </tr>
+                        <tr>
+                            <th></th>
+                            <td></td>
+                            <td></td>
+                            <td class="text-primary fs-5 fw-bold">Grand-Total</td>
+                            <td class="text-primary fs-5 fw-bold">{{inv.total_amount}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+            <div class="d-md-flex justify-content-between my-5">
+
+                <div>
+                    <h5 class="fw-bold my-4">Payment Info</h5>
+                    <ul class="list-unstyled">
+                        <li><span class="fw-semibold">Account No: </span> 102 3345 56938</li>
+                        <li><span class="fw-semibold">Account Name: </span> William Peter</li>
+                        <li><span class="fw-semibold">Branch Name: </span> XYZ </li>
+
+                    </ul>
+                </div>
+
+                <div>
+                    <h5 class="fw-bold my-4">Contact Us</h5>
+                    <ul class="list-unstyled">
+                        <li><iconify-icon class="social-icon text-primary fs-5 me-2" icon="mdi:location"
+                                style="vertical-align:text-bottom"></iconify-icon> 30 E Lake St, Chicago, USA</li>
+                        <li><iconify-icon class="social-icon text-primary fs-5 me-2" icon="solar:phone-bold"
+                                style="vertical-align:text-bottom"></iconify-icon> (510) 710-3464</li>
+                        <li><iconify-icon class="social-icon text-primary fs-5 me-2" icon="ic:baseline-email"
+                                style="vertical-align:text-bottom"></iconify-icon> info@worldcourse.com</li>
+                    </ul>
+                </div>
+
+
+            </div>
+
+            <div class="text-center my-5">
+                <p class="text-muted"><span class="fw-semibold">NOTICE: </span>This is a Computer Generated Invoice</p>
+            </div>
+
+            
+
+        </div>
+    </section>
+	</div>
+
+
+
+    <script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+
+</body>
+
+</html>

@@ -35,6 +35,7 @@ urlpatterns = [
 
 
     #Invoice
+    path('invoice/<int:id>',views.invoice,name="invoice"),
     path('view_invoices/',views.view_invoices,name="view_invoices"),
     path('add_invoices/',views.add_invoices,name="add_invoices"),
     path('edit_invoices/<int:id>/',views.edit_customer,name="edit_invoice"),

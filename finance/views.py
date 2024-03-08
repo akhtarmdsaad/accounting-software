@@ -21,6 +21,24 @@ def test_form(request):
         "form":form
     })
 
+def invoice(request,id=None):
+    if not id:
+        return HttpResponse(request,"Nothing to show ...")
+    from company_settings import COMPANY_NAME,COMPANY_EMAIL,COMPANY_ADDR
+    from company_settings import COMPANY_GSTIN
+    # from finance.models import Invoice
+    # print(len(Invoice.objects.all()))
+    inv = Invoice.objects.get(id=id)
+    context = {
+        "inv":inv,
+        "NAME":COMPANY_NAME,
+        "EMAIL":COMPANY_EMAIL,
+        "ADDR":COMPANY_ADDR,
+        "GST":COMPANY_GSTIN,
+        "transactions":inv.transaction_set.all(),
+    }
+    return render(request,'hod/invoice.html',context=context)
+
 @login_required(login_url="account_login")
 def dashboard(request):
     total_item_groups = ItemGroup.objects.all().count()
@@ -428,7 +446,11 @@ def delete_customer(request,id):
 def view_invoices(request):
     if not request.user.has_perm('finance.view_invoice'):
         return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
-    invoices = Invoice.objects.filter(valid=True).order_by('-id')
+    inv_no = request.GET.get("inv_search")
+    if inv_no:
+        invoices = Invoice.objects.filter(invoice_no__contains=inv_no,valid=True).order_by('-id')
+    else:
+        invoices = Invoice.objects.filter(valid=True).order_by('-id')
     pagination_applied = True
     if(invoices.count() < 1000):
         invoices_paged = invoices
@@ -790,21 +812,35 @@ def save_invoice(request):
     transaction = request.GET.get('transaction')
     transaction_addon = request.GET.get('transaction_addon')
     shipping = None
+
+    if customer_id.isdigit():
+        customer_id = int(customer_id)
+    else:
+        return JsonResponse({
+            "error":"customer id is invalid"
+        })
+    
+
+    # Name of Customer who is Purchasing 
+    try:
+        customer = Customer.objects.get(id=(customer_id))      # we need customer in both cases (shipping = true or false)
+    except Customer.DoesNotExist:
+        return JsonResponse({
+            "error":"No such Customer Found"
+        })
+    if change_shipping_address == "true" and (not shipping_customer_name or not state or not address):
+        return JsonResponse({
+            "error":"Invalid Shipping Details"
+        })
     if change_shipping_address == "true":
-        # create a new Customer
-        customer = Customer(
-            name = shipping_customer_name,
-            address = address,
-            state = state
-        )
-        customer.save()
+        # Name of party where the goods are being transported
         shipping = ShippingDetail(
+            name = shipping_customer_name,
             state = state,
             address = address
         )
         shipping.save()
-    else:
-        customer = get_object_or_404(Customer,id=int(customer_id))
+    
 
     # print(customer,type(customer))
     
@@ -830,8 +866,11 @@ def save_invoice(request):
 
     for tr in transaction:
         sl_no,item,tax,qnt,rate,dis_per,taxable_value = tr.split(separator)
+        
+        "Should i get the item from `name` or `id` ??"
         item = get_object_or_404(Item,name=item)
-        print(taxable_value,type(taxable_value), dis_per,type(dis_per))
+        
+        # print(taxable_value,type(taxable_value), dis_per,type(dis_per))
         taxable_value = float(taxable_value)
         dis_per = float(dis_per)
         dis_amt = taxable_value * dis_per / 100
@@ -878,5 +917,7 @@ def save_invoice(request):
 
 
     # invoice.delete()
-    return JsonResponse({"status":"success"})
+    return JsonResponse({
+        "status":"success"
+        })
     

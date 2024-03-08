@@ -75,7 +75,9 @@
                     type="text"
                     class="form-control"
                     name="gstin"
+                    maxlength="15"
                   />
+                  <div class="gst_error" style="color:red;"></div>
                 </div>
               </div>
               <div class="col-12 col-sm-6">
@@ -87,6 +89,7 @@
                     name="pan_card"
                   />
                 </div>
+                <div class="pan_error" style="color:red;"></div>
               </div>
               <div class="col-sm-11">
                 <div class="form-group">
@@ -134,3 +137,29 @@
 </div>
 
 {% endblock content %}
+
+{% block script %}
+
+<script>
+  gst_input = document.querySelector("input[name=gstin]")
+  pan_input = document.querySelector("input[name=pan_card]")
+
+  gst_input.onchange = (e)=>{
+    if(e.target.value.length != 0 && e.target.value.length != 15){
+      document.querySelector("div.gst_error").innerHTML = "Invalid GSTIN";
+    }
+    else{
+      document.querySelector("div.gst_error").innerHTML = ""
+    }
+  }
+  pan_input.onchange = (e)=>{
+    if(e.target.value.length != 0 && e.target.value.length != 10){
+      document.querySelector("div.pan_error").innerHTML = "Invalid PAN";
+    }
+    else{
+      document.querySelector("div.pan_error").innerHTML = ""
+    }
+  }
+</script>
+
+{% endblock script %}

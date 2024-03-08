@@ -10,4 +10,4 @@ env/
 
 # privacy
 mypiplist.txt
-invoice_design/*.jpeg
+*.jpeg

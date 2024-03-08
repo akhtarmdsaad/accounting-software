@@ -3,6 +3,11 @@ import datetime
 
 #Name of the Company
 COMPANY_NAME = "SAAD TECHNOLOGIES"
+COMPANY_ADDR = "Plot No: 285/266/2180,Basanti \
+                nagar road, uditnagar,Rourkela, sundergarh \
+                odisha - 769001"
+COMPANY_GSTIN = "21ABCDF8552G1A1"
+COMPANY_EMAIL = "info@abccompany.com"
 
 #Abbreviation of the Company 
 COMPANY_ABBR = "ST"
