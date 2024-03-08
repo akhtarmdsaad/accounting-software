@@ -32,6 +32,9 @@
 <!-- - Show error in the modal dialog after save_invoice press - done -->
 - Add State to Shipping detail in invoice async save (backend)
 - Update Customer balance, item quantities etc in save_invoice in views(backend)
+  - Do it pre save and post save
+  - Do Same for delete invoice
+- Remove test from vendor_views
 <!-- - Add CGST to "tax percent" -> "CGST tax percent" in Add Item modal and in the table. -->
 - **Take Suggestion**: Reset data after click of Add Button.  
 <!-- - Handle the Async in backend and return appropriate statuses - *already working* -->
@@ -41,6 +44,7 @@
 - Fix Search Invoice no at last scroll
 - Edit invoices URL takes to Customer update page
 - Delete url takes to customer page
+- Add Preview Button to each list item 
 ### *Purchase Invoice*
 - Write complete code similar to Sale invoice
   - Find a way to async save file

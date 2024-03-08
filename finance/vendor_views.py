@@ -513,4 +513,17 @@ def redeem_vendor_credit_note(request,id):
 
 
 def testme(request):
-    import finance.testing_bysaad
+    from company_settings import COMPANY_NAME,COMPANY_EMAIL,COMPANY_ADDR
+    from company_settings import COMPANY_GSTIN
+    from finance.models import Invoice
+    # print(len(Invoice.objects.all()))
+    inv = Invoice.objects.all()[2009]
+    context = {
+        "inv":inv,
+        "NAME":COMPANY_NAME,
+        "EMAIL":COMPANY_EMAIL,
+        "ADDR":COMPANY_ADDR,
+        "GST":COMPANY_GSTIN,
+        "transactions":inv.transaction_set.all(),
+    }
+    return render(request,'hod/invoice.html',context=context)
