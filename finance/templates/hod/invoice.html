@@ -5,11 +5,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice V2</title>
+    <title>Accountease</title>
     
     <link href="{% static 'assets/css/bootstrap.min.css' %}" rel="stylesheet">
 
-    <link rel="stylesheet" type="text/css" href="{% static 'assests/css/invoice.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/invoice.css' %}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,24 +19,8 @@
 <body>
 	<div class="container invoice">
     <section id="invoice">
-        <div class="container my-5 py-5">
-
-            <div class="text-center pb-5">
-                <img src="images/logo_dark.png" alt="Company Logo">
-            </div>
-
+        <div class="container">
             <div class="d-md-flex justify-content-between my-5">
-                <div class="mt-5 mt-md-0" style="width:270px;">
-                    <p class="fw-bold text-primary">Invoice To</p>
-                    <h4>{{inv.customer.name}}</h4>
-                    <ul class="list-unstyled m-0">
-                        <li>{{inv.customer.address}}</li>
-                        {% if inv.customer.gstin %}
-                            <li>GSTIN - {{inv.customer.gstin}}</li>
-                        {% endif %}
-                        <li>{{inv.customer.email}}</li>
-                    </ul>
-                </div>
                 <div class="mt-5 mt-md-0" style="width:270px;">
                     <p class="fw-bold text-primary">Invoice From</p>
                     <h4>{{NAME}}</h4>
@@ -49,6 +33,18 @@
                         <li>{{EMAIL}}</li>
                     </ul>
                 </div>
+                <div class="mt-5 mt-md-0" style="width:270px;">
+                    <p class="fw-bold text-primary">Invoice To</p>
+                    <h4>{{inv.customer.name}}</h4>
+                    <ul class="list-unstyled m-0">
+                        <li>{{inv.customer.address}}</li>
+                        {% if inv.customer.gstin %}
+                            <li>GSTIN - {{inv.customer.gstin}}</li>
+                        {% endif %}
+                        <li>{{inv.customer.email}}</li>
+                    </ul>
+                </div>
+                
             </div>
             {% if inv.shipping_details %}
                 <div class="mt-5 mt-md-0">
@@ -166,16 +162,7 @@
                 <p class="text-muted"><span class="fw-semibold">NOTICE: </span>This is a Computer Generated Invoice</p>
             </div>
 
-            <div id="footer-bottom">
-                <div class="container border-top border-primary">
-                    <div class="row mt-3">
-                        <div class="col-md-6 copyright">
-                            <p>© 2024 Invoice. by Md Saad Akhtar</p>
-                        </div>
-                        
-                    </div>
-                </div>
-            </div>
+            
 
         </div>
     </section>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Invoice</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="script.js"></script>
+  </head>
+  <body>
+    <div class="container" id="invoice">
+      <div class="heading">
+        <h4>Tax Invoice</h4>
+      </div>
+      <hr />
+      <div class="inv_details">
+        <span>Date : </span> 10/12/2024<br />
+        <span>Invoice: </span> ST/0010/23-24
+      </div>
+      <hr />
+      <div style="display:flex;">
+        <div class="cust_details">
+          <span>Customer Details:</span> <br />
+          Koice Inc <br />
+          2705 N. Enterprise St <br />
+          Orange, CA 92865 <br />
+          contact@koiceinc.com <br />
+          <br />
+        </div>
+        <div class="cust_details">
+          <span>Shipping Details:</span> <br />
+          Koice Inc <br />
+          2705 N. Enterprise St <br />
+          Orange, CA 92865 <br />
+          contact@koiceinc.com <br />
+        </div>
+      </div>
+      <div class="items">
+        <table>
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Qty</th>
+              <th>Rate</th>
+              <th>Discount</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Linen-395</td>
+              <td>1</td>
+              <td>400.00</td>
+              <td>0</td>
+              <td>400</td>
+            </tr>
+            <tr>
+              <td>Linen-395</td>
+              <td>1</td>
+              <td>400.00</td>
+              <td>0</td>
+              <td>400</td>
+            </tr>
+            <tr>
+              <td>Linen-395</td>
+              <td>1</td>
+              <td>400.00</td>
+              <td>0</td>
+              <td>400</td>
+            </tr>
+            <tr>
+              <td>Linen-395</td>
+              <td>1</td>
+              <td>400.00</td>
+              <td>0</td>
+              <td>400</td>
+            </tr>
+            <tr>
+              <td>Test</td>
+              <td>5</td>
+              <td>400.00</td>
+              <td>0</td>
+              <td>2000</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="2"></td>
+              <td colspan="2">Sub Total</td>
+              <td class="amount">2800</td>
+            </tr>
+            <tr>
+              <td colspan="2"></td>
+              <td colspan="2">Cgst</td>
+              <td class="amount">148</td>
+            </tr>
+            <tr>
+              <td colspan="2"></td>
+              <td colspan="2">Sgst</td>
+              <td class="amount">148</td>
+            </tr>
+            <tr>
+              <td colspan="2"></td>
+              <td colspan="2" style="font-weight: 700">Total Amount</td>
+              <td class="amount" style="font-weight: 700">3096</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </body>
+</html>

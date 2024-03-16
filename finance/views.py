@@ -21,6 +21,24 @@ def test_form(request):
         "form":form
     })
 
+def invoice(request,id=None):
+    if not id:
+        return HttpResponse(request,"Nothing to show ...")
+    from company_settings import COMPANY_NAME,COMPANY_EMAIL,COMPANY_ADDR
+    from company_settings import COMPANY_GSTIN
+    # from finance.models import Invoice
+    # print(len(Invoice.objects.all()))
+    inv = Invoice.objects.get(id=id)
+    context = {
+        "inv":inv,
+        "NAME":COMPANY_NAME,
+        "EMAIL":COMPANY_EMAIL,
+        "ADDR":COMPANY_ADDR,
+        "GST":COMPANY_GSTIN,
+        "transactions":inv.transaction_set.all(),
+    }
+    return render(request,'hod/invoice.html',context=context)
+
 @login_required(login_url="account_login")
 def dashboard(request):
     total_item_groups = ItemGroup.objects.all().count()
@@ -809,7 +827,7 @@ def save_invoice(request):
         return JsonResponse({
             "error":"No such Customer Found"
         })
-    if not shipping_customer_name or not state or not address:
+    if change_shipping_address == "true" and (not shipping_customer_name or not state or not address):
         return JsonResponse({
             "error":"Invalid Shipping Details"
         })
