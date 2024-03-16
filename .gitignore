@@ -4,6 +4,7 @@
 
 # Exclude docs
 media/*
+learnings.md
 
 # env
 env/
