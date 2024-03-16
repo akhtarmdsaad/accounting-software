@@ -154,7 +154,20 @@
                   </tr>
                 </thead>
                 <tbody>
-					        
+					        {% for t in transactions %} 
+                  <tr>
+                    <td>{{t.item.name}}</td>
+                    <td>{{t.item.state_tax_rate}}</td>
+                    <td>{{t.quantity}}</td>
+                    <td>{{t.rate}}</td>
+                    <td>{{t.discount_percent}}</td>
+                    <td>{{t.taxable_value}}</td>
+                    <td class="text-end">
+                      <button class="btn btn-primary btn-sm edit_row m-2" data-toggle="modal" data-target="#editTransaction">Edit</button>
+                      <button class="btn btn-danger btn-sm delete_row">Delete</button>
+                    </td>
+                  </tr>
+                  {% endfor %}
                 </tbody>
                 <tfoot>
                   <tr>
@@ -611,6 +624,9 @@
 
 {% block script %}
 <script>
+  {% if clear %}
+    localStorage.clear()
+  {% endif %}
   if(!localStorage.getItem("checked_shipping"))
   {
     localStorage.setItem("checked_shipping",false)

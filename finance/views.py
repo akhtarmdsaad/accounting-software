@@ -476,10 +476,38 @@ def add_invoices(request):
         "year":str(date.year).rjust(4,'0'),
         "customers":Customer.objects.all(),
         "states":state_names,
-        "items":Item.objects.all()
+        "items":Item.objects.all(),
+        "clear":False       # Clear the local Storage
     }
     return render(request,"hod/add_invoice.html",context)
 
+def edit_invoice(request,id=None):
+
+    if not id:
+        return redirect("add_invoices")
+    try:
+        current_invoice = Invoice.objects.get(id=id)
+    except Invoice.DoesNotExist:
+        return redirect("add_invoices")
+    invoice_no = current_invoice.invoice_no
+    date = current_invoice.date
+    extra_details = current_invoice.extra_details
+    if not extra_details:
+        extra_details = '{}'
+    context = {
+        "cash_id":68,
+        "invoice_no":invoice_no,
+        "day":str(date.day).rjust(2,'0'),
+        "month":str(date.month).rjust(2,'0'),
+        "year":str(date.year).rjust(4,'0'),
+        "customers":Customer.objects.all(),
+        "states":state_names,
+        "items":Item.objects.all(),
+        "transactions":current_invoice.transaction_set.all(),
+        "extra_details": json.loads(extra_details),
+        "clear":True        # Clear the localStorage
+    }
+    return render(request,"hod/add_invoice.html",context)
 def reset_invoice(request):
     invoice = Invoice.objects.last()
     for i in invoice.transaction_set.all():
@@ -498,38 +526,9 @@ def delete_invoice(request,id):
     if not request.user.has_perm('finance.delete_invoice'):
         return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
     invoice = get_object_or_404(Invoice,id=id)
-    if invoice.valid:
-        invoice.customer.current_balance -= invoice.total_amount
-        invoice.customer.save()
-        for tr in invoice.transaction_set.all():
-            tr.item.current_stock += tr.quantity
-            tr.item.save()
 
     invoice.delete()
     return redirect("view_invoices")
-
-@login_required(login_url="account_login")
-def delete_transaction(request,id):
-    if not request.user.has_perm('finance.delete_invoice'):
-        return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
-    elem = get_object_or_404(Transaction,id=id)
-    elem.invoice.total_amount -= elem.amount
-    elem.invoice.total_taxable_amount -= elem.taxable_value
-    state_tax = 0
-    central_tax = 0
-    integrated_tax = 0
-    if elem.invoice.customer.state == "26" :                  # hardcoding the state code for now
-        state_tax = elem.item.state_tax_rate * elem.taxable_value / 100
-        central_tax = elem.item.central_tax_rate * elem.taxable_value / 100
-    else:
-        integrated_tax = elem.item.integrated_tax_rate * elem.taxable_value / 100
-    elem.invoice.total_state_tax_amount -= state_tax
-    elem.invoice.total_central_tax_amount -= central_tax
-    elem.invoice.total_integrated_tax_amount -= integrated_tax
-    elem.invoice.save()
-    elem.delete()
-
-    return redirect("add_invoices")
 
 @login_required(login_url="account_login")
 def view_payments(request):

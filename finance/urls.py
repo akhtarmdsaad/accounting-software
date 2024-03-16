@@ -37,8 +37,8 @@ urlpatterns = [
     #Invoice
     path('view_invoices/',views.view_invoices,name="view_invoices"),
     path('add_invoices/',views.add_invoices,name="add_invoices"),
-    path('edit_invoices/<int:id>/',views.edit_customer,name="edit_invoice"),
-    path('delete_invoice/<int:id>/',views.delete_customer,name="delete_invoice"),
+    path('edit_invoices/<int:id>/',views.edit_invoice,name="edit_invoice"),
+    path('delete_invoice/<int:id>/',views.delete_invoice,name="delete_invoice"),
     path('reset_invoices/',views.reset_invoice,name="reset_invoice"),
     
 
