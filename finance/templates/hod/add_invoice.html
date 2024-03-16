@@ -606,7 +606,7 @@
       {% comment %} <div class="modal-body"> {% endcomment %}
             <button class="btn btn-secondary modal-header" style="width" onclick='document.getElementById("printf").contentWindow.print();'>Print</button>
           <button class="btn btn-danger modal-header" onclick='document.getElementById("printf").contentWindow.print();'>Make Pdf</button>
-        <iframe id="printf" class="modal-body" src="http://localhost:8000/finance/invoice/2015"></iframe>
+        <iframe id="printf" class="modal-body" src={% url "invoice" invoice.pk %} style="height:60vh;"></iframe>
       {% comment %} </div> {% endcomment %}
     </div>
   </div>

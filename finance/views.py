@@ -487,6 +487,7 @@ def add_invoices(request):
     date = current_invoice.date
     
     context = {
+        "invoice":current_invoice,
         "cash_id":68,
         "invoice_no":invoice_no,
         "day":str(date.day).rjust(2,'0'),
@@ -513,6 +514,7 @@ def edit_invoice(request,id=None):
     if not extra_details:
         extra_details = '{}'
     context = {
+        "invoice":current_invoice,
         "cash_id":68,
         "invoice_no":invoice_no,
         "day":str(date.day).rjust(2,'0'),

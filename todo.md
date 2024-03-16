@@ -45,7 +45,7 @@
 <!-- - Edit invoices URL takes to Customer update page
 - Delete url takes to customer page -->
 <!-- - Add Preview/print Button to each list item  -->
-- Add URL to Preview/print Button of each list item 
+- Add URL to Preview/print Button of each list item (Take it from `add_invoice.html`)
 ### *Purchase Invoice*
 - Write complete code similar to Sale invoice
   - Find a way to async save file
