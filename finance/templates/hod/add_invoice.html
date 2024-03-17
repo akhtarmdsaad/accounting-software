@@ -235,8 +235,8 @@
                   <input type="submit" id = "saveInvoice" value="Save Invoice" class = "btn btn-primary">
                 </div>
                 <div class="col-sm-2">
-                  <button type="button" class="btn btn-secondary" data-toggle="modal" data-target=".bd-example-modal-lg">
-                    Preview Invoice</button>
+                  <a class="btn btn-secondary" target="_blank" href='{% url "invoice" invoice.pk %}'>
+                    Preview Invoice</a>
 
                 </div>
                 <div class="col-sm-1">
@@ -599,18 +599,6 @@
   </div>
 </div>
 
-
-<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      {% comment %} <div class="modal-body"> {% endcomment %}
-            <button class="btn btn-secondary modal-header" style="width" onclick='document.getElementById("printf").contentWindow.print();'>Print</button>
-          <button class="btn btn-danger modal-header" onclick='document.getElementById("printf").contentWindow.print();'>Make Pdf</button>
-        <iframe id="printf" class="modal-body" src={% url "invoice" invoice.pk %} style="height:60vh;"></iframe>
-      {% comment %} </div> {% endcomment %}
-    </div>
-  </div>
-</div>
 
 <!-- Modal -->
 <div class="modal fade" id="modelId" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
