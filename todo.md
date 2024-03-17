@@ -9,6 +9,8 @@
 - Inbox of user
 - Remove ID column from each table
 - Implement check on every invoice
+  - Invoice no is Serial Wise
+  - User can only **edit** invoice and **cancel** invoice but they **cannot delete** it.
 - Correct the CSS during shrinking window
 - Fix Dashboard
 <hr />
@@ -35,6 +37,7 @@
   - Do it from pre save and post save of models
   - Do Same for delete invoice, transactions, edit invoice etc
 - Remove test from vendor_views
+- Fix the modal CSS that are affected because of iframe.
 <!-- - Add CGST to "tax percent" -> "CGST tax percent" in Add Item modal and in the table. -->
 - **Take Suggestion**: Reset data after click of Add Button.  
 <!-- - Handle the Async in backend and return appropriate statuses - *already working* -->
@@ -52,10 +55,10 @@
   - Rest of code must be similar to sale invoice (Helps in good UI)
 ### *Sale return*
 - Remove redeem options
-- Change to 'update on pre save' and delete code from views
+- 'update on pre save' and delete code from views
 ### *Purchase return*
 - Remove redeem options
-- Change to 'update on pre save' and delete code from views
+- 'update on pre save' and delete code from views
 
 ### *Customer / Vendor*
 <!-- - Add Checking for valid GST (Automatic check internet if possible) -->
@@ -68,8 +71,8 @@
 - Fix website url in vendors details
 <hr />
 
-# Reports 
-- Fix navbar link
+<!-- # Reports --> 
+<!-- - Fix navbar link -->
 
 # Addons
 - Short description of each tab on inside modal with button written "details" on it. with info part
