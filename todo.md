@@ -13,16 +13,16 @@
 - Fix Dashboard
 <hr />
 
-### *Edit Invoice*
-- Add `edit_invoice.html` to templates
+<!-- ### *Edit Invoice*
+- Add `edit_invoice.html` to templates -->
 ### *Sale Invoice*
-- Add preview Invoice - *already working*
+<!-- - Add preview Invoice - *already working* -->
   <!-- - Decide format of invoice -->
   <!-- - Design in HTML/CSS (probably) -->
-  - integrate it with django
-  - Ability to convert it into pdf file and save locally 
-- Add print Invoice
-  - simple Browser printer (maybe we can use this to convert to pdf)
+  <!-- - integrate it with django -->
+  <!-- - Ability to convert it into pdf file and save locally  -->
+<!-- - Add print Invoice
+  - simple Browser printer (maybe we can use this to convert to pdf) -->
 <!-- - Fix Delete trxn addon button  - After refreshing page, delete button stop working correctly - Fixed -->
 <!-- - Add edit button to trxn addon - I think its better not to add it. -->
 <!-- - Change sessionStorage to localStorage -->
@@ -52,8 +52,10 @@
   - Rest of code must be similar to sale invoice (Helps in good UI)
 ### *Sale return*
 - Remove redeem options
+- Change to 'update on pre save' and delete code from views
 ### *Purchase return*
 - Remove redeem options
+- Change to 'update on pre save' and delete code from views
 
 ### *Customer / Vendor*
 <!-- - Add Checking for valid GST (Automatic check internet if possible) -->
