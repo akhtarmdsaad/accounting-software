@@ -45,7 +45,7 @@
 <!-- - Edit invoices URL takes to Customer update page
 - Delete url takes to customer page -->
 <!-- - Add Preview/print Button to each list item  -->
-- Add URL to Preview/print Button of each list item (Take it from `add_invoice.html`)
+<!-- - Add URL to Preview/print Button of each list item (Take it from `add_invoice.html`) -->
 ### *Purchase Invoice*
 - Write complete code similar to Sale invoice
   - Find a way to async save file
@@ -57,7 +57,10 @@
 
 ### *Customer / Vendor*
 <!-- - Add Checking for valid GST (Automatic check internet if possible) -->
-- Add (Automatic check internet gst details)
+- Add (Automatic check internet gst details)  
+  - `https://github.com/pranav7712/OFFICE_AUTOMATION/blob/main/GSTIN_VALIDATOR_PYTHON.py#L66`
+  - POST request to `https://my.gstzen.in/p/free-gstin-validator/?`
+  - To pass CSRF token : `https://stackoverflow.com/questions/13567507/passing-csrftoken-with-python-requests`
 <!-- - Add Checking for valid PAN card (Automatic check internet if possible) -->
 - Add edit option inside the view single customer
 - Fix website url in vendors details
