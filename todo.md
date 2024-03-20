@@ -73,6 +73,10 @@
 <!-- - Add Checking for valid PAN card (Automatic check internet if possible) -->
 <!-- - Add edit option inside the view single vendor -->
 <!-- - Fix website url in vendors details -->
+## *Google drive Support*
+- Add support for google drive operations where the whole database(*db.sqlite3*) gets updated timely whenever internet gets connected. Users can change the time according to their will. 
+
+
 <hr />
 
 <!-- # Reports --> 
