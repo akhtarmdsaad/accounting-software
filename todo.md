@@ -16,7 +16,7 @@
 <hr />
 
 ### *Edit Invoice*
-- Fix edit invoice part
+- Make edit invoice part separately (Completely Separate)
 ### *Sale Invoice*
 <!-- - Add preview Invoice - *already working* -->
   <!-- - Decide format of invoice -->
