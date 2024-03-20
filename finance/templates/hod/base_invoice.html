@@ -1,0 +1,866 @@
+{% extends 'base.html' %} 
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'assets/css/add_invoice.css' %}">
+{% endblock head %}
+
+
+
+{% block content %}
+
+
+<div class="main-wrapper">
+  <div class="page-wrapper loading" id="page-wrapper">
+    {% comment %} <div class="loading" style="width:100%;height:100%;background-color:green;"></div> {% endcomment %}
+    <div class="content container-fluid">
+      <div class="page-header">
+        <div class="row align-items-center">
+          <div class="col">
+            <h3 class="page-title">{{work}} {{realname}}</h3>
+            <ul class="breadcrumb">
+              <li class="breadcrumb-item">
+                <a href="{% url 'finance_dashboard' %}">Dashboard</a>
+              </li>
+              <li class="breadcrumb-item active">{{work}} {{realname}}</li>
+            </ul>
+          </div>
+          <div class="col-auto text-right float-right ml-auto">
+            <a href="{% url 'view_invoices' %}" class="btn btn-primary"
+              ><i class="fas fa-plus"></i> &nbsp;View {{realname}}
+            </a>
+            <!-- Button trigger modal -->
+<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#modelId" id="launch_error" style="display:none;">
+  Launch
+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="card">
+          <div class="card-body">
+            <form method="post" action="#">
+              {% csrf_token %}
+              <div class="col-12">
+                <h5 class="form-title"><span>{{work}} {{realname}}</span></h5>
+              </div>
+              {% include 'includes/messages.html' %}
+              <div class="row col-12">
+                <div class="col-12 col-sm-6">
+                  <div class="form-group">
+                    <label>Invoice No</label>
+                    <input
+                      required
+                      type="text"
+                      class="form-control"
+                      name="invoice_no"
+                      id="invoice_no"
+                      {% block inv_no %}
+                      value="{{invoice_no}}"
+                      disabled
+                      {% endblock inv_no %}
+                    />
+                  </div>
+                </div>
+                <div class="col-12 col-sm-6">
+                  <div class="form-group">
+                    <label>Date</label>
+                    <input
+                      required
+                      type="date"
+                      class="form-control"
+                      name="date"
+                      id="date"
+                      value="{{year}}-{{month}}-{{day}}"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="row col-12">
+                {% block field %}
+                <div class="col-12 col-sm-6">
+                    <div class="form-group">
+                      <label>Customer</label>
+                      <select id="customers_select" name="customer_id">
+                        <option>Select Customer</option>
+                        {% for i in customers %}
+                        <option value="{{i.id}}" {% if i.id == invoice.customer.id %} selected{% endif %} >
+                          {{i.name}}
+                          {{i.address}}
+                        </option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                  {% endblock field %}
+              </div>
+              <div class="col-12 col-sm-6">
+                <div class="form-group">
+                  <label>Tax Type</label>
+                  <select class="form-control" id="tax_type" name='tax_type'>
+                    <option value="1">CGST/SGST</option>
+                    <option value="2">IGST</option>
+                  </select>
+                </div>
+              </div>
+              <div class="change_shipping_address col-sm-6 col-12 my-3">
+                <div class="form-check form-check-inline">
+                  <label class="form-check-label" style="user-select: none;cursor: pointer;color: green;">
+                    <input class="form-check-input" type="checkbox" name="change_shipping_address" id="change_shipping_address" value="checkedValue"> Change Shipping Address
+                  </label>
+                </div>
+              </div>
+              <div class="random_customer col-sm-12">
+                <div class="row">
+                  <div class="form-group col-sm-6">
+                    <label>Customer name</label>
+                    <input
+                      type="text"
+                      class="form-control remove_from_random_customer"
+                      name="customer_name"
+                      id="shipping_customer_name"
+                      value=""
+                      required = "false"
+                    />
+                  </div>
+                  <div class="form-group col-sm-6">
+                    <label for="state">State</label>
+                    <select name="state" class="form-control" id="shipping_state" 
+                    required = "false">
+                      {% for i in states %}
+                        <option value="{{forloop.counter}}">{{i}}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Address</label>
+                  <textarea
+                    class="form-control remove_from_random_customer"
+                    name="address"
+                    id="shipping_address"
+                    rows="10"
+                    required = "false"
+                  ></textarea>
+                </div>
+              </div>
+
+              <table class="table mt-4 table-striped table-responsive" id="myTable">
+                <thead>
+                  <tr>
+                    <th width="300">Item</th>
+                    <th>CGST / SGST %</th>
+                    <th width="99">Quantity</th>
+                    <th width="150">Rate</th>
+                    <th width="99">Discount (in %)</th>
+                    <th>Taxable Value</th>
+                    <th class="text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+					        {% for t in transactions %} 
+                  <tr>
+                    <td>{{t.item.name}}</td>
+                    <td>{{t.item.state_tax_rate}}</td>
+                    <td>{{t.quantity}}</td>
+                    <td>{{t.rate}}</td>
+                    <td>{{t.discount_percent}}</td>
+                    <td>{{t.taxable_value}}</td>
+                    <td class="text-end">
+                      <button class="btn btn-primary btn-sm edit_row m-2" data-toggle="modal" data-target="#editTransaction">Edit</button>
+                      <button class="btn btn-danger btn-sm delete_row">Delete</button>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td colspan="2">
+                      <button
+                      type="button" class="btn btn-primary" id="add_item" data-toggle="modal" data-target="#addItem"
+                      >
+                        <i class="fa fa-plus"></i>&nbsp; Add Item
+                      </button>
+                      
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td class="text-end" colspan="2"><strong>Total Taxable Amount:</strong></td>
+                    <td colspan="1"></td>
+                    <td align="right"><b id="invoice_taxable_value">{{invoice.total_taxable_amount}}</b></td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td class="text-end" colspan="2"><strong>CGST:</strong></td>
+                    <td colspan="1"></td>
+                    <td align="right"><b id="invoice_central_tax_value"></b></td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td class="text-end" colspan="2"><strong>SGST:</strong></td>
+                    <td colspan="1"></td>
+                    <td align="right"><b id="invoice_state_tax_value"></b></td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td class="text-end" colspan="2"><strong>IGST:</strong></td>
+                    <td colspan="1"></td>
+                    <td align="right"><b id="invoice_integrated_tax_value"></b></td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td colspan="2">
+                      <button
+                      type="button" class="btn btn-secondary" id="add_transaction" data-toggle="modal" data-target="#addTransaction"
+                      >
+                        <i class="fa fa-plus"></i>&nbsp; Add Transaction
+                      </button>
+                    </td>
+                    <td colspan="5"></td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td class="text-end" colspan="2"><strong>Total Amount:</strong></td>
+                    <td colspan="2" align="right" style="
+                    font-size: x-large;
+                    color: green;
+                    font-weight: 400;
+                    "><b id="invoice_total_amount">{{invoice.total_amount}}</b></td>
+                    <td></td>
+                  </tr>
+                </tfoot>
+              </table>
+              <div class="row">
+                <div class="col-sm-2">
+                  <input type="submit" id = "saveInvoice" value="Save Invoice" class = "btn btn-primary">
+                </div>
+                <div class="col-sm-2">
+                  <a class="btn btn-secondary" target="_blank" href={% block invoice_url %}{% endblock invoice_url %}>
+                    Preview Invoice</a>
+
+                </div>
+                <div class="col-sm-1">
+                  <a href="{% url 'reset_invoice' %}" class="btn btn-danger" id="reset">
+                    Reset
+                  </a>
+                </div>
+                <div class="col-sm-1">
+                  <button type="button" id="refresh_total" class="btn btn-secondary">
+                    Refresh
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal For Creating transaction-->
+<div class="modal fade" id="addItem" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add Item</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="modal-form">          
+          <div class="row col-12">
+            <div class="col-12 col-sm-3">
+              <div class="form-group">  
+                <label for="item">Item</label>
+                <select id="items_select">
+                  <option>Select Item</option>
+                  {% for i in items %}
+                  <option value="{{i.id}}" current_stock="{{i.current_stock}}" tax="{{i.state_tax_rate}}">
+                    {{i.name}} 
+                  </option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="col-12 col-sm-1">
+              <label>Edit</label>
+              <a href="/finance/edit_items/1/" target="_blank" id="edit_item" class="btn btn-sm bg-success-light mr-2">
+                <i class="fas fa-pen"></i>
+              </a>
+            </div>
+            <div class="col-12 col-sm-2">
+              <div class="form-group">
+                {% comment %} <label>Tax Percent</label> {% endcomment %}
+                <label>CGST/SGST</label>
+                <input
+                  required
+                  type="number" step="0.01"
+                  class="form-control"
+                  id="tax"
+                  disabled
+                />
+              </div>
+            </div>
+            <div class="col-12 col-sm-3">
+              <div class="form-group">
+                <label>Current Stock</label>
+                <input
+                  required
+                  type="number" step="0.01"
+                  class="form-control"
+                  id="current_stock"
+                  disabled
+                />
+              </div>
+            </div>
+            <div class="col-12 col-sm-3">
+              <div class="form-group">
+                <label>Quantity</label>
+                <input
+                  required
+                  type="number" step="0.01"
+                  class="form-control"
+                  id="qnt"
+                />
+              </div>
+            </div>
+            <div class="col-12 col-sm-6">
+              <div class="form-group">
+                <label>Rate (Excluding Tax)</label>
+                <input
+                  required
+                  type="number" step="0.01"
+                  class="form-control"
+                  id="rate"
+                />
+              </div>
+            </div>
+            <div class="col-12 col-sm-6">
+              <div class="form-group">
+                <label>Taxable Value</label>
+                <input
+                  required
+                  type="number" step="0.01"
+                  class="form-control"
+                  name="taxable_value" id="taxable_value"
+                />
+              </div>
+            </div>
+            <div class="col-12 col-sm-6">
+              <div class="form-group">
+                <label>Discount (in %)</label>
+                <input
+                  required
+                  type="number" step="0.01"
+                  class="form-control"
+                  id="discount_percent"
+                />
+              </div>
+              <div class="form-group">
+                <label>Rate (Including Tax)</label>
+                <input
+                  required
+                  type="number" step="0.01"
+                  class="form-control"
+                  id="total_rate"
+                />
+            </div>
+              
+            </div>
+
+            <div class="col-12 col-sm-6">
+              <div class="form-group">
+                <label>Discount Amount</label>
+                <input
+                  required
+                  type="number" step="0.01"
+                  class="form-control"
+                  id="discount_amount"
+                />
+              </div>
+              <div class="form-group">
+                <label>Total Amount</label>
+                <input
+                  required
+                  type="number" step="0.01"
+                  class="form-control"
+                  id="total_amount"
+                />
+              </div>
+            
+              
+            </div>
+            <input type="hidden" value="{{invoice.id}}">
+            <input type="hidden" id="customer_id_in_transaction" value="2">
+            <input type="hidden" id="shipping_checkbox_trxn" value="0">
+            <input type="hidden" id="shipping_state_trxn" value="26">
+          </div>
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-success submit">Add</button>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+
+
+<div>
+<!-- Extra Details in Invoice (Discount, Round etc) Modal-->
+<div class="modal fade" id="addTransaction" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add Item</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <div class="row col-12">
+            <div class="form-group col-sm-12">
+              <label for="taxable_value_in_trxn">Total Taxable Value</label>
+              <input type="text" class="form-control" name="taxable_value_in_trxn" aria-describedby="helpId" disabled>
+            </div>
+            <div class="form-group col-sm-4">
+              <input placeholder="Name" type="text" class="form-control" name="name_in_trxn" aria-describedby="helpId" >
+            </div>
+            <div class="form-group col-sm-4">
+              <input placeholder="Percent" type="number" step="0.01" class="form-control" name="percent_in_trxn" aria-describedby="helpId" >
+            </div>
+            <div class="form-group col-sm-4">
+              <input placeholder="Amount" type="number" step="0.01" class="form-control" name="amount_in_trxn" aria-describedby="helpId" >
+            </div>
+            <div class="form-group col-sm-12">
+              <label for="total_amount_in_trxn">Total Amount</label>
+              <input type="number" steps="0.01" class="form-control" name="total_amount_in_trxn" aria-describedby="helpId" value="{{invoice.total_amount}}" disabled>
+            </div>
+          </div>
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-success submit">Add</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- Modal To Edit the Transaction-->
+<div class="modal fade" id="editTransaction" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel2">Edit Transaction</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="modal-form2">
+          <div class="row col-12">
+            <div class="col-12 col-sm-3">
+              <div class="form-group">  
+                <label for="item">Item</label>
+                <select id="items_select2" >
+                  <option>Select Item</option>
+                  {% for i in items %}
+                  <option value="{{i.id}}" current_stock="{{i.current_stock}}" tax="{{i.state_tax_rate}}">
+                    {{i.name}}
+                  </option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="col-12 col-sm-1">
+              <label>Edit</label>
+              <a href="/finance/edit_items/1/" target="_blank" id="edit_item2" class="btn btn-sm bg-success-light mr-2">
+                <i class="fas fa-pen"></i>
+              </a>
+            </div>
+            <div class="col-12 col-sm-2">
+              <div class="form-group">
+                <label>Tax Percent</label>
+                <input
+                  required
+                  type="number" step="0.01"
+                  class="form-control"
+                  id="tax2"
+                  disabled
+                />
+              </div>
+            </div>
+            <div class="col-12 col-sm-3">
+              <div class="form-group">
+                <label>Current Stock</label>
+                <input
+                  required
+                  type="number" step="0.01"
+                  class="form-control"
+                  id="current_stock2"
+                  disabled
+                />
+              </div>
+            </div>
+            <div class="col-12 col-sm-3">
+              <div class="form-group">
+                <label>Quantity</label>
+                <input
+                  required
+                  type="number" step="0.01"
+                  class="form-control"
+                  id="qnt2"
+                />
+              </div>
+            </div>
+            <div class="col-12 col-sm-6">
+              <div class="form-group">
+                <label>Rate (Excluding Tax)</label>
+                <input
+                  required
+                  type="number" step="0.01"
+                  class="form-control"
+                  id="rate2"
+                />
+              </div>
+            </div>
+            <div class="col-12 col-sm-6">
+              <div class="form-group">
+                <label>Taxable Value</label>
+                <input
+                  required
+                  type="number" step="0.01"
+                  class="form-control"
+                  id="taxable_value2"
+                  />
+              </div>
+            </div>
+            <div class="col-12 col-sm-6">
+              <div class="form-group">
+                <label>Discount (in %)</label>
+                <input
+                  required
+                  type="number" step="0.01"
+                  class="form-control"
+                  id="discount_percent2"
+                />
+              </div>
+                  <div class="form-group">
+                    <label>Rate (Including Tax)</label>
+                    <input
+                      required
+                      type="number" step="0.01"
+                      class="form-control"
+                      id="total_rate2"
+                    />
+                </div>
+              
+            </div>
+
+            <div class="col-12 col-sm-6">
+              <div class="form-group">
+                <label>Discount Amount</label>
+                <input
+                  required
+                  type="number" step="0.01"
+                  class="form-control"
+                  id="discount_amount2"
+                />
+              </div>
+              <div class="form-group">
+                <label>Total Amount</label>
+                <input
+                  required
+                  type="number" step="0.01"
+                  class="form-control"
+                  id="total_amount2"
+                />
+              </div>
+            </div>
+            
+          
+          </div>
+          <input type="hidden" value="{{invoice.id}}">
+          <input type="hidden" id="customer_id_in_transaction2" value="2">
+        </div>
+      </div> 
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-info submit">Update</button>
+      </div>
+    </div> 
+  </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="modelId" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-danger" id="error_heading">Error</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+      </div>
+      <div class="modal-body" id="error_desc">
+        Internal Server Error Occured
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        {% comment %} <button type="button" class="btn btn-primary">Save</button> {% endcomment %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+
+{% block script %}
+<script>
+  {% block variables %}{% endblock variables %}
+  {% if clear %}
+    localStorage.clear()
+  {% endif %}
+  if(!localStorage.getItem("checked_shipping"))
+  {
+    localStorage.setItem("checked_shipping",false)
+  }
+  const total_taxable_amount = document.querySelector("total_taxable_value")
+  var invoice_taxable_value = 0
+  var invoice_total_amount = 0
+  const total_invoice_amount = document.querySelector("total_invoice_amount")
+  var current_gst_applied = "CGST"
+  
+
+  const taxable_value_in_trxn = document.querySelector("input[name='taxable_value_in_trxn']")
+  const total_amount_in_trxn = document.querySelector("input[name='total_amount_in_trxn']")
+  const checkbox_input = document.querySelector("input#change_shipping_address")
+  const node = document.querySelector(".random_customer")
+  function checkCheckbox()
+  {
+    data = localStorage.getItem("checked_shipping")
+      if(data == 'true')
+      {
+        // console.log('click')
+        if(!checkbox_input.checked)
+          checkbox_input.click();
+        node.style.display="block"
+        
+      }
+      else if(data == 'false')
+      {
+        // console.log('click 2')
+        if (checkbox_input.checked)
+          checkbox_input.click();
+        node.style.display="none" 
+      }
+  }
+  checkCheckbox()
+
+  // make igst hidden from start 
+  document.querySelector("#invoice_integrated_tax_value").parentElement.parentElement.style.visibility = "hidden";
+
+function changeInvoiceState(name){
+  if(name == "CGST" || name == "SGST" || name == "OGST")
+  {
+    document.querySelector("#invoice_integrated_tax_value").parentElement.parentElement.style.visibility = "hidden";
+    document.querySelector("#invoice_central_tax_value").parentElement.parentElement.style.visibility = "visible";
+    document.querySelector("#invoice_state_tax_value").parentElement.parentElement.style.visibility = "visible";
+  }
+  else 
+  {
+    document.querySelector("#invoice_integrated_tax_value").parentElement.parentElement.style.visibility = "visible";
+    document.querySelector("#invoice_central_tax_value").parentElement.parentElement.style.visibility = "hidden";
+    document.querySelector("#invoice_state_tax_value").parentElement.parentElement.style.visibility = "hidden";
+    
+  }
+}
+function change_tax(name)
+  {
+    if(name == "IGST")
+    {
+      // console.log("Ran IGST")
+      current_gst_applied = "IGST"
+      changeInvoiceState("IGST")
+    }
+    else if(name == "CGST" || name == "SGST" || name == "OGST")
+    {
+      // console.log("Ran CGST")
+      current_gst_applied = "CGST"
+      changeInvoiceState("CGST")
+    }
+    else
+      console.error("Not accepted this GST: ",name);
+  };
+CUSTOMER_IS_CASH = false ;
+// console.log("Started")
+</script>
+<script src="{% static 'assets/js/add_invoice.js' %}"></script>
+<script>
+  // cash customer check 
+  function checkIfCash(value)
+  {
+    if(value == 68)
+    {
+      update_random_customer(1);
+      CUSTOMER_IS_CASH = true
+    }
+    else 
+    {
+      update_random_customer(3)
+      CUSTOMER_IS_CASH = false
+    }
+  }
+  $(function () {
+    $("#customers_select").selectize({
+      onChange: function(value) {
+        localStorage.setItem('cust_sel',value) 
+        customer_id_in_transaction.value = value
+        customer_id_in_transaction2.value = value
+        
+        }
+    });
+  });
+  // ----------------------------------------------------------------------------------------------------
+  // SHIPPING 
+  // add_item_button = document.getElementById("add_item")
+  add_item_button.addEventListener("click",(e)=>{
+
+      data = localStorage.getItem('checked_shipping')
+      if(data && data == 'true') shipping_checkbox_trxn.value = "1";
+      else shipping_checkbox_trxn.value = "0";
+
+      data = localStorage.getItem('state')
+      if(data) 
+        shipping_state_trxn.value = data
+      
+  })
+  document.addEventListener("DOMContentLoaded",(e)=>{
+    checkCheckbox()
+      
+  });
+  // adding event listener to percent input to update amount input in addTransaction
+  percent_input = document.querySelector("input[name='percent_in_trxn']")
+  amount_input = document.querySelector("input[name='amount_in_trxn']")
+  // invoice_total_amount = document.querySelector("#invoice_total_amount")
+  percent_input.addEventListener("input",(e)=>{
+    if(percent_input.value && parseFloat(percent_input.value) && parseFloat(taxable_value_in_trxn.value))
+    {
+      amount_input.value = round((percent_input.value/100)*taxable_value_in_trxn.value);
+      total_amount_in_trxn.value = round(invoice_total_amount + parseFloat(amount_input.value)) ;
+    }
+    else
+      amount_input.value = 0;
+    
+  })
+
+  // adding event listener to amount input to update percent input in addTransaction
+  amount_input.addEventListener("input",(e)=>{
+    if(amount_input.value && parseFloat(amount_input.value) && parseFloat(taxable_value_in_trxn.value)){
+      percent_input.value = round((parseFloat(amount_input.value)/parseFloat(taxable_value_in_trxn.value))*100);
+      total_amount_in_trxn.value = round(invoice_total_amount + parseFloat(amount_input.value)) ;
+    }
+    else
+      percent_input.value = 0;
+  })
+
+  // update totals 
+  // updation
+  function update_totals()
+  {
+    // get table body 
+    z = table.children
+    x=0
+    total_taxable = 0 
+    total_cgst = 0
+    total_sgst = 0
+    total_igst = 0
+    invoice_total_amount = 0
+    while (x < z.length)
+    {
+      c = z[x].children
+      total_taxable += parseFloat(c[5].textContent)
+      // calculate GST
+      if(current_gst_applied == "CGST"){
+        total_cgst += parseFloat(c[1].textContent) * parseFloat(c[5].textContent) / 200.0
+        total_sgst += parseFloat(c[1].textContent) * parseFloat(c[5].textContent) / 200.0
+      }
+      else 
+        total_igst += parseFloat(c[1].textContent) * parseFloat(c[5].textContent) / 100.0;
+
+       
+      x+=1
+    }
+    
+    // fixing taxes 
+    if(current_gst_applied == "CGST"){
+      total = total_sgst + total_cgst + total_igst
+      total_cgst = total / 2.0;
+      total_sgst = total_cgst
+      total_igst = 0
+    }
+    else 
+    {
+      total_igst = total_sgst + total_cgst + total_igst
+      total_cgst = 0
+      total_sgst = 0
+    }
+
+    document.querySelector("#invoice_taxable_value").textContent = total_taxable
+    taxable_value_in_trxn.value = total_taxable
+    document.querySelector("#invoice_central_tax_value").textContent = round(total_cgst,2)
+    document.querySelector("#invoice_state_tax_value").textContent = round(total_sgst,2)
+    document.querySelector("#invoice_integrated_tax_value").textContent = round(total_igst,2)
+    
+    // calculate total amount
+    x = 1 
+    y = extra_detail.children.length-2
+    invoice_total_amount = 0
+    while (x < y && extra_detail.children[x].children[3]){
+      // console.log("1",extra_detail.children[x])
+      // console.log("2",extra_detail.children[x].children[3])
+      // console.log("3",extra_detail.children[x].children[3].children[0])
+      c = extra_detail.children[x].children[3].children[0];
+      if(c.tagName == "INPUT"){
+        invoice_total_amount += parseFloat(c.value)
+      }
+      else{
+        invoice_total_amount += parseFloat(c.textContent)
+      }
+      x+=1
+    }
+    document.querySelector("#invoice_total_amount").textContent = round(invoice_total_amount,2)
+    total_amount_in_trxn.value = round(invoice_total_amount,2)
+    update_trxn_addon_session_storage();
+    // console.log("Ran Update Totals")
+  }
+  update_totals()
+  function tax_is_changed(e){
+    if(e.target.value == "1"){
+      change_tax("CGST");
+    }
+    else{
+      change_tax("IGST")
+    }
+    update_totals()
+  }
+  document.querySelector("#tax_type").addEventListener("change",(e)=>{tax_is_changed(e)})
+  document.querySelector("#refresh_total").addEventListener("click",()=>{update_totals()})
+  // setInterval(()=>{update_totals()},5000)
+  update_random_customer(3)
+</script>
+{% endblock script %}
+{% block extrascripts %}{% endblock extrascripts %}

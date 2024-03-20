@@ -12,8 +12,3 @@ body.loading {
     /* align-items: center; */
     /* display:none; */
 }
-
-iframe#printf, .modal-content, .model-header {
-    width:70vw;
-    height:80vh;
-}

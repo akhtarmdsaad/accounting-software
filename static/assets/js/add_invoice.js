@@ -590,7 +590,7 @@ $(document).ready(function() {
     onChange: function(value) {
       // Make an AJAX request to fetch the available quantity and tax percent for the selected item
       $.ajax({
-        url: '/finance/get_tax_quantity/',
+        url: GET_TAX_URL,
         data: {
           'item_id': value,
           "customer_id":customer_id_in_transaction.value
@@ -808,7 +808,7 @@ save_invoice_button.addEventListener("click",(e)=>{
     "customer_id":customer_id,
     "tax_type":tax_type,
     "change_shipping_address":change_shipping_address,
-    "customer_shipping":shipping_customer_name,
+    "shipping_customer_name":shipping_customer_name,
     "state":state,
     "address":address,
     "transaction":transaction,
@@ -819,14 +819,14 @@ save_invoice_button.addEventListener("click",(e)=>{
   // async save them
   $.ajax({
     type: "GET",
-    url: "/finance/save_invoice/",
+    url: SAVE_INVOICE_URL,
     data: data,
     dataType: "json",
     success: function (response) {
       if(response.status == "success")
       {
-        window.location.href = "/finance/view_invoices/"
-        localStorage.clear()
+        window.location.href = VIEW_INVOICE_URL;
+        localStorage.clear();
       }
       else if (response.error){
         document.querySelector("#error_desc").innerHTML = response.error

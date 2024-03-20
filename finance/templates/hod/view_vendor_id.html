@@ -11,6 +11,11 @@
             <li class="breadcrumb-item active">Vendor Details</li>
           </ul>
         </div>
+        <div class="col-auto text-right float-right ml-auto">
+          <a href="{% url 'edit_vendor' elem.id %}" class="btn btn-info"
+            ><i class="fas fa-pen"></i> &nbsp;Edit Vendor
+          </a>
+        </div>
       </div>
     </div>
     <div class="card">
@@ -41,7 +46,11 @@
                     </li>
                     <li>
                       <span class="title-span">Website : </span>
-                      <span class="info-span"><a href="{{elem.website}}">{{elem.website}}</a></span>
+                      <span class="info-span">
+                        {% if elem.website %}
+                        <a href="http://{{elem.website}}">{{elem.website}}</a>
+                        {% endif %}
+                      </span>
                     </li>
                     <li>
                       <span class="title-span">Address : </span>

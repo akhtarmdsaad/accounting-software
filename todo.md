@@ -1,6 +1,6 @@
 # Todo
 
-- Add support of Purchase Invoice
+- Add support of Purchase Invoice - (*Working*)
 - Add Security measures
 - Add Test cases
 - Fix all items IGST from 0% to required values
@@ -15,8 +15,8 @@
 - Fix Dashboard
 <hr />
 
-<!-- ### *Edit Invoice*
-- Add `edit_invoice.html` to templates -->
+### *Edit Invoice*
+- Fix edit invoice part
 ### *Sale Invoice*
 <!-- - Add preview Invoice - *already working* -->
   <!-- - Decide format of invoice -->
@@ -32,12 +32,13 @@
 <!-- - Make all inputs in trxn addon disabled (to prevent miscalculation) - The name input can be left enabled -->
 <!-- - Put a loading screen during save invoice async -->
 <!-- - Show error in the modal dialog after save_invoice press - done -->
-- Add State to Shipping detail in invoice async save (backend)
+<!-- - Add State to Shipping detail in invoice async save (backend) -->
+<!-- - Fix Save Invoice On change shipping address -->
 - Update Customer balance, item quantities etc in save_invoice in views(backend)
   - Do it from pre save and post save of models
   - Do Same for delete invoice, transactions, edit invoice etc
 - Remove test from vendor_views
-- Fix the modal CSS that are affected because of iframe.
+<!-- - Fix the modal CSS that are affected because of iframe. -->
 <!-- - Add CGST to "tax percent" -> "CGST tax percent" in Add Item modal and in the table. -->
 - **Take Suggestion**: Reset data after click of Add Button.  
 <!-- - Handle the Async in backend and return appropriate statuses - *already working* -->
@@ -53,6 +54,8 @@
 - Write complete code similar to Sale invoice
   - Find a way to async save file
   - Rest of code must be similar to sale invoice (Helps in good UI)
+- **Suggestion**: do we need change shipping addr??
+- Add edit purchase invoice
 ### *Sale return*
 - Remove redeem options
 - 'update on pre save' and delete code from views
@@ -63,12 +66,13 @@
 ### *Customer / Vendor*
 <!-- - Add Checking for valid GST (Automatic check internet if possible) -->
 - Add (Automatic check internet gst details)  
-  - `https://github.com/pranav7712/OFFICE_AUTOMATION/blob/main/GSTIN_VALIDATOR_PYTHON.py#L66`
+  <!-- - `https://github.com/pranav7712/OFFICE_AUTOMATION/blob/main/GSTIN_VALIDATOR_PYTHON.py#L66`
   - POST request to `https://my.gstzen.in/p/free-gstin-validator/?`
-  - To pass CSRF token : `https://stackoverflow.com/questions/13567507/passing-csrftoken-with-python-requests`
+  - To pass CSRF token : `https://stackoverflow.com/questions/13567507/passing-csrftoken-with-python-requests` -->
+  - Functions made, just needed to be implemented
 <!-- - Add Checking for valid PAN card (Automatic check internet if possible) -->
-- Add edit option inside the view single customer
-- Fix website url in vendors details
+<!-- - Add edit option inside the view single vendor -->
+<!-- - Fix website url in vendors details -->
 <hr />
 
 <!-- # Reports --> 

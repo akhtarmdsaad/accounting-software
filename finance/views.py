@@ -496,7 +496,9 @@ def add_invoices(request):
         "customers":Customer.objects.all(),
         "states":state_names,
         "items":Item.objects.all(),
-        "clear":False       # Clear the local Storage
+        "clear":False,       # Clear the local Storage
+        "realname":"Invoice",
+        "work":"Add"
     }
     return render(request,"hod/add_invoice.html",context)
 
@@ -525,9 +527,11 @@ def edit_invoice(request,id=None):
         "items":Item.objects.all(),
         "transactions":current_invoice.transaction_set.all(),
         "extra_details": json.loads(extra_details),
-        "clear":True        # Clear the localStorage
+        "clear":True,        # Clear the localStorage
+        "realname": "Invoice",
+        "work":"Edit"
     }
-    return render(request,"hod/add_invoice.html",context)
+    return render(request,"hod/edit_invoice.html",context)
 def reset_invoice(request):
     invoice = Invoice.objects.last()
     for i in invoice.transaction_set.all():
@@ -829,10 +833,11 @@ def save_invoice(request):
         return JsonResponse({
             "error":"No such Customer Found"
         })
-    if change_shipping_address == "true" and (not shipping_customer_name or not state or not address):
+    if change_shipping_address == "true" and not (shipping_customer_name and state and address):
         return JsonResponse({
             "error":"Invalid Shipping Details"
         })
+    print(shipping_customer_name,state,address,sep=", ")
     if change_shipping_address == "true":
         # Name of party where the goods are being transported
         shipping = ShippingDetail(
@@ -841,12 +846,21 @@ def save_invoice(request):
             address = address
         )
         shipping.save()
-    
 
     # print(customer,type(customer))
     
-    invoice = Invoice.objects.get(valid=False)
-    invoice.invoice_no = invoice_no
+    invoice = Invoice.objects.filter(invoice_no=invoice_no)
+    if len(invoice) == 1:
+        invoice = invoice[0]
+    elif len(invoice) > 1:
+        return JsonResponse({
+            "error":"More than one invoice with same inv no"
+        })
+    else:
+        return JsonResponse({
+            "error":"No such invoices found"
+        })
+    # invoice.invoice_no = invoice_no
     invoice.customer = customer
     invoice.date = date
     invoice.shipping_details = shipping
@@ -866,7 +880,10 @@ def save_invoice(request):
     total_invoice_amount = 0
 
     for tr in transaction:
-        sl_no,item,tax,qnt,rate,dis_per,taxable_value = tr.split(separator)
+        x = tr.split(separator)
+        if len(x)!=7:
+            continue
+        sl_no,item,tax,qnt,rate,dis_per,taxable_value = x
         
         "Should i get the item from `name` or `id` ??"
         item = get_object_or_404(Item,name=item)
