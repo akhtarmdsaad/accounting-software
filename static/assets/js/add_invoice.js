@@ -48,7 +48,7 @@ function update_trxn_addon_session_storage()
         s = name+separator+value
         obj.push(s)
     }
-  localStorage.setItem("transaction_addon",obj.join(divide_separator))
+  sessionStorage.setItem("transaction_addon",obj.join(divide_separator))
 }
 function update_trxn_session_storage()
 {
@@ -63,7 +63,7 @@ function update_trxn_session_storage()
     obj.push(s.join(separator))
   }
   obj = obj.join(divide_separator)
-  localStorage.setItem("transaction",obj)
+  sessionStorage.setItem("transaction",obj)
 }
 
 function get_edit_delete_btn()
@@ -117,7 +117,7 @@ function get_edit_delete_btn()
   return z;
 }
 
-// localStorage.setItem('cust_sel','Select Customer') 
+// sessionStorage.setItem('cust_sel','Select Customer') 
 
 function update_random_customer(case_no)
 {
@@ -136,29 +136,29 @@ function update_random_customer(case_no)
     // console.log("Case 1 executed")
     node.style.display="block"
     
-    data = localStorage.getItem('customer_name') 
+    data = sessionStorage.getItem('customer_name') 
     if(data)
       customer_name.value = data;  
     
-    data = localStorage.getItem('address') 
+    data = sessionStorage.getItem('address') 
     if(data)
       address.value = data;
     
-    data = localStorage.getItem('state') 
+    data = sessionStorage.getItem('state') 
     if(data)
       state.value = data
       
 
     customer_name.addEventListener('input',(e)=>{
-      localStorage.setItem('customer_name',customer_name.value) 
+      sessionStorage.setItem('customer_name',customer_name.value) 
     });
     
     address.addEventListener('input',(e)=>{
-      localStorage.setItem('address',address.value) 
+      sessionStorage.setItem('address',address.value) 
     });
     
     state.addEventListener('change',(e)=>{
-      localStorage.setItem('state',state.value);
+      sessionStorage.setItem('state',state.value);
     });
 
     // add the required role here
@@ -171,29 +171,29 @@ function update_random_customer(case_no)
     // console.log("Case 2 executed")
     node.style.display="block" 
     
-    data = localStorage.getItem('customer_name') 
+    data = sessionStorage.getItem('customer_name') 
     if(data)
       customer_name.value = data;  
     
-    data = localStorage.getItem('address') 
+    data = sessionStorage.getItem('address') 
     if(data)
       address.value = data;
     
-    data = localStorage.getItem('state') 
+    data = sessionStorage.getItem('state') 
     if(data)
       state.value = data;
       
 
     customer_name.addEventListener('input',(e)=>{
-      localStorage.setItem('customer_name',customer_name.value) 
+      sessionStorage.setItem('customer_name',customer_name.value) 
     });
     
     address.addEventListener('input',(e)=>{
-      localStorage.setItem('address',address.value) 
+      sessionStorage.setItem('address',address.value) 
     });
     
     state.addEventListener('change',(e)=>{
-      localStorage.setItem('state',state.value) 
+      sessionStorage.setItem('state',state.value) 
     });
 
     customer_name.setAttribute("required",true) 
@@ -208,15 +208,15 @@ function update_random_customer(case_no)
     address.removeAttribute("required")
 
     customer_name.removeEventListener('input',(e)=>{
-      localStorage.setItem('customer_name',customer_name.value) 
+      sessionStorage.setItem('customer_name',customer_name.value) 
     });
     
     address.removeEventListener('input',(e)=>{
-      localStorage.setItem('address',address.value) 
+      sessionStorage.setItem('address',address.value) 
     });
     
     state.removeEventListener('change',(e)=>{
-      localStorage.setItem('state',state.value) 
+      sessionStorage.setItem('state',state.value) 
     });
   }
 } // closed update input random customer
@@ -231,27 +231,27 @@ checkbox.addEventListener("change",(e)=>{
   {
     update_random_customer(3)
   }
-  localStorage.setItem("checked_shipping",e.target.checked)
+  sessionStorage.setItem("checked_shipping",e.target.checked)
 })
 
 
 
-data = localStorage.getItem('invoice_no') 
+data = sessionStorage.getItem('invoice_no') 
 if(data)
   invoice_no_input.value = data;
 
-data = localStorage.getItem('cust_sel') 
+data = sessionStorage.getItem('cust_sel') 
 if(data)
 {
   cust_sel.value = data;
   customer_id_in_transaction.value = data
   customer_id_in_transaction2.value = data
 }
-data = localStorage.getItem('date') 
+data = sessionStorage.getItem('date') 
 if(data)
   date_input.value = data;
 
-data = localStorage.getItem('transaction')
+data = sessionStorage.getItem('transaction')
 if(data)
 {
   trxn = get_trxn_from_storage(data)
@@ -268,11 +268,11 @@ if(data)
     `;
     z = get_edit_delete_btn()
     row.appendChild(z);
-    invoice_taxable_value += parseFloat(taxable_value.value)
-    invoice_total_amount += parseFloat(total_amount.value)
+    // invoice_taxable_value += parseFloat(taxable_value.value)
+    // invoice_total_amount += parseFloat(total_amount.value)
   })
 }
-data = localStorage.getItem('transaction_addon')
+data = sessionStorage.getItem('transaction_addon')
 
 if(data)
 {
@@ -314,18 +314,18 @@ if(data)
 
 
 document.getElementById("reset").addEventListener("click",(e)=>{
-  localStorage.clear()
+  sessionStorage.clear()
   customer_id_in_transaction.value = "2"
   customer_id_in_transaction2.value = "2"
 })
 
 // session storage
 invoice_no_input.addEventListener('input',(e)=>{
-  localStorage.setItem('invoice_no',document.getElementById("invoice_no").value) 
+  sessionStorage.setItem('invoice_no',document.getElementById("invoice_no").value) 
 });
 
 date_input.addEventListener('input',(e)=>{
-  localStorage.setItem('date',document.getElementById("date").value) 
+  sessionStorage.setItem('date',document.getElementById("date").value) 
 });
 
 
@@ -680,15 +680,15 @@ add_button.addEventListener("click",(e)=>{
   
   
   // get the old string
-  old_string = localStorage.getItem("transaction")
+  old_string = sessionStorage.getItem("transaction")
   if (!old_string)
   {
-    localStorage.setItem("transaction",obj.join(separator))
+    sessionStorage.setItem("transaction",obj.join(separator))
   }
   else
   {
     obj = old_string + divide_separator + obj.join(separator)
-    localStorage.setItem("transaction",obj)
+    sessionStorage.setItem("transaction",obj)
   }
   
   
@@ -758,15 +758,15 @@ add_transaction_button.addEventListener("click",(e)=>{
     amount_input.value
   ]
 
-  old_string = localStorage.getItem("transaction_addon")
+  old_string = sessionStorage.getItem("transaction_addon")
   if (!old_string)
   {
-    localStorage.setItem("transaction_addon",obj.join(separator))
+    sessionStorage.setItem("transaction_addon",obj.join(separator))
   }
   else
   {
     obj = old_string + divide_separator + obj.join(separator)
-    localStorage.setItem("transaction_addon",obj)
+    sessionStorage.setItem("transaction_addon",obj)
   }
   
 
@@ -797,9 +797,9 @@ save_invoice_button.addEventListener("click",(e)=>{
   address = document.querySelector("#shipping_address").value
 
   // get the transaction data
-  transaction = localStorage.getItem("transaction")
+  transaction = sessionStorage.getItem("transaction")
   // get the transaction addon data
-  transaction_addon = localStorage.getItem("transaction_addon")
+  transaction_addon = sessionStorage.getItem("transaction_addon")
 
   // wrap them into json
   data = {
@@ -826,7 +826,7 @@ save_invoice_button.addEventListener("click",(e)=>{
       if(response.status == "success")
       {
         window.location.href = VIEW_INVOICE_URL;
-        localStorage.clear();
+        sessionStorage.clear();
       }
       else if (response.error){
         document.querySelector("#error_desc").innerHTML = response.error

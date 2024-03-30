@@ -630,13 +630,35 @@
 
 {% block script %}
 <script>
+
+  
+
   {% block variables %}{% endblock variables %}
   {% if clear %}
-    localStorage.clear()
+    sessionStorage.clear()
   {% endif %}
-  if(!localStorage.getItem("checked_shipping"))
+  
+  // update the sessionStorage 
+  var obj = []
+  {% for t in transactions %}
+    s = '{{forloop.counter}}$$${{t.item.name}}$$${{t.item.state_tax_rate}}$$${{t.quantity}}$$${{t.rate}}$$${{t.discount_percent}}$$${{t.taxable_value}}'
+    obj.push(s);
+  {% endfor %}
+  obj = obj.join('$$$&&^^@#')
+  sessionStorage.setItem("transaction",obj)
+
+
+  obj = []
+  {% for k,v in extra_details.items %}
+  s = '{{k}}$$${{v}}'
+  obj.push(s)
+  {% endfor %}
+  obj = obj.join('$$$&&^^@#')
+  sessionStorage.setItem("transaction_addon",obj)
+  
+  if(!sessionStorage.getItem("checked_shipping"))
   {
-    localStorage.setItem("checked_shipping",false)
+    sessionStorage.setItem("checked_shipping",false)
   }
   const total_taxable_amount = document.querySelector("total_taxable_value")
   var invoice_taxable_value = 0
@@ -651,7 +673,7 @@
   const node = document.querySelector(".random_customer")
   function checkCheckbox()
   {
-    data = localStorage.getItem("checked_shipping")
+    data = sessionStorage.getItem("checked_shipping")
       if(data == 'true')
       {
         // console.log('click')
@@ -727,7 +749,7 @@ CUSTOMER_IS_CASH = false ;
   $(function () {
     $("#customers_select").selectize({
       onChange: function(value) {
-        localStorage.setItem('cust_sel',value) 
+        sessionStorage.setItem('cust_sel',value) 
         customer_id_in_transaction.value = value
         customer_id_in_transaction2.value = value
         
@@ -739,11 +761,11 @@ CUSTOMER_IS_CASH = false ;
   // add_item_button = document.getElementById("add_item")
   add_item_button.addEventListener("click",(e)=>{
 
-      data = localStorage.getItem('checked_shipping')
+      data = sessionStorage.getItem('checked_shipping')
       if(data && data == 'true') shipping_checkbox_trxn.value = "1";
       else shipping_checkbox_trxn.value = "0";
 
-      data = localStorage.getItem('state')
+      data = sessionStorage.getItem('state')
       if(data) 
         shipping_state_trxn.value = data
       
