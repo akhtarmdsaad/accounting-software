@@ -5,18 +5,24 @@
 - Add Test cases
 - Fix all items IGST from 0% to required values
 - Fix Navbar on Shrinking window
+  -  The problem is in script.js (mA.redraw())
 - Profile of User
 - Inbox of user
 - Remove ID column from each table
 - Implement check on every invoice
   - Invoice no is Serial Wise
   - User can only **edit** invoice and **cancel** invoice but they **cannot delete** it.
-- Correct the CSS during shrinking window
+<!-- - Correct the CSS during shrinking window -->
 - Fix Dashboard
 <hr />
 
+### *Invoice (design)*
+- Fix trxn addon
+- fix cgst
+
 ### *Edit Invoice*
-- Make edit invoice part separately (Completely Separate)
+<!-- - Make edit invoice part separately (Completely Separate) -->
+- No reset button on edit
 ### *Sale Invoice*
 <!-- - Add preview Invoice - *already working* -->
   <!-- - Decide format of invoice -->
