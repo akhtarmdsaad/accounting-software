@@ -4,15 +4,15 @@
 - Add Security measures
 - Add Test cases
 - Fix all items IGST from 0% to required values
-- Fix Navbar on Shrinking window
-  -  The problem is in script.js (mA.redraw())
+<!-- - Fix Navbar on Shrinking window
+  -  The problem is in main wrapper
+  - The main wrapper should be present outside the header, sidebar and footer part.  it will wrap everything -->
 - Profile of User
 - Inbox of user
 - Remove ID column from each table
 - Implement check on every invoice
   - Invoice no is Serial Wise
   - User can only **edit** invoice and **cancel** invoice but they **cannot delete** it.
-<!-- - Correct the CSS during shrinking window -->
 - Fix Dashboard
 <hr />
 
@@ -90,3 +90,8 @@
 
 # Addons
 - Short description of each tab on inside modal with button written "details" on it. with info part
+
+# Need o Internet
+- Check post_save syntax
+- do the gst_check part
+- Find a way to async save file for Purchase invoice
