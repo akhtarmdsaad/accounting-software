@@ -33,7 +33,6 @@
                         <th>Vendor</th>
                         <th>Item</th>
                         <th>Quantity</th>
-                        <th>Status</th>
                         <th>Value</th>
                         <th class="text-right">Action</th>
                       </tr>
@@ -47,13 +46,6 @@
                         <td>{{i.item}}</td>
                         <td>{{i.quantity}}</td>
                         <td>{{i.amount}}</td>
-                        <td>
-                          {% if i.status == 1 %}
-                            <span class="badge badge-success"><a style="color:white;" href="{% url 'my_credit_redeem' i.id %}">Available</a></span>
-                          {% else %}
-                            <span class="badge badge-danger">Redeemed</span>
-                          {% endif %}
-                        </td>
                         <td class="text-right">
                           <div class="actions">
                             <a

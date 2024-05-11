@@ -1,5 +1,5 @@
 from django.db.models.signals import post_save, post_delete
-from finance.models import Invoice, Transaction
+from finance.models import Invoice, Transaction, SaleReturn
 from django.dispatch import reciever
 import json
 
@@ -22,8 +22,8 @@ def update_invoice(sender, instance, created, **kwargs):
             total_central_tax_amount += (t.item.central_tax_rate / 100) * t.taxable_value
         else:
             total_integrated_tax_amount += (t.item.integrated_tax_rate / 100) * t.taxable_value
-    total_invoice_amount = total_taxable_amount + total_state_tax_amount + 
-                            total_central_tax_amount + total_integrated_tax_amount
+    
+    total_invoice_amount = total_taxable_amount + total_state_tax_amount + total_central_tax_amount + total_integrated_tax_amount
 
     # calculating extra details
     for val in json.loads(instance.extra_details).values():
@@ -45,3 +45,17 @@ def add_to_inventory(sender, instance, **kwargs):
     inventory_item.quantity = inventory_item.quantity + instance.quantity
 
     inventory_item.save()
+
+@receiver(post_save, sender=SaleReturn)
+def add_sale_return(sender,instance, created,**kwargs):
+    if created:
+        pass 
+    
+    # add amount to customer
+    customer = instance.customer
+    customer.current_balance += instance.amount
+
+    # add quantity to item
+    item = instance.item
+    item.current_stock += instance.quantity
+    item.save()

@@ -677,11 +677,10 @@ def add_salereturn(request):
             quantity=qnt,
             description=desc,
             amount=amount
-            
         )
         # Do The Changes to other models Here
-        item.current_stock += decimal.Decimal(qnt)
-        item.save()
+        # item.current_stock += decimal.Decimal(qnt)
+        # item.save()
         
         elem.save()
         messages.success(request,"Sale Return Added Successfully")

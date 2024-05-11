@@ -444,9 +444,9 @@ def add_vendor_credit_note(request):
 def delete_vendor_credit_note(request,id):
     if not request.user.has_perm('finance.delete_vendorcreditnote'):
         return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
-    elem = get_object_or_404(VendorCreditNote,id=id)
-    elem.item.current_stock -= decimal.Decimal(elem.quantity)
-    elem.item.save()
+    # elem = get_object_or_404(VendorCreditNote,id=id)
+    # elem.item.current_stock -= decimal.Decimal(elem.quantity)
+    # elem.item.save()
 
     elem.delete()
     return redirect("view_vendor_credit_notes")
@@ -477,8 +477,8 @@ def edit_vendor_credit_note(request,id):
         elem.changed_by_user = request.user
 
         # Do The Changes to other models Here
-        elem.item.current_stock -= decimal.Decimal(elem.quantity)
-        elem.item.save()
+        # elem.item.current_stock -= decimal.Decimal(elem.quantity)
+        # elem.item.save()
         
         elem.save()
         messages.success(request,"Credit Note Updated Successfully")

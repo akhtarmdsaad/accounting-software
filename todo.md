@@ -63,17 +63,23 @@
 - **Suggestion**: do we need change shipping addr??
 - Add edit purchase invoice
 ### *Sale return*
-- Remove redeem options
-  - remove the column status in view sale return
-  - remove the filed status in edit sale return
-  - remove redeem status from models.py
+- Add format for printing sale returns
+<!-- - Remove redeem options -->
+  <!-- - remove the column status in view sale return -->
+  <!-- - remove the field status in edit sale return -->
+  <!-- - remove redeem status from models.py -->
+<!-- - 'update on post save' and delete code from views -->
+  <!-- - remove it from views.py -->
+  <!-- - add a signal on signals.py -->
+### *Purchase return*
+<!-- - Remove redeem options -->
+  <!-- - remove the column status in view purchase return -->
+  <!-- - remove the field status in edit purchase return -->
+  <!-- - remove redeem status from models.py -->
+- Change the name from VendorCreditNote to PurchaseReturn (stfart from models.py and change them in vendor views.py too)
 - 'update on post save' and delete code from views
   - remove it from views.py
   - add a signal on signals.py
-### *Purchase return*
-- Remove redeem options
-- 'update on pre save' and delete code from views
-
 <!-- ### *Customer / Vendor* -->
 <!-- - Add Checking for valid GST (Automatic check internet if possible) -->
 <!-- - Add (Automatic check internet gst details) -->  

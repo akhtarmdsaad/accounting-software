@@ -182,11 +182,6 @@ class Transaction(models.Model):
     def __str__(self):
         return self.invoice.invoice_no
 
-STATUS = (
-    (1,"Available"),
-    (2,"Redeemed")
-)
-
 class SaleReturn(models.Model):
     date = models.DateField(_("date"), auto_now=False, auto_now_add=False)
     customer = models.ForeignKey(Customer,on_delete=models.CASCADE)
@@ -194,7 +189,6 @@ class SaleReturn(models.Model):
     quantity = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField(default="")
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    status = models.IntegerField(choices=STATUS,default = 1)
     created_at = models.DateTimeField(auto_now_add=True,null = True)
     updated_at = models.DateTimeField(auto_now_add=True,null = True)
     changed_by_user = models.ForeignKey(CustomUser,null=True,on_delete=models.PROTECT)
@@ -279,7 +273,6 @@ class PurchaseReturn(models.Model):
     quantity = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField(default="")
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    status = models.IntegerField(choices=STATUS,default = 1)
     created_at = models.DateTimeField(auto_now_add=True,null = True)
     updated_at = models.DateTimeField(auto_now_add=True,null = True)
     changed_by_user = models.ForeignKey(CustomUser,null=True,on_delete=models.PROTECT)
@@ -295,7 +288,6 @@ class VendorCreditNote(models.Model):
     item = models.ForeignKey(Item,on_delete=models.CASCADE)
     quantity = models.DecimalField(max_digits=10, decimal_places=2,default=decimal.Decimal(0))
     description = models.TextField(default="")
-    status = models.IntegerField(choices=STATUS,default = 1)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True,null = True)
     updated_at = models.DateTimeField(auto_now_add=True,null = True)
