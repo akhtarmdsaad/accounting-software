@@ -64,7 +64,12 @@
 - Add edit purchase invoice
 ### *Sale return*
 - Remove redeem options
-- 'update on pre save' and delete code from views
+  - remove the column status in view sale return
+  - remove the filed status in edit sale return
+  - remove redeem status from models.py
+- 'update on post save' and delete code from views
+  - remove it from views.py
+  - add a signal on signals.py
 ### *Purchase return*
 - Remove redeem options
 - 'update on pre save' and delete code from views
