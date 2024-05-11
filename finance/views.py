@@ -406,7 +406,10 @@ def add_customer(request):
         
         customer.save()
         messages.success(request,"Customer Saved Successfully")
-    return render(request,"hod/add_customer.html")
+    context = {
+        "GST_CHECK_URL":reverse('gst_check')
+    }
+    return render(request,"hod/add_customer.html",context)
 
 @login_required(login_url="account_login")
 def edit_customer(request,id):
@@ -928,6 +931,7 @@ def save_invoice(request):
     invoice.total_central_tax_amount = total_central_tax_amount
     invoice.total_integrated_tax_amount = total_integrated_tax_amount
     invoice.total_amount = total_invoice_amount
+    invoice.tax_type = int(tax_type)
     
     
     invoice.valid = True
@@ -939,3 +943,18 @@ def save_invoice(request):
         "status":"success"
         })
     
+# AJAX
+def gst_check(request):
+    from finance.tools import Gstin
+    gstin = request.GET.get('gstin')
+    
+    g = Gstin(gstin)
+    value = g.get_name()
+    if not value:
+        value = "The given GST is not registered"
+
+    data = {
+        "data":value
+    }
+
+    return JsonResponse(data)

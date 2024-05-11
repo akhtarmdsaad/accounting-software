@@ -149,7 +149,24 @@
       document.querySelector("div.gst_error").innerHTML = "Invalid GSTIN";
     }
     else{
-      document.querySelector("div.gst_error").innerHTML = ""
+      if(e.target.value.length == 15){
+        document.querySelector("div.gst_error").innerHTML = "loading ...";
+        // ajax request to check gst 
+        $.ajax({
+          url: "{{GST_CHECK_URL}}",
+          data: {
+            'gstin':e.target.value
+          },
+          dataType: 'json',
+          success: function(response) {
+              // task ...
+              document.querySelector("div.gst_error").innerHTML = response.data;
+          }
+      })
+      }
+      else{
+        document.querySelector("div.gst_error").innerHTML = ""
+      }
     }
   }
   pan_input.onchange = (e)=>{
