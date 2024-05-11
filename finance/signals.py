@@ -1,0 +1,47 @@
+from django.db.models.signals import post_save, post_delete
+from finance.models import Invoice, Transaction
+from django.dispatch import reciever
+import json
+
+@receiver(post_save, sender=Invoice) 
+def update_invoice(sender, instance, created, **kwargs):
+    if created:
+        pass
+    
+    # calculation
+    total_taxable_amount = 0
+    total_state_tax_amount = 0
+    total_central_tax_amount = 0
+    total_integrated_tax_amount = 0
+    total_invoice_amount = 0
+
+    for t in instance.transaction_set.all():
+        total_taxable_amount += (t.taxable_value - t.discount_amount) 
+        if instance.tax_type == 1:
+            total_state_tax_amount += (t.item.state_tax_rate / 100) * t.taxable_value
+            total_central_tax_amount += (t.item.central_tax_rate / 100) * t.taxable_value
+        else:
+            total_integrated_tax_amount += (t.item.integrated_tax_rate / 100) * t.taxable_value
+    total_invoice_amount = total_taxable_amount + total_state_tax_amount + 
+                            total_central_tax_amount + total_integrated_tax_amount
+
+    # calculating extra details
+    for val in json.loads(instance.extra_details).values():
+        total_invoice_amount += int(val)
+    
+    instance.total_taxable_amount = total_taxable_amount
+    instance.total_state_tax_amount = total_state_tax_amount
+    instance.total_central_tax_amount = total_central_tax_amount
+    instance.total_integrated_tax_amount = total_integrated_tax_amount
+    instance.total_amount = total_invoice_amount
+    instance.valid = True
+    print(instance, instance.total_amount)
+    # instance.save()
+
+
+@receiver(post_delete, sender=Transaction)
+def add_to_inventory(sender, instance, **kwargs):
+    inventory_item = Inventory.objects.get(id=instance.inventory_item.id)
+    inventory_item.quantity = inventory_item.quantity + instance.quantity
+
+    inventory_item.save()

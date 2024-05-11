@@ -100,4 +100,6 @@ urlpatterns = [
     # AJAX 
     path('get_tax_quantity/',views.get_tax_quantity,name="get_tax_quantity"),
     path('save_invoice/',views.save_invoice,name="save_invoice"),
+    path('save_purchase_invoice/',vendor_views.save_purchase_invoice,name="save_purchase_invoice"),
+    path('gst_check/',views.gst_check,name="gst_check"),
 ]

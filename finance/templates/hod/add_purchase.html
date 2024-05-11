@@ -1,7 +1,16 @@
-{% extends "hod/base_invoice.html" %}
+{% extends "hod/base_purchase_invoice.html" %}
 
 {% block inv_no %}
 {% endblock inv_no %}
+
+{% block variables %}
+
+var VIEW_INVOICE_URL = `{% url "view_purchase_invoices" %}`
+var SAVE_INVOICE_URL = `{% url "save_purchase_invoice" %}`
+var GET_TAX_URL = `{% url "get_tax_quantity" %}`
+
+
+{% endblock variables %}
 
 {% block field %}
 <div class="col-12 col-sm-6">
@@ -19,31 +28,9 @@
   </div>
 </div>
 
-<!--               #################################################                              -->
-{% comment %} <div class="col-12 col-sm-6">
-  <div class="form-group">
-    <label>Vendor</label>
-    <select id="customers_select" name="customer_id">
-      <option>Select Customer</option>
-      {% for i in customers %}
-      <option value="{{i.id}}" {% if i.id == invoice.customer.id %} selected{% endif %} >
-        {{i.name}}
-        {{i.address}}
-      </option>
-      {% endfor %}
-    </select>
-  </div>
-</div> {% endcomment %}
-<!--               #################################################                              -->
 <div class="col-12 col-sm-6">
   <div class="form-group">
     <label for="purchase_invoice">Purchase Invoice</label>
-
-    {% block oldfile %}
-    <br>
-    <small style="font-weight: bold;">Currently: <a href="/{{purchase_invoice.file_invoice}}">{{purchase_invoice.file_invoice|truncatechars:20}}</a> </small>
-    {% endblock oldfile %}
-
     <input type="file" class="form-control-file" name="purchase_invoice_file" id="purchase_invoice" placeholder="Invoice File here" aria-describedby="fileHelpId">
     <small id="fileHelpId" class="form-text text-muted">Upload Invoice file here</small>
   </div>

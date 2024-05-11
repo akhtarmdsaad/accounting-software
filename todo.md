@@ -7,8 +7,8 @@
 <!-- - Fix Navbar on Shrinking window
   -  The problem is in main wrapper
   - The main wrapper should be present outside the header, sidebar and footer part.  it will wrap everything -->
-- Profile of User
-- Inbox of user
+- Remove Profile of User
+- Remove Inbox of user
 - Remove ID column from each table
 - Implement check on every invoice
   - Invoice no is Serial Wise
@@ -69,13 +69,13 @@
 - Remove redeem options
 - 'update on pre save' and delete code from views
 
-### *Customer / Vendor*
+<!-- ### *Customer / Vendor* -->
 <!-- - Add Checking for valid GST (Automatic check internet if possible) -->
-- Add (Automatic check internet gst details)  
+<!-- - Add (Automatic check internet gst details) -->  
   <!-- - `https://github.com/pranav7712/OFFICE_AUTOMATION/blob/main/GSTIN_VALIDATOR_PYTHON.py#L66`
   - POST request to `https://my.gstzen.in/p/free-gstin-validator/?`
   - To pass CSRF token : `https://stackoverflow.com/questions/13567507/passing-csrftoken-with-python-requests` -->
-  - Functions made, just needed to be implemented
+  <!-- - Functions made, just needed to be implemented -->
 <!-- - Add Checking for valid PAN card (Automatic check internet if possible) -->
 <!-- - Add edit option inside the view single vendor -->
 <!-- - Fix website url in vendors details -->
@@ -91,7 +91,8 @@
 # Addons
 - Short description of each tab on inside modal with button written "details" on it. with info part
 
-# Need o Internet
-- Check post_save syntax
-- do the gst_check part
-- Find a way to async save file for Purchase invoice
+# Need of Internet
+<!-- - Check post_save syntax -->
+<!-- - do the gst_check part -->
+<!-- - Find a way to async save file for Purchase invoice -->
+- Fix the media settings

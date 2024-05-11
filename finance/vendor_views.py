@@ -1,11 +1,12 @@
 import datetime
-import decimal
+import decimal,json
 from django.http import JsonResponse
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
 from finance.models import Item, PurchaseInvoice, PurchaseTransaction, Reciept, Vendor,VendorCreditNote
 from django.contrib import messages
+from finance.common import state_names
 
 @login_required(login_url="account_login")
 def view_vendors(request):
@@ -120,8 +121,13 @@ def add_purchase_invoice(request):
             valid=False
         )
     purchase_transactions = current_invoice.purchasetransaction_set.all()
+    print("here above post")
     if request.method == "POST":
-        pass
+        file = request.POST.get('purchase_invoice_file')
+        print("File found")
+        current_invoice.file_invoice = file
+        current_invoice.save()
+        print('file added')
     
     day = str(current_invoice.date.day).rjust(2,"0")
     month = str(current_invoice.date.month).rjust(2,"0")
@@ -135,7 +141,8 @@ def add_purchase_invoice(request):
         "month":month,
         "year":year,
         "realname":"Purchase Invoice",
-        "work":"Add"
+        "work":"Add",
+        "states":state_names
     })
 
 @login_required(login_url="account_login")
@@ -510,7 +517,7 @@ def testme(request):
 
 # AJAX (async)
 
-def save_invoice(request):
+def save_purchase_invoice(request):
     # get async data 
     '''
     data = {
@@ -590,7 +597,10 @@ def save_invoice(request):
     total_invoice_amount = 0
 
     for tr in transaction:
-        sl_no,item,tax,qnt,rate,dis_per,taxable_value = tr.split(separator)
+        x = tr.split(separator)
+        if len(x)!=7:
+            continue
+        sl_no,item,tax,qnt,rate,dis_per,taxable_value = x
         
         "Should i get the item from `name` or `id` ??"
         item = get_object_or_404(Item,name=item)
@@ -645,4 +655,3 @@ def save_invoice(request):
     return JsonResponse({
         "status":"success"
         })
-    
