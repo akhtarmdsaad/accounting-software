@@ -1,13 +1,21 @@
 from django.contrib import admin
 from django.urls import path,include
-
 from finance import report_views, vendor_views
-
 from . import views
+
+from rest_framework.routers import DefaultRouter
+from .ajax_views import RelatedFileAJAXView
+
+
+ajax_router = DefaultRouter()
+ajax_router.register(r'', RelatedFileAJAXView)
+
 
 urlpatterns = [
     path('dashboard/',views.dashboard,name="finance_dashboard"),
 
+    
+    path(r'^related_images/', include(ajax_router.urls)),
     #items
     path('view_item_groups/',views.view_item_groups,name="view_item_groups"),
     path('add_item_groups/',views.add_item_groups,name="add_item_groups"),

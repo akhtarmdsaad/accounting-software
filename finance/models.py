@@ -214,10 +214,14 @@ class Vendor(models.Model):
     def __str__(self):
         return self.company
 
-class PurchaseInvoice(models.Model):
+class RelatedFile(models.Model):
+  file = models.FileField(upload_to='invoice_files/')
+  def __unicode__(self):
+    return self.file.url
+
+class PurchaseInvoiceDetails(models.Model):
     invoice_no = models.CharField(_("invoice_no"), max_length=50)
     vendor = models.ForeignKey(Vendor,on_delete=models.CASCADE)
-    file_invoice = models.FileField(_("invoice_file"), upload_to="media/invoice_files")
     date = models.DateField(_("date"), auto_now=False, auto_now_add=False)
     total_taxable_amount = models.DecimalField(max_digits=10, decimal_places=2,null=True)
     total_tax_amount = models.DecimalField(max_digits=10, decimal_places=2,null=True)
@@ -227,10 +231,16 @@ class PurchaseInvoice(models.Model):
     updated_at = models.DateTimeField(auto_now_add=True,null = True)
     changed_by_user = models.ForeignKey(CustomUser,null=True,on_delete=models.PROTECT)
     
+class PurchaseInvoice(models.Model):
+    file = models.ForeignKey(RelatedFile,on_delete=models.CASCADE,null=True)
+    details = models.ForeignKey(PurchaseInvoiceDetails,on_delete=models.CASCADE,null=True)
 
     def __str__(self):
-        return self.invoice_no
-    
+        if self.details:
+            self.details.invoice_no
+        else:
+            return "Unknown Purchase Invoice"
+
 
     
 class PurchaseTransaction(models.Model):

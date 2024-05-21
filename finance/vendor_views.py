@@ -105,45 +105,13 @@ def view_purchase_invoices(request):
 def add_purchase_invoice(request):
     if not request.user.has_perm('finance.add_purchaseinvoice'):
         return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
-    vendors = Vendor.objects.all()
-    items = Item.objects.all()
-    current_invoice = PurchaseInvoice.objects.filter(valid=False)
-    if current_invoice:
-        current_invoice = current_invoice[0]
-    else:
-        current_invoice = PurchaseInvoice.objects.create(
-            invoice_no="",
-            vendor=vendors[0],
-            date=datetime.datetime.now(),
-            total_taxable_amount = 0,
-            total_tax_amount=0,
-            total_amount=0,
-            valid=False
-        )
-    purchase_transactions = current_invoice.purchasetransaction_set.all()
-    print("here above post")
-    if request.method == "POST":
-        file = request.POST.get('purchase_invoice_file')
-        print("File found")
-        current_invoice.file_invoice = file
-        current_invoice.save()
-        print('file added')
-    
-    day = str(current_invoice.date.day).rjust(2,"0")
-    month = str(current_invoice.date.month).rjust(2,"0")
-    year = str(current_invoice.date.year).rjust(4,"0")
-    return render(request,"hod/add_purchase.html",{
-        "vendors":vendors,
-        "items":items,
-        "purchase_transactions":purchase_transactions,
-        "current_invoice":current_invoice,
-        "day":day,
-        "month":month,
-        "year":year,
-        "realname":"Purchase Invoice",
-        "work":"Add",
-        "states":state_names
-    })
+    context = {
+        "vendors":Vendor.objects.all(),
+        "items":Item.objects.all(),
+        "states":state_names,
+    }
+    return render(request,'hod/add_purchase.html',context)
+
 
 @login_required(login_url="account_login")
 def delete_purchase_invoice(request,id):

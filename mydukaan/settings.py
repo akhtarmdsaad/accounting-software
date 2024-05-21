@@ -43,8 +43,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'active_link',
-
-
+    'rest_framework',
     'accounts',
     'finance',
 ]

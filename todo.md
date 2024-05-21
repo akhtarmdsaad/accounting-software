@@ -14,6 +14,8 @@
   - Invoice no is Serial Wise
   - User can only **edit** invoice and **cancel** invoice but they **cannot delete** it.
 - Fix Dashboard
+- Fix `Welcome admin` to `Welcome {name}`
+- Allow login with username (dangerous for security)
 <hr />
 
 ### *Invoice (design)*
