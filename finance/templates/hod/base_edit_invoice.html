@@ -245,11 +245,13 @@
                     Preview Invoice</a>
 
                 </div>
+                {% block reset_invoice %}
                 <div class="col-sm-1">
                   <a href="{% url 'reset_invoice' %}" class="btn btn-danger" id="reset">
                     Reset
                   </a>
                 </div>
+                {% endblock reset_invoice %}
                 <div class="col-sm-1">
                   <button type="button" id="refresh_total" class="btn btn-secondary">
                     Refresh
