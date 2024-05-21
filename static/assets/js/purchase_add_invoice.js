@@ -777,7 +777,7 @@ add_transaction_button.addEventListener("click",(e)=>{
 
 
 save_invoice_button.addEventListener("click",(e)=>{
-  // e.preventDefault();
+  e.preventDefault();
 
   // Add the loading screen
   const pagewrapper = document.querySelector("body")
@@ -789,6 +789,7 @@ save_invoice_button.addEventListener("click",(e)=>{
   date = date_input.value
   customer_id = customer_id_in_transaction.value
   tax_type = document.querySelector("#tax_type").value
+  file_id = document.querySelector("#file_id").value
 
   // get the shipping address
   change_shipping_address = document.querySelector("#change_shipping_address").checked
@@ -807,6 +808,7 @@ save_invoice_button.addEventListener("click",(e)=>{
     "date":date,
     "customer_id":customer_id,
     "tax_type":tax_type,
+    "file_id":file_id,
     "change_shipping_address":change_shipping_address,
     "shipping_customer_name":shipping_customer_name,
     "state":state,
@@ -825,30 +827,31 @@ save_invoice_button.addEventListener("click",(e)=>{
     success: function (response) {
       if(response.status == "success")
       {
-        // window.location.href = VIEW_INVOICE_URL;
+        window.location.href = VIEW_INVOICE_URL;
         sessionStorage.clear();
       }
       else if (response.error){
+        e.preventDefault();
         document.querySelector("#error_desc").innerHTML = response.error
         document.querySelector("#launch_error").click();
-        e.preventDefault();
+        alert(response.error)
       }
 
       else
       {
-        console.warn(response)
         e.preventDefault();
+        console.warn(response)
       }
       // remove the loading screen
       pagewrapper.classList.remove("loading")
     },
     error: function (response){
+      e.preventDefault();
       // console.log("Saad There is problem")
       document.querySelector("#error_desc").innerHTML = response.statusText
       document.querySelector("#launch_error").click();
       // remove the loading screen
       pagewrapper.classList.remove("loading")
-      e.preventDefault();
     }
   });
   

@@ -223,9 +223,9 @@ class PurchaseInvoiceDetails(models.Model):
     invoice_no = models.CharField(_("invoice_no"), max_length=50)
     vendor = models.ForeignKey(Vendor,on_delete=models.CASCADE)
     date = models.DateField(_("date"), auto_now=False, auto_now_add=False)
-    total_taxable_amount = models.DecimalField(max_digits=10, decimal_places=2,null=True)
-    total_tax_amount = models.DecimalField(max_digits=10, decimal_places=2,null=True)
-    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    total_taxable_amount = models.DecimalField(max_digits=10, decimal_places=2,null=True,default=0)
+    total_tax_amount = models.DecimalField(max_digits=10, decimal_places=2,null=True,default=0)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2,default=0)
     valid = models.BooleanField(_("valid"),default=False)
     created_at = models.DateTimeField(auto_now_add=True,null = True)
     updated_at = models.DateTimeField(auto_now_add=True,null = True)
@@ -244,7 +244,7 @@ class PurchaseInvoice(models.Model):
 
     
 class PurchaseTransaction(models.Model):
-    invoice = models.ForeignKey(PurchaseInvoice, on_delete=models.CASCADE)
+    invoice = models.ForeignKey(PurchaseInvoiceDetails, on_delete=models.CASCADE)
     item = models.ForeignKey(Item,on_delete=models.CASCADE)
     quantity = models.DecimalField(max_digits=10, decimal_places=2,default=decimal.Decimal(0))
     rate = models.DecimalField(max_digits=10, decimal_places=2)
@@ -253,7 +253,7 @@ class PurchaseTransaction(models.Model):
     discount_amount = models.DecimalField(max_digits=10, decimal_places=2,null=True)
     state_tax = models.DecimalField(max_digits=10, decimal_places=2,null=True)
     central_tax = models.DecimalField(max_digits=10, decimal_places=2,null=True)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    amount = models.DecimalField(max_digits=10, decimal_places=2,default=0)
     created_at = models.DateTimeField(auto_now_add=True,null = True)
     updated_at = models.DateTimeField(auto_now_add=True,null = True)
     changed_by_user = models.ForeignKey(CustomUser,null=True,on_delete=models.PROTECT)

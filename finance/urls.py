@@ -15,7 +15,7 @@ urlpatterns = [
     path('dashboard/',views.dashboard,name="finance_dashboard"),
 
     
-    path(r'^related_images/', include(ajax_router.urls)),
+    path('related_images/', include(ajax_router.urls)),
     #items
     path('view_item_groups/',views.view_item_groups,name="view_item_groups"),
     path('add_item_groups/',views.add_item_groups,name="add_item_groups"),
@@ -107,6 +107,7 @@ urlpatterns = [
 
     # AJAX 
     path('get_tax_quantity/',views.get_tax_quantity,name="get_tax_quantity"),
+    path('get_tax_quantity_vendor/',vendor_views.get_tax_quantity,name="vendor_get_tax_quantity"),
     path('save_invoice/',views.save_invoice,name="save_invoice"),
     path('save_purchase_invoice/',vendor_views.save_purchase_invoice,name="save_purchase_invoice"),
     path('gst_check/',views.gst_check,name="gst_check"),

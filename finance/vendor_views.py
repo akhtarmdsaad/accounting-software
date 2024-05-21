@@ -2,9 +2,9 @@ import datetime
 import decimal,json
 from django.http import JsonResponse
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.contrib.auth.decorators import login_required
-from finance.models import Item, PurchaseInvoice, PurchaseTransaction, Reciept, Vendor,VendorCreditNote
+from finance.models import Item, PurchaseInvoice, PurchaseTransaction, Reciept, Vendor,VendorCreditNote, LastItemRate, RelatedFile, PurchaseInvoiceDetails
 from django.contrib import messages
 from finance.common import state_names
 
@@ -94,7 +94,7 @@ def delete_vendor(request,id):
 def view_purchase_invoices(request):
     if not request.user.has_perm('finance.view_purchaseinvoice'):
         return HttpResponse("Permission Error. Sorry You are not authorised to visit this page")
-    purchase_invoices = PurchaseInvoice.objects.all()
+    purchase_invoices = PurchaseInvoiceDetails.objects.all()
     return render(request,"hod/view_purchase.html",{
         "purchase_invoices":purchase_invoices
     })
@@ -493,6 +493,7 @@ def save_purchase_invoice(request):
     "date":date,
     "customer":customer,
     "tax_type":tax_type,
+    "file_id":file_id,
     "change_shipping_address":change_shipping_address,
     "customer_shipping":customer_shipping,
     "state":state,
@@ -505,6 +506,7 @@ def save_purchase_invoice(request):
     date = request.GET.get('date')
     customer_id = request.GET.get('customer_id')    # vendor id
     tax_type = request.GET.get('tax_type')
+    file_id = request.GET.get('file_id')
     change_shipping_address = request.GET.get('change_shipping_address')
     shipping_customer_name = request.GET.get('shipping_customer_name')
     state = request.GET.get('state')
@@ -528,6 +530,17 @@ def save_purchase_invoice(request):
         return JsonResponse({
             "error":"No such Vendor Found"
         })
+    try:
+        if file_id:
+            file = RelatedFile.objects.get(id=int(file_id))      # we need customer in both cases (shipping = true or false)
+    except RelatedFile.DoesNotExist:
+        return JsonResponse({
+            "error":"No such File Found"
+        })
+    except:
+        return JsonResponse({
+            "error":"Invalid id"
+        })
     if change_shipping_address == "true" and (shipping_customer_name and state and address):
         return JsonResponse({
             "error":"Invalid Shipping Details"
@@ -544,12 +557,19 @@ def save_purchase_invoice(request):
 
     # print(customer,type(customer))
     
-    invoice = PurchaseInvoice.objects.get(valid=False)
-    invoice.invoice_no = invoice_no
+    invoice = PurchaseInvoiceDetails(
+        invoice_no = invoice_no
+    )
     invoice.vendor = vendor
     invoice.date = date
     invoice.shipping_details = shipping
     invoice.save()
+
+    base_invoice = PurchaseInvoice(
+        file=file,
+        details=invoice
+    )
+    base_invoice.save()
     # add transaction
     separator = "$$$"
     divide_separator = "$$$&&^^@#"
@@ -557,12 +577,6 @@ def save_purchase_invoice(request):
     transaction = transaction.split(divide_separator)
     # transaction_addon = {}
     # transaction_addon = transaction_addon.split(divide_separator)
-
-    total_taxable_amount = 0
-    total_state_tax_amount = 0
-    total_central_tax_amount = 0
-    total_integrated_tax_amount = 0
-    total_invoice_amount = 0
 
     for tr in transaction:
         x = tr.split(separator)
@@ -586,14 +600,6 @@ def save_purchase_invoice(request):
             discount_percent = dis_per,
             discount_amount = dis_amt,
         )
-        x = (taxable_value - dis_amt) 
-        total_taxable_amount += x
-        if tax_type=="1":
-            total_state_tax_amount += (x * item.state_tax_rate/100)
-            total_central_tax_amount += (x * item.central_tax_rate/100)
-        else:
-            total_integrated_tax_amount += (x * item.integrated_tax_rate / 100)
-        total_invoice_amount += x * (1 + (item.state_tax_rate+item.central_tax_rate)/100)
         tr.save()
 
     l = transaction_addon.split(divide_separator)
@@ -607,14 +613,6 @@ def save_purchase_invoice(request):
     # add to invoice
     invoice.extra_details = json.dumps(json_dict)
     
-    # tax calculation
-    invoice.total_taxable_amount = total_taxable_amount
-    invoice.total_state_tax_amount = total_state_tax_amount
-    invoice.total_central_tax_amount = total_central_tax_amount
-    invoice.total_integrated_tax_amount = total_integrated_tax_amount
-    invoice.total_amount = total_invoice_amount
-    
-    
     invoice.valid = True
     invoice.save()
 
@@ -623,3 +621,28 @@ def save_purchase_invoice(request):
     return JsonResponse({
         "status":"success"
         })
+
+
+def get_tax_quantity(request):
+    '''
+    $('#rate').val(data.rate);
+        $('#tax').val(data.tax);
+        $('#current_stock').val(data.available_quantity);
+    '''
+    vendor_id = request.GET.get('customer_id')
+    vendor = get_object_or_404(Vendor,id=vendor_id)
+
+    item_id = request.GET.get('item_id')
+    item = get_object_or_404(Item,id=item_id)
+    
+
+    data = {
+            "tax":item.state_tax_rate,
+            "available_quantity":item.current_stock,
+            "edit_item_url": reverse("edit_item",args=[item.id])
+        }
+    
+        
+    
+    return JsonResponse(data)
+
