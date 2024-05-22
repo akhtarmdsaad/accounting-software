@@ -819,6 +819,7 @@ def save_invoice(request):
     transaction = request.GET.get('transaction')
     transaction_addon = request.GET.get('transaction_addon')
     shipping = None
+    
 
     if customer_id.isdigit():
         customer_id = int(customer_id)

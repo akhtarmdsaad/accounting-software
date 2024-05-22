@@ -153,7 +153,7 @@ class Invoice(models.Model):
     total_integrated_tax_amount = models.DecimalField(max_digits=10, decimal_places=2,default=0)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2,default=0)
 
-    extra_details = models.JSONField(null=True)
+    extra_details = models.JSONField(default="{}")
     shipping_details = models.ForeignKey(ShippingDetail,on_delete=models.CASCADE,null=True)
     valid = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True,null = True)

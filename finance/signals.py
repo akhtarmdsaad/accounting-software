@@ -1,6 +1,6 @@
 from django.db.models.signals import post_save, post_delete
 from finance.models import Invoice, Transaction, SaleReturn
-from django.dispatch import reciever
+from django.dispatch import receiver
 import json
 
 @receiver(post_save, sender=Invoice) 
@@ -25,17 +25,18 @@ def update_invoice(sender, instance, created, **kwargs):
     
     total_invoice_amount = total_taxable_amount + total_state_tax_amount + total_central_tax_amount + total_integrated_tax_amount
 
-    # calculating extra details
-    for val in json.loads(instance.extra_details).values():
-        total_invoice_amount += int(val)
-    
+    if instance.extra_details:
+        # calculating extra details
+        for val in json.loads(instance.extra_details).values():
+            total_invoice_amount += int(val)
+        
     instance.total_taxable_amount = total_taxable_amount
     instance.total_state_tax_amount = total_state_tax_amount
     instance.total_central_tax_amount = total_central_tax_amount
     instance.total_integrated_tax_amount = total_integrated_tax_amount
     instance.total_amount = total_invoice_amount
     instance.valid = True
-    print(instance, instance.total_amount)
+    print("From signal:",instance, instance.total_amount)
     # instance.save()
 
 

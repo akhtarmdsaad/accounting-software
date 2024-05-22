@@ -798,8 +798,21 @@ save_invoice_button.addEventListener("click",(e)=>{
 
   // get the transaction data
   transaction = sessionStorage.getItem("transaction")
+
   // get the transaction addon data
   transaction_addon = sessionStorage.getItem("transaction_addon")
+
+  // convert the transaction_addon to object
+  arrays = transaction_addon.split(divide_separator)
+  var x = {}
+  let key = ""
+  let value = ""
+  for (let i=0;i<arrays.length;i++){
+    key,value = arrays[i].split(separator);
+    x[key]=value
+  }
+
+
 
   // wrap them into json
   data = {
@@ -812,7 +825,7 @@ save_invoice_button.addEventListener("click",(e)=>{
     "state":state,
     "address":address,
     "transaction":transaction,
-    "transaction_addon":transaction_addon
+    "transaction_addon":x
   }
   
 
