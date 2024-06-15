@@ -19,6 +19,7 @@
 ### *Invoice (design)*
 - Fix trxn addon
 - fix cgst
+- copy invoice design from assignment
 
 ### *Edit Invoice*
 <!-- - Make edit invoice part separately (Completely Separate) -->
