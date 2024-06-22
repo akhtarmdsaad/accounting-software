@@ -808,6 +808,7 @@ def save_invoice(request):
     "transaction_addon":transaction_addon
   }
     '''
+    print(request.GET)
     invoice_no = request.GET.get('invoice_no')
     date = request.GET.get('date')
     customer_id = request.GET.get('customer_id')
@@ -820,7 +821,7 @@ def save_invoice(request):
     transaction_addon = request.GET.get('transaction_addon')
     shipping = None
     
-
+    print("transaction_addon:"+transaction_addon)
     if customer_id.isdigit():
         customer_id = int(customer_id)
     else:
@@ -867,6 +868,11 @@ def save_invoice(request):
     invoice.customer = customer
     invoice.date = date
     invoice.shipping_details = shipping
+    try:
+        invoice.tax_type = int(tax_type)
+    except:
+        print("Invalid TAX TYPE:",tax_type,type(tax_type))
+        raise
     invoice.save()
     # add transaction
     separator = "$$$"
@@ -889,6 +895,8 @@ def save_invoice(request):
         sl_no,item,tax,qnt,rate,dis_per,taxable_value = x
         
         "Should i get the item from `name` or `id` ??"
+
+        print(Item.objects.filter(name=item))
         item = get_object_or_404(Item,name=item)
         
         # print(taxable_value,type(taxable_value), dis_per,type(dis_per))

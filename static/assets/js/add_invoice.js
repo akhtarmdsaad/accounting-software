@@ -803,14 +803,14 @@ save_invoice_button.addEventListener("click",(e)=>{
   transaction_addon = sessionStorage.getItem("transaction_addon")
 
   // convert the transaction_addon to object
-  arrays = transaction_addon.split(divide_separator)
-  var x = {}
-  let key = ""
-  let value = ""
-  for (let i=0;i<arrays.length;i++){
-    key,value = arrays[i].split(separator);
-    x[key]=value
-  }
+  // arrays = transaction_addon.split(divide_separator)
+  // var x = {}
+  // let key = ""
+  // let value = ""
+  // for (let i=0;i<arrays.length;i++){
+  //   key,value = arrays[i].split(separator);
+  //   x[key]=value
+  // }
 
 
 
@@ -825,10 +825,9 @@ save_invoice_button.addEventListener("click",(e)=>{
     "state":state,
     "address":address,
     "transaction":transaction,
-    "transaction_addon":x
+    "transaction_addon":transaction_addon
   }
   
-
   // async save them
   $.ajax({
     type: "GET",

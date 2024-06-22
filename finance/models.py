@@ -142,7 +142,10 @@ class ShippingDetail(models.Model):
         return self.name
 
 
-
+TAX_TYPE = (
+    (1,'CGST/SGST'),
+    (2,'IGST')
+)
 class Invoice(models.Model):
     invoice_no = models.CharField(_("invoice_no"), max_length=50)
     customer = models.ForeignKey(Customer,on_delete=models.CASCADE, null=True)
@@ -152,8 +155,8 @@ class Invoice(models.Model):
     total_central_tax_amount = models.DecimalField(max_digits=10, decimal_places=2,default=0)
     total_integrated_tax_amount = models.DecimalField(max_digits=10, decimal_places=2,default=0)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2,default=0)
-
-    extra_details = models.JSONField(default="{}")
+    tax_type = models.IntegerField(choices=TAX_TYPE,default=1)
+    extra_details = models.JSONField(default=dict)
     shipping_details = models.ForeignKey(ShippingDetail,on_delete=models.CASCADE,null=True)
     valid = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True,null = True)

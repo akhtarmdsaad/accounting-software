@@ -157,6 +157,7 @@
                     <th width="99">Discount (in %)</th>
                     <th>Taxable Value</th>
                     <th class="text-right">Action</th>
+                    <th style="display:none;">Item Id</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -172,6 +173,7 @@
                       <button class="btn btn-primary btn-sm edit_row m-2" data-toggle="modal" data-target="#editTransaction">Edit</button>
                       <button class="btn btn-danger btn-sm delete_row">Delete</button>
                     </td>
+                    <td name="item_id" style="display:none;">{{t.item.id}}</td>
                   </tr>
                   {% endfor %}
                 </tbody>
@@ -285,7 +287,7 @@
                   <option>Select Item</option>
                   {% for i in items %}
                   <option value="{{i.id}}" current_stock="{{i.current_stock}}" tax="{{i.state_tax_rate}}">
-                    {{i.name}} 
+                    {{i}} 
                   </option>
                   {% endfor %}
                 </select>
@@ -479,7 +481,7 @@
                   <option>Select Item</option>
                   {% for i in items %}
                   <option value="{{i.id}}" current_stock="{{i.current_stock}}" tax="{{i.state_tax_rate}}">
-                    {{i.name}}
+                    {{i}}
                   </option>
                   {% endfor %}
                 </select>

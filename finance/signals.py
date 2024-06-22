@@ -1,7 +1,7 @@
 from django.db.models.signals import post_save, post_delete
 from finance.models import Invoice, Transaction, SaleReturn
 from django.dispatch import receiver
-import json
+import json,decimal
 
 @receiver(post_save, sender=Invoice) 
 def update_invoice(sender, instance, created, **kwargs):
@@ -16,12 +16,12 @@ def update_invoice(sender, instance, created, **kwargs):
     total_invoice_amount = 0
 
     for t in instance.transaction_set.all():
-        total_taxable_amount += (t.taxable_value - t.discount_amount) 
+        total_taxable_amount += decimal.Decimal(t.taxable_value - t.discount_amount) 
         if instance.tax_type == 1:
-            total_state_tax_amount += (t.item.state_tax_rate / 100) * t.taxable_value
-            total_central_tax_amount += (t.item.central_tax_rate / 100) * t.taxable_value
+            total_state_tax_amount += decimal.Decimal((t.item.state_tax_rate / 100) * float(t.taxable_value))
+            total_central_tax_amount += decimal.Decimal((t.item.central_tax_rate / 100) * float(t.taxable_value))
         else:
-            total_integrated_tax_amount += (t.item.integrated_tax_rate / 100) * t.taxable_value
+            total_integrated_tax_amount += decimal.Decimal((t.item.integrated_tax_rate / 100) * float(t.taxable_value))
     
     total_invoice_amount = total_taxable_amount + total_state_tax_amount + total_central_tax_amount + total_integrated_tax_amount
 
@@ -40,23 +40,23 @@ def update_invoice(sender, instance, created, **kwargs):
     # instance.save()
 
 
-@receiver(post_delete, sender=Transaction)
-def add_to_inventory(sender, instance, **kwargs):
-    inventory_item = Inventory.objects.get(id=instance.inventory_item.id)
-    inventory_item.quantity = inventory_item.quantity + instance.quantity
+# @receiver(post_delete, sender=Transaction)
+# def add_to_inventory(sender, instance, **kwargs):
+#     inventory_item = Inventory.objects.get(id=instance.inventory_item.id)
+#     inventory_item.quantity = inventory_item.quantity + instance.quantity
 
-    inventory_item.save()
+#     inventory_item.save()
 
-@receiver(post_save, sender=SaleReturn)
-def add_sale_return(sender,instance, created,**kwargs):
-    if created:
-        pass 
+# @receiver(post_save, sender=SaleReturn)
+# def add_sale_return(sender,instance, created,**kwargs):
+#     if created:
+#         pass 
     
-    # add amount to customer
-    customer = instance.customer
-    customer.current_balance += instance.amount
+#     # add amount to customer
+#     customer = instance.customer
+#     customer.current_balance += instance.amount
 
-    # add quantity to item
-    item = instance.item
-    item.current_stock += instance.quantity
-    item.save()
+#     # add quantity to item
+#     item = instance.item
+#     item.current_stock += instance.quantity
+#     item.save()
